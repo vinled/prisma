@@ -1,0 +1,6 @@
+{
+  "name": "Gerador de Posts Imobiliários",
+  "description": "Crie designs incríveis para suas redes sociais em segundos, com fotos e informações essenciais do seu imóvel.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

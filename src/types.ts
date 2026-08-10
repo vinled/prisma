@@ -1,0 +1,46 @@
+export interface PropertyDetails {
+  title: string; // chamadas (opcional)
+  price: string;
+  neighborhood: string;
+  city: string;
+  state: string;
+  area: string;
+  bedrooms: string;
+  suites: string;
+  bathrooms: string;
+  parking: string;
+  propertyCode: string;
+  propertyType: string;
+  propertySubtype: string;
+  amenities: string[];
+  differentials: string[];
+  leisureArea: boolean | null;
+  whatsapp: string;
+}
+
+export type TemplateId = 'modern' | 'luxury' | 'bold' | 'elegant' | 'minimalist';
+export type AspectRatioId = 'feed' | 'story';
+
+export interface BrandKit {
+  logo: string | null;
+  name: string;
+  creci: string;
+  whatsapp: string;
+  primaryColor: string;
+  secondaryColor: string;
+  isSaved: boolean;
+}
+
+export interface TemplateOptions {
+  gradientOpacity?: number; // 0 to 100
+  imagePositionX?: number; // 0 to 100
+}
+
+export interface TemplateProps {
+  details: PropertyDetails;
+  image: string | null;
+  logo: string | null;
+  aspectRatio?: AspectRatioId;
+  brandKit?: BrandKit | null;
+  options?: TemplateOptions;
+}
