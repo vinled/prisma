@@ -83,7 +83,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Tipo do imóvel</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Tipo do imóvel</label>
           <select
             name="propertyType"
             value={details.propertyType}
@@ -99,7 +99,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
 
         {details.propertyType === 'Apartamento' && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Tipo de apartamento</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Tipo de apartamento</label>
             <select
               name="propertySubtype"
               value={details.propertySubtype}
@@ -116,7 +116,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Chamada (opcional)</label>
+        <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Chamada (opcional)</label>
         <input
           type="text"
           name="title"
@@ -129,7 +129,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Bairro</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Bairro</label>
           <input
             type="text"
             name="neighborhood"
@@ -140,7 +140,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Cidade</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Cidade</label>
           <input
             type="text"
             name="city"
@@ -151,7 +151,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Estado</label>
           <select
             name="state"
             value={details.state}
@@ -168,7 +168,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Preço</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Preço</label>
           <input
             type="text"
             name="price"
@@ -179,7 +179,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Metragem (m²)</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Metragem (m²)</label>
           <input
             type="text"
             name="area"
@@ -190,7 +190,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Dormitórios</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Dormitórios</label>
           <input
             type="text"
             name="bedrooms"
@@ -201,7 +201,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Suítes</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Suítes</label>
           <input
             type="text"
             name="suites"
@@ -212,7 +212,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Banheiros</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Banheiros</label>
           <input
             type="text"
             name="bathrooms"
@@ -223,7 +223,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Vagas</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Vagas</label>
           <input
             type="text"
             name="parking"
@@ -236,7 +236,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Código do imóvel (opcional)</label>
+        <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Código do imóvel (opcional)</label>
         <input
           type="text"
           name="propertyCode"
@@ -248,7 +248,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
       </div>
 
       <div className="pt-4 border-t border-gray-200">
-        <label className="block text-sm font-medium text-gray-700 mb-3">Área de lazer</label>
+        <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-3">Área de lazer</label>
         <div className="flex space-x-4 mb-4">
           <label className="flex items-center">
             <input
@@ -258,7 +258,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
               onChange={() => onChange({ ...details, leisureArea: false })}
               className="mr-2 text-blue-600 focus:ring-blue-500"
             />
-            <span className="text-sm text-gray-700">Não informado</span>
+            <span className="text-sm text-gray-700 dark:text-zinc-300">Não informado</span>
           </label>
           <label className="flex items-center">
             <input
@@ -268,7 +268,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
               onChange={() => onChange({ ...details, leisureArea: true })}
               className="mr-2 text-blue-600 focus:ring-blue-500"
             />
-            <span className="text-sm text-gray-700">Possui área de lazer</span>
+            <span className="text-sm text-gray-700 dark:text-zinc-300">Possui área de lazer</span>
           </label>
         </div>
         
@@ -289,7 +289,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
 
       <div className="pt-4 border-t border-gray-200">
         <div className="mb-4">
-          <h3 className="text-sm font-semibold text-gray-800">Destaques do Imóvel</h3>
+          <h3 className="text-sm font-semibold text-gray-800 dark:text-zinc-300">Destaques do Imóvel</h3>
           <p className="text-xs text-gray-500 mt-1">
             Selecione comodidades e diferenciais. Para não poluir o design, <strong>apenas até 5 opções no total</strong> serão exibidas na arte final.
           </p>
@@ -316,7 +316,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
       </div>
 
       <div className="pt-4 border-t border-gray-200">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Contato</label>
+        <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-2">Contato</label>
         
         {brandKit?.isSaved && brandKit?.whatsapp ? (
           <div>

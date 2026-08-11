@@ -26,7 +26,7 @@ export function AmenitiesSelector({ label, options, selected, onChange }: Amenit
   return (
     <div className="space-y-2">
       <div className="flex justify-between items-center">
-        <label className="block text-sm font-medium text-gray-700">{label}</label>
+        <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300">{label}</label>
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
@@ -47,7 +47,7 @@ export function AmenitiesSelector({ label, options, selected, onChange }: Amenit
               className={`px-3 py-1.5 text-sm rounded-full border transition-colors ${
                 selected.includes(option)
                   ? 'bg-blue-100 border-blue-300 text-blue-800'
-                  : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-100'
+                  : 'bg-white border-gray-300 text-gray-700 dark:text-zinc-300 hover:bg-gray-100'
               }`}
             >
               {option}
@@ -63,7 +63,7 @@ export function AmenitiesSelector({ label, options, selected, onChange }: Amenit
               key={item}
               className="flex items-center bg-gray-100 px-3 py-1 rounded-full border border-gray-200"
             >
-              <span className="text-sm text-gray-800 mr-2">{item}</span>
+              <span className="text-sm text-gray-800 dark:text-zinc-300 mr-2">{item}</span>
               <button
                 type="button"
                 onClick={() => removeOption(item)}

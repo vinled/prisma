@@ -35,7 +35,7 @@ export function BrandKitForm({ brandKit, onChange }: BrandKitFormProps) {
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
             Nome do corretor / imobiliária
           </label>
           <input
@@ -47,7 +47,7 @@ export function BrandKitForm({ brandKit, onChange }: BrandKitFormProps) {
         </div>
         
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
             CRECI
           </label>
           <input
@@ -59,7 +59,7 @@ export function BrandKitForm({ brandKit, onChange }: BrandKitFormProps) {
         </div>
         
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
             WhatsApp
           </label>
           <input
@@ -74,7 +74,7 @@ export function BrandKitForm({ brandKit, onChange }: BrandKitFormProps) {
       
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
             Cor principal
           </label>
           <div className="flex items-center space-x-2">
@@ -89,7 +89,7 @@ export function BrandKitForm({ brandKit, onChange }: BrandKitFormProps) {
         </div>
         
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
             Cor secundária
           </label>
           <div className="flex items-center space-x-2">
@@ -112,7 +112,7 @@ export function BrandKitForm({ brandKit, onChange }: BrandKitFormProps) {
           checked={brandKit?.isSaved || false}
           onChange={(e) => handleChange('isSaved', e.target.checked)}
         />
-        <label htmlFor="saveBrandKit" className="ml-2 block text-sm text-gray-900">
+        <label htmlFor="saveBrandKit" className="ml-2 block text-sm text-gray-900 dark:text-zinc-300">
           Salvar como minha identidade
         </label>
       </div>

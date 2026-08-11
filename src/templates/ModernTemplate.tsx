@@ -90,7 +90,7 @@ export function ModernTemplate({ details, image, logo, aspectRatio, brandKit, op
           {locationString && (
             <div className={`flex items-center text-gray-200 ${aspectRatio === 'story' ? 'text-xl mb-1' : 'text-base'} drop-shadow-sm`}>
               <MapPin className={`${aspectRatio === 'story' ? 'w-5 h-5' : 'w-4 h-4'} mr-2 opacity-80 shrink-0`} />
-              <span className="font-light tracking-wide truncate">{locationString}</span>
+              <span className="text-white font-bold tracking-wide truncate">{locationString}</span>
             </div>
           )}
           {details.price?.trim() && (
@@ -115,13 +115,13 @@ export function ModernTemplate({ details, image, logo, aspectRatio, brandKit, op
         {/* Differentials & Code */}
         <div className={`flex justify-between items-end ${aspectRatio === 'story' ? 'mt-3' : 'mt-2'}`}>
           {tagsString && (
-            <div className={`${aspectRatio === 'story' ? 'text-xl' : 'text-sm'} font-light text-gray-300 max-w-[75%] leading-relaxed`}>
+            <div className={`${aspectRatio === 'story' ? 'text-xl' : 'text-sm'} font-bold text-gray-300 max-w-[75%] leading-relaxed`}>
               {tagsString}
             </div>
           )}
           
           {details.propertyCode?.trim() && (
-            <div className={`${aspectRatio === 'story' ? 'text-lg' : 'text-xs'} text-gray-400 font-mono tracking-wider ml-auto`}>
+            <div className={`${aspectRatio === 'story' ? 'text-lg' : 'text-xs'} text-white font-bold font-[Arial] tracking-wider ml-auto`}>
               Cód. {details.propertyCode}
             </div>
           )}

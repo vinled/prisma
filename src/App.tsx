@@ -177,7 +177,7 @@ export default function App() {
                 <AspectRatioSelector selected={aspectRatio} onSelect={setAspectRatio} />
               </div>
               
-              {['modern', 'elegant'].includes(selectedTemplate) && (
+              {['modern', 'elegant', 'luxury', 'bold', 'minimalist'].includes(selectedTemplate) && (
                 <div className="mt-6 space-y-4 pt-6 border-t border-gray-100 dark:border-zinc-800">
                   <h3 className="text-sm font-medium text-gray-700 dark:text-zinc-300">Ajustes da Imagem</h3>
                   
