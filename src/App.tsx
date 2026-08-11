@@ -16,6 +16,7 @@ import { ImageUploader } from './components/ImageUploader';
 import { TemplateSelector } from './components/TemplateSelector';
 import { AspectRatioSelector } from './components/AspectRatioSelector';
 import { TemplateRenderer } from './components/TemplateRenderer';
+import { MyProperties } from './components/MyProperties';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<'criacao' | 'meus_imoveis'>('criacao');
@@ -173,11 +174,7 @@ export default function App() {
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto">
         {activeTab === 'meus_imoveis' ? (
-          <div className="p-12 flex flex-col items-center justify-center h-full text-gray-500 dark:text-zinc-400">
-            <Layout className="w-16 h-16 mb-4 opacity-50" />
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Meus Imóveis</h2>
-            <p>Ainda não há imóveis salvos. Crie o seu primeiro post na guia Criação Rápida.</p>
-          </div>
+          <MyProperties />
         ) : (
           <div className="max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8">
             <header className="flex justify-between items-center mb-8">
