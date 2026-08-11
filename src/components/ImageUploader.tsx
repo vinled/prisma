@@ -81,16 +81,16 @@ export function ImageUploader({ images, onImagesChange }: ImageUploaderProps) {
       {images.length < 10 && (
         <label 
           className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
-            isDragging ? 'border-blue-500 bg-blue-50' : 'border-gray-300 bg-gray-50 hover:bg-gray-100'
+            isDragging ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-300 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-800/50 hover:bg-gray-100 dark:hover:bg-zinc-800'
           }`}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
         >
           <div className="flex flex-col items-center justify-center pt-5 pb-6">
-            <Upload className={`w-6 h-6 mb-2 ${isDragging ? 'text-blue-500' : 'text-gray-400'}`} />
-            <p className="mb-1 text-sm text-gray-500 text-center px-4">
-              <span className="font-semibold">Clique ou arraste imagens</span>
+            <Upload className={`w-6 h-6 mb-2 ${isDragging ? 'text-blue-500' : 'text-gray-400 dark:text-zinc-500'}`} />
+            <p className="mb-1 text-sm text-gray-500 dark:text-zinc-400 text-center px-4">
+              <span className="font-semibold text-gray-700 dark:text-zinc-300">Clique ou arraste imagens</span>
               <br/>(até 10 fotos)
             </p>
           </div>

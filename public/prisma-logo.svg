@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120" width="400" height="120">
+  <defs>
+    <linearGradient id="p-left" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#2D1460"/>
+      <stop offset="100%" stop-color="#14063A"/>
+    </linearGradient>
+    <linearGradient id="p-top" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4D2A96"/>
+      <stop offset="100%" stop-color="#3A1C7D"/>
+    </linearGradient>
+    <linearGradient id="p-right" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#6F42C1"/>
+      <stop offset="100%" stop-color="#552C9F"/>
+    </linearGradient>
+    <linearGradient id="p-bottom" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#412185"/>
+      <stop offset="100%" stop-color="#220D54"/>
+    </linearGradient>
+  </defs>
+
+  <g transform="translate(10, 15)">
+    <!-- Left Stem of P -->
+    <polygon points="10,25 35,10 35,105 10,85" fill="url(#p-left)" />
+    
+    <!-- Top Face of P loop -->
+    <polygon points="35,10 75,30 75,55 35,40" fill="url(#p-top)" />
+    
+    <!-- Right Face of P loop -->
+    <polygon points="75,30 90,40 90,65 75,55" fill="url(#p-right)" />
+    
+    <!-- Bottom Face of P loop -->
+    <polygon points="35,70 75,85 90,65 50,55" fill="url(#p-bottom)" />
+    <!-- Wait, let's simplify the 3D 'P' logo -->
+    
+    <!-- Clean 3D P shape -->
+    <!-- Left vertical -->
+    <polygon points="20,25 45,10 45,105 20,85" fill="#1e1147" />
+    <!-- Top part of loop -->
+    <polygon points="45,10 85,25 65,45 45,35" fill="#6741d9" />
+    <!-- Outer right vertical -->
+    <polygon points="85,25 85,65 65,85 65,45" fill="#5f3dc4" />
+    <!-- Bottom part of loop -->
+    <polygon points="65,85 45,75 45,55 65,65" fill="#3b2085" />
+    
+    <!-- Sparkle / Star -->
+    <path d="M 45 45 Q 55 45 55 35 Q 55 45 65 45 Q 55 45 55 55 Q 55 45 45 45 Z" fill="#ffffff" />
+  </g>
+
+  <!-- PRISMA Text -->
+  <text x="110" y="82" font-family="Arial, Helvetica, sans-serif" font-weight="900" font-size="68" fill="#14063A" letter-spacing="2">PRISMA</text>
+</svg>

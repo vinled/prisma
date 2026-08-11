@@ -1,1 +1,20 @@
 @import "tailwindcss";
+@custom-variant dark (&:is(.dark *));
+
+@layer base {
+  input[type="text"], input[type="number"], input[type="email"], select, textarea {
+    @apply dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-100;
+  }
+  label {
+    @apply dark:text-zinc-300;
+  }
+}
+
+@layer base {
+  input[type="color"] {
+    @apply dark:border-zinc-700 dark:bg-zinc-800;
+  }
+  input[type="checkbox"] {
+    @apply dark:bg-zinc-800 dark:border-zinc-700;
+  }
+}
