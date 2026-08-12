@@ -44,3 +44,12 @@ export interface TemplateProps {
   brandKit?: BrandKit | null;
   options?: TemplateOptions;
 }
+
+export interface SavedProperty {
+  id: string;
+  date: string;
+  details: PropertyDetails;
+  selectedTemplate: TemplateId;
+  aspectRatio: AspectRatioId;
+  templateOptions: TemplateOptions;
+}

@@ -9,7 +9,7 @@ import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { Download, Layout, Moon, Sun } from 'lucide-react';
 import { PrismaLogo } from './components/PrismaLogo';
-import { PropertyDetails, TemplateId, AspectRatioId, BrandKit, TemplateOptions } from './types';
+import { PropertyDetails, TemplateId, AspectRatioId, BrandKit, TemplateOptions, SavedProperty } from './types';
 import { PropertyForm } from './components/PropertyForm';
 import { BrandKitForm } from './components/BrandKitForm';
 import { ImageUploader } from './components/ImageUploader';
@@ -51,6 +51,20 @@ export default function App() {
   const [isExporting, setIsExporting] = useState(false);
   const [previewIndex, setPreviewIndex] = useState(0);
 
+  const [savedProperties, setSavedProperties] = useState<SavedProperty[]>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('prisma_imoveis');
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch (e) {
+          console.error('Failed to parse saved properties', e);
+        }
+      }
+    }
+    return [];
+  });
+  
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('theme') === 'dark' ||
@@ -84,6 +98,27 @@ export default function App() {
     try {
       setIsExporting(true);
       
+
+    const savePropertyData = () => {
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+      
+      const newProperty: SavedProperty = {
+        id: Date.now().toString(),
+        date: dateStr,
+        details,
+        selectedTemplate,
+        aspectRatio,
+        templateOptions
+      };
+      
+      const updated = [newProperty, ...savedProperties];
+      setSavedProperties(updated);
+      localStorage.setItem('prisma_imoveis', JSON.stringify(updated));
+    };
+    
+    savePropertyData();
+    
       const scale = 2; // Export at 2x resolution
       
       const baseWidth = 540;
@@ -124,6 +159,22 @@ export default function App() {
       alert('Erro ao gerar a imagem. Verifique se há imagens e tente novamente.');
     } finally {
       setIsExporting(false);
+    }
+  };
+
+  const handleEdit = (prop: SavedProperty) => {
+    setDetails(prop.details);
+    setSelectedTemplate(prop.selectedTemplate);
+    setAspectRatio(prop.aspectRatio);
+    setTemplateOptions(prop.templateOptions);
+    setActiveTab('criacao');
+  };
+
+  const handleDelete = (id: string) => {
+    if (window.confirm('Tem certeza que deseja excluir este imóvel salvo?')) {
+      const updated = savedProperties.filter(p => p.id !== id);
+      setSavedProperties(updated);
+      localStorage.setItem('prisma_imoveis', JSON.stringify(updated));
     }
   };
 
@@ -174,7 +225,7 @@ export default function App() {
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto">
         {activeTab === 'meus_imoveis' ? (
-          <MyProperties />
+          <MyProperties properties={savedProperties} onEdit={handleEdit} onDelete={handleDelete} />
         ) : (
           <div className="max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8">
             <header className="flex justify-between items-center mb-8">
