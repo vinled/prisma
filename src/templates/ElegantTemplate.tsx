@@ -48,7 +48,7 @@ export function ElegantTemplate({ details, image, logo, aspectRatio, brandKit, o
         {whatsapp?.trim() && (
           <div className="flex items-center text-white drop-shadow-md bg-black/20 backdrop-blur-md px-3 py-2 rounded-full border border-white/10 shadow-lg">
             <Phone className="w-3.5 h-3.5 mr-1.5 opacity-90" />
-            <span className="text-sm font-semibold tracking-wide">{whatsapp}</span>
+            <span className="whitespace-nowrap text-sm font-semibold tracking-wide">{whatsapp}</span>
           </div>
         )}
       </div>

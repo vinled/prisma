@@ -52,4 +52,5 @@ export interface SavedProperty {
   selectedTemplate: TemplateId;
   aspectRatio: AspectRatioId;
   templateOptions: TemplateOptions;
+  thumbnail?: string;
 }

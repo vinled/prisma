@@ -67,7 +67,7 @@ export function BoldTemplate({ details, image, logo, aspectRatio, brandKit, opti
           )}
           
           {details.price?.trim() && (
-            <div className={`${aspectRatio === 'story' ? 'text-7xl mb-4' : 'text-5xl mb-2'} font-[900] text-white text-left tracking-tight drop-shadow-lg`}>
+            <div className={`whitespace-nowrap ${aspectRatio === 'story' ? 'text-7xl mb-4' : 'text-5xl mb-2'} font-[900] text-white text-left tracking-tight drop-shadow-lg`}>
               {details.price}
             </div>
           )}

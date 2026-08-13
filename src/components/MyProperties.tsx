@@ -1,5 +1,5 @@
-import React from 'react';
-import { Edit2, Copy, Trash2, Image as ImageIcon, Home } from 'lucide-react';
+import React, { useState } from 'react';
+import { Edit2, Copy, Trash2, Image as ImageIcon, Home, Search } from 'lucide-react';
 import { SavedProperty } from '../types';
 
 interface Props {
@@ -9,6 +9,18 @@ interface Props {
 }
 
 export function MyProperties({ properties, onEdit, onDelete }: Props) {
+  const [termoBusca, setTermoBusca] = useState('');
+
+  const filteredProperties = properties.filter((prop) => {
+    const searchLower = termoBusca.toLowerCase();
+    const details = prop.details;
+    const matchCode = (details.propertyCode || '').toLowerCase().includes(searchLower);
+    const matchNeighborhood = (details.neighborhood || '').toLowerCase().includes(searchLower);
+    const matchCity = (details.city || '').toLowerCase().includes(searchLower);
+    const matchType = (details.propertyType || '').toLowerCase().includes(searchLower);
+    return matchCode || matchNeighborhood || matchCity || matchType;
+  });
+
   const handleCopyCaption = (prop: SavedProperty) => {
     const type = prop.details.propertyType || 'Imóvel';
     const location = [prop.details.neighborhood, prop.details.city].filter(Boolean).join(', ');
@@ -38,9 +50,23 @@ export function MyProperties({ properties, onEdit, onDelete }: Props) {
           </p>
         </div>
       ) : (
-        <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 overflow-hidden transition-colors duration-200">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+        <div className="space-y-6">
+          <div className="relative max-w-md">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Search className="h-5 w-5 text-gray-400" />
+            </div>
+            <input
+              type="text"
+              value={termoBusca}
+              onChange={(e) => setTermoBusca(e.target.value)}
+              className="block w-full pl-10 pr-3 py-2.5 border border-gray-200 dark:border-zinc-700 rounded-xl leading-5 bg-white dark:bg-zinc-900 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm transition-colors"
+              placeholder="Buscar por código, bairro ou tipo..."
+            />
+          </div>
+
+          <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 overflow-hidden transition-colors duration-200">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-gray-100 dark:border-zinc-800 text-sm text-gray-500 dark:text-zinc-400">
                   <th className="p-4 font-medium">Imóvel</th>
@@ -50,17 +76,32 @@ export function MyProperties({ properties, onEdit, onDelete }: Props) {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-zinc-800">
-                {properties.map((property) => {
-                  const title = property.details.propertyType || 'Imóvel sem tipo';
-                  const location = [property.details.neighborhood, property.details.city].filter(Boolean).join(', ') || 'Localização não informada';
-                  
-                  return (
+                {filteredProperties.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className="p-8 text-center text-gray-500 dark:text-zinc-400">
+                      Nenhum imóvel encontrado.
+                    </td>
+                  </tr>
+                ) : (
+                  filteredProperties.map((property) => {
+                    const title = property.details.propertyType || 'Imóvel sem tipo';
+                    const location = [property.details.neighborhood, property.details.city].filter(Boolean).join(', ') || 'Localização não informada';
+                    
+                    return (
                     <tr key={property.id} className="hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors group">
                       <td className="p-4">
                         <div className="flex items-center space-x-4">
-                          <div className="w-14 h-14 rounded-lg bg-gray-100 dark:bg-zinc-800 flex items-center justify-center border border-gray-200 dark:border-zinc-700 shrink-0">
-                            <ImageIcon className="w-6 h-6 text-gray-400" />
-                          </div>
+                          {property.thumbnail ? (
+                            <img 
+                              src={property.thumbnail} 
+                              alt={title}
+                              className="w-12 h-12 rounded-lg object-cover border border-gray-200 dark:border-zinc-700 shrink-0"
+                            />
+                          ) : (
+                            <div className="w-12 h-12 rounded-lg bg-gray-100 dark:bg-zinc-800 flex items-center justify-center border border-gray-200 dark:border-zinc-700 shrink-0">
+                              <ImageIcon className="w-5 h-5 text-gray-400" />
+                            </div>
+                          )}
                           <div className="flex flex-col">
                             <span className="font-bold text-gray-900 dark:text-white">{title}</span>
                             <span className="text-sm text-[#666] dark:text-zinc-400 mt-0.5">{location}</span>
@@ -100,10 +141,11 @@ export function MyProperties({ properties, onEdit, onDelete }: Props) {
                       </td>
                     </tr>
                   );
-                })}
+                }))}
               </tbody>
             </table>
           </div>
+        </div>
         </div>
       )}
     </div>

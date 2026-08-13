@@ -43,7 +43,7 @@ export function MinimalistTemplate({ details, image, logo, aspectRatio, brandKit
           {whatsapp?.trim() && (
              <div className="flex items-center text-gray-800 bg-white px-4 py-2 rounded-xl shadow-sm">
               <Phone className="w-5 h-5 mr-2" style={{ color: primaryColor }} />
-              <span className="text-base font-bold tracking-wide">{whatsapp}</span>
+              <span className="whitespace-nowrap text-base font-bold tracking-wide">{whatsapp}</span>
             </div>
           )}
         </div>
@@ -67,7 +67,7 @@ export function MinimalistTemplate({ details, image, logo, aspectRatio, brandKit
           )}
           
           {details.price?.trim() && (
-            <div className={`${aspectRatio === 'story' ? 'text-5xl mb-8' : 'text-4xl mb-6'} font-[800] text-[#1A1A1A] tracking-tight`}>
+            <div className={`whitespace-nowrap ${aspectRatio === 'story' ? 'text-5xl mb-8' : 'text-4xl mb-6'} font-[800] text-[#1A1A1A] tracking-tight`}>
               {details.price}
             </div>
           )}

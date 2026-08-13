@@ -65,7 +65,7 @@ export function ModernTemplate({ details, image, logo, aspectRatio, brandKit, op
         {whatsapp?.trim() && (
           <div className={`flex items-center space-x-2 bg-black/30 backdrop-blur-md ${aspectRatio === 'story' ? 'px-5 py-2.5' : 'px-4 py-2'} rounded-full text-white border border-white/10 shadow-sm`}>
             <MessageCircle className={`${aspectRatio === 'story' ? 'w-5 h-5' : 'w-4 h-4'} text-green-400`} />
-            <span className={`font-medium ${aspectRatio === 'story' ? 'text-lg' : 'text-sm'} tracking-wide`}>{whatsapp}</span>
+            <span className={`font-medium ${aspectRatio === 'story' ? 'text-lg' : 'text-sm'} tracking-wide whitespace-nowrap`}>{whatsapp}</span>
           </div>
         )}
       </div>
@@ -94,7 +94,7 @@ export function ModernTemplate({ details, image, logo, aspectRatio, brandKit, op
             </div>
           )}
           {details.price?.trim() && (
-            <div className={`${aspectRatio === 'story' ? 'text-6xl mb-1' : 'text-5xl'} font-black text-white tracking-tighter drop-shadow-md`}>
+            <div className={`whitespace-nowrap ${aspectRatio === 'story' ? 'text-6xl mb-1' : 'text-5xl'} font-black text-white tracking-tighter drop-shadow-md`}>
               {details.price}
             </div>
           )}
@@ -106,7 +106,7 @@ export function ModernTemplate({ details, image, logo, aspectRatio, brandKit, op
             {features.slice(0, 4).map((feat, i) => (
               <div key={i} className="flex items-center space-x-2">
                 <feat.icon className={`${aspectRatio === 'story' ? 'w-6 h-6' : 'w-5 h-5'} opacity-70`} />
-                <span className={`${aspectRatio === 'story' ? 'text-xl' : 'text-base'} font-medium`}>{feat.label}</span>
+                <span className={`whitespace-nowrap ${aspectRatio === 'story' ? 'text-xl' : 'text-base'} font-medium`}>{feat.label}</span>
               </div>
             ))}
           </div>
