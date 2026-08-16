@@ -135,9 +135,9 @@ export function ElegantTemplate({ details, image, logo, aspectRatio, brandKit, o
           )}
 
           {/* Property Code */}
-          {details.code?.trim() && (
+          {details.propertyCode?.trim() && (
             <div className="w-full text-center mt-2">
-              <span className="text-[8px] text-white/40 tracking-wider">Cód. {details.code}</span>
+              <span className="text-[8px] text-white/40 tracking-wider">Cód. {details.propertyCode}</span>
             </div>
           )}
         </div>

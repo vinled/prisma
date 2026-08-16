@@ -132,6 +132,21 @@ export default function App() {
   const [previewScale, setPreviewScale] = useState(1);
   const hiddenRenderersRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    if (!previewContainerRef.current) return;
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const containerWidth = entry.contentRect.width;
+        let scale = containerWidth / 540;
+        if (scale > 1) scale = 1;
+        setPreviewScale(scale);
+      }
+    });
+    observer.observe(previewContainerRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+
   
   const executeSave = async (): Promise<void> => {
     return new Promise((resolve) => {
@@ -273,16 +288,24 @@ export default function App() {
   };
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-zinc-950 transition-colors duration-200 overflow-hidden text-gray-900 dark:text-gray-100">
+    <div className="flex flex-col md:flex-row h-screen bg-gray-50 dark:bg-zinc-950 transition-colors duration-200 overflow-x-hidden text-gray-900 dark:text-gray-100">
       {/* Sidebar */}
-      <aside className="w-64 bg-white dark:bg-zinc-900 border-r border-gray-200 dark:border-zinc-800 flex flex-col transition-colors duration-200 shrink-0">
-        <div className="p-6">
+      <aside className="w-full h-auto md:w-64 md:h-screen bg-white dark:bg-zinc-900 border-b md:border-b-0 md:border-r border-gray-200 dark:border-zinc-800 flex flex-col transition-colors duration-200 shrink-0 z-20">
+        <div className="p-4 md:p-6 flex justify-between items-center">
           <PrismaLogo />
+          <div className="md:hidden">
+            <button
+              onClick={() => setIsDarkMode(!isDarkMode)}
+              className="p-2 text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+            >
+              {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button>
+          </div>
         </div>
-        <nav className="flex-1 px-4 space-y-2 mt-4">
+        <nav className="px-4 pb-4 md:py-4 md:flex-1 space-y-0 md:space-y-2 flex flex-row md:flex-col overflow-x-auto gap-2 md:gap-0 mt-0 md:mt-4">
           <button
             onClick={() => setActiveTab('meus_imoveis')}
-            className={`w-full flex items-center px-4 py-3 rounded-xl transition-colors ${
+            className={`w-full md:w-full flex shrink-0 items-center px-4 py-2 md:py-3 rounded-xl transition-colors ${
               activeTab === 'meus_imoveis' 
                 ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 font-semibold' 
                 : 'text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800'
@@ -303,7 +326,7 @@ export default function App() {
               });
               setImages([]);
             }}
-            className={`w-full flex items-center px-4 py-3 rounded-xl transition-colors ${
+            className={`w-full md:w-full flex shrink-0 items-center px-4 py-2 md:py-3 rounded-xl transition-colors ${
               activeTab === 'criacao' 
                 ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 font-semibold' 
                 : 'text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800'
@@ -315,7 +338,7 @@ export default function App() {
             Criação Rápida
           </button>
         </nav>
-        <div className="p-4 border-t border-gray-200 dark:border-zinc-800">
+        <div className="hidden md:block p-4 border-t border-gray-200 dark:border-zinc-800">
           <button
             onClick={() => setIsDarkMode(!isDarkMode)}
             className="w-full flex items-center justify-center p-2 rounded-lg bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-zinc-400 hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors"
@@ -327,7 +350,7 @@ export default function App() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto overflow-x-hidden w-full">
         {activeTab === 'meus_imoveis' ? (
           <MyProperties properties={savedProperties} onEdit={handleEdit} onDelete={handleDelete} />
         ) : (
@@ -339,7 +362,7 @@ export default function App() {
               </div>
             </header>
 
-        <div className="flex flex-col lg:grid lg:grid-cols-12 gap-12">
+        <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 lg:gap-12 w-full max-w-full">
           
           {/* Controls Side */}
           <div className="lg:col-span-5 space-y-8 order-2 lg:order-1">

@@ -119,9 +119,9 @@ export function LuxuryTemplate({ details, image, logo, aspectRatio, brandKit, op
           
           <div className="w-full h-[1px] bg-gradient-to-r from-white/40 via-white/10 to-transparent" />
           
-          {details.code?.trim() && (
+          {details.propertyCode?.trim() && (
             <div className="mt-2.5 text-white/50 font-sans text-[9px] font-medium tracking-widest uppercase">
-              Cód. {details.code}
+              Cód. {details.propertyCode}
             </div>
           )}
         </div>
