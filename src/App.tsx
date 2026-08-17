@@ -273,6 +273,8 @@ export default function App() {
   };
 
   const handleEdit = (prop: SavedProperty) => {
+    setPreviewIndex(0);
+    setImages(prop.thumbnail ? [prop.thumbnail] : []);
     setIdEmEdicao(prop.id);
     setDetails(prop.details);
     setSelectedTemplate(prop.selectedTemplate);
@@ -288,7 +290,7 @@ export default function App() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row h-screen bg-gray-50 dark:bg-zinc-950 transition-colors duration-200 overflow-x-hidden text-gray-900 dark:text-gray-100">
+    <div className="w-full max-w-[100vw] overflow-x-hidden box-border flex flex-col md:flex-row min-h-screen md:h-screen bg-gray-50 dark:bg-zinc-950 transition-colors duration-200 text-gray-900 dark:text-gray-100">
       {/* Sidebar */}
       <aside className="w-full h-auto md:w-64 md:h-screen bg-white dark:bg-zinc-900 border-b md:border-b-0 md:border-r border-gray-200 dark:border-zinc-800 flex flex-col transition-colors duration-200 shrink-0 z-20">
         <div className="p-4 md:p-6 flex justify-between items-center">
@@ -302,10 +304,10 @@ export default function App() {
             </button>
           </div>
         </div>
-        <nav className="px-4 pb-4 md:py-4 md:flex-1 space-y-0 md:space-y-2 flex flex-row md:flex-col overflow-x-auto gap-2 md:gap-0 mt-0 md:mt-4">
+        <nav className="w-full grid grid-cols-2 gap-2 px-2 box-border md:flex md:flex-col md:flex-1 md:space-y-2 md:px-4 md:py-4 md:mt-4">
           <button
             onClick={() => setActiveTab('meus_imoveis')}
-            className={`w-full md:w-full flex shrink-0 items-center px-4 py-2 md:py-3 rounded-xl transition-colors ${
+            className={`w-full flex justify-center md:justify-start items-center text-center md:text-left text-sm p-2 md:px-4 md:py-3 overflow-hidden truncate rounded-xl transition-colors ${
               activeTab === 'meus_imoveis' 
                 ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 font-semibold' 
                 : 'text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800'
@@ -326,7 +328,7 @@ export default function App() {
               });
               setImages([]);
             }}
-            className={`w-full md:w-full flex shrink-0 items-center px-4 py-2 md:py-3 rounded-xl transition-colors ${
+            className={`w-full flex justify-center md:justify-start items-center text-center md:text-left text-sm p-2 md:px-4 md:py-3 overflow-hidden truncate rounded-xl transition-colors ${
               activeTab === 'criacao' 
                 ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 font-semibold' 
                 : 'text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800'
@@ -362,10 +364,10 @@ export default function App() {
               </div>
             </header>
 
-        <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 lg:gap-12 w-full max-w-full">
+        <div className="flex flex-col lg:grid lg:grid-cols-[1fr_1.5fr] gap-8 lg:gap-12 w-full max-w-full">
           
           {/* Controls Side */}
-          <div className="lg:col-span-5 space-y-8 order-2 lg:order-1">
+          <div className="space-y-8 order-2 lg:order-1 min-w-0 w-full max-w-full">
             <section className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 transition-colors duration-200">
               <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Identidade da marca</h2>
               <BrandKitForm brandKit={brandKit} onChange={setBrandKit} />
@@ -373,7 +375,15 @@ export default function App() {
 
             <section className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 transition-colors duration-200">
               <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">1. Imagens</h2>
-              <ImageUploader images={images} onImagesChange={setImages} />
+              <ImageUploader 
+                images={images} 
+                onImagesChange={(newImages) => {
+                  setImages(newImages);
+                  if (newImages.length > images.length) {
+                    setPreviewIndex(newImages.length - 1);
+                  }
+                }} 
+              />
             </section>
 
             <section className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 transition-colors duration-200">
@@ -426,11 +436,11 @@ export default function App() {
           </div>
 
           {/* Preview Side */}
-          <div className="lg:col-span-7 order-1 lg:order-2 lg:sticky lg:top-6 lg:self-start w-full space-y-6">
+          <div className="order-1 lg:order-2 lg:sticky lg:top-6 lg:self-start w-full max-w-full space-y-6 min-w-0">
             <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 flex flex-col transition-colors duration-200">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Pré-visualização do Post</h2>
-                <div className="flex items-center space-x-3">
+              <div className="flex flex-wrap w-full gap-2 items-start md:items-center justify-between mb-6">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white truncate max-w-full">Pré-visualização do Post</h2>
+                <div className="flex flex-wrap items-center gap-2 space-x-0">
                   {idEmEdicao && (
                     <button
                       onClick={handleSaveOnly}
@@ -466,29 +476,17 @@ export default function App() {
               )}
 
               {/* The Preview Area */}
-              <div 
-                ref={previewContainerRef}
-                className="w-full flex-grow flex items-center justify-center bg-gray-100 dark:bg-zinc-950 rounded-xl overflow-hidden relative p-4 transition-colors duration-200 min-h-[400px]"
-              >
+              <div className="flex items-center justify-center w-full overflow-hidden bg-gray-100 dark:bg-zinc-950 rounded-xl relative p-4 transition-colors duration-200">
                 {images.length > 0 ? (
-                  <div
-                    style={{
-                      width: `${540 * previewScale}px`,
-                      height: `${(aspectRatio === 'story' ? 960 : 540) * previewScale}px`,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      overflow: 'visible'
-                    }}
-                  >
+                  <div ref={previewContainerRef} className={`w-full max-w-[540px] h-auto ${aspectRatio === 'story' ? 'aspect-[9/16]' : 'aspect-square'} relative overflow-hidden flex items-center justify-center mx-auto`}>
                   <div 
                     ref={previewRef}
-                    className="relative shadow-xl transition-all duration-300 bg-white"
+                    className="absolute top-0 left-0 shadow-xl transition-all duration-300 bg-white"
                     style={{ 
                       width: '540px', 
                       height: aspectRatio === 'story' ? '960px' : '540px',
                       transform: `scale(${previewScale})`,
-                      transformOrigin: 'center',
+                      transformOrigin: 'top left',
                       fontSize: '16px' // force base size
                     }}
                   >
@@ -521,7 +519,7 @@ export default function App() {
                    <textarea 
                      readOnly 
                      rows={10} 
-                     className="w-full p-4 bg-gray-50 dark:bg-zinc-950 border border-gray-200 dark:border-zinc-800 rounded-xl text-sm text-gray-700 dark:text-zinc-300 resize-none focus:outline-none"
+                     className="w-full max-w-full p-4 bg-gray-50 dark:bg-zinc-950 border border-gray-200 dark:border-zinc-800 rounded-xl text-sm text-gray-700 dark:text-zinc-300 resize-none focus:outline-none"
                      value={generatedCaption}
                    />
                    <button 

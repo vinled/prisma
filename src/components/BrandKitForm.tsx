@@ -72,7 +72,7 @@ export function BrandKitForm({ brandKit, onChange }: BrandKitFormProps) {
         </div>
       </div>
       
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 pt-2">
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
             Cor principal
