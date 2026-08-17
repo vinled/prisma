@@ -7,7 +7,10 @@ import React, { useState, useRef, useEffect } from 'react';
 import domtoimage from 'dom-to-image-more';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
-import { Download, Layout, Moon, Sun, Copy, Check } from 'lucide-react';
+import { Download, Layout, Moon, Sun, Copy, Check, LogOut } from 'lucide-react';
+import { supabase } from './lib/supabase';
+import { Auth } from './components/Auth';
+import { Session } from '@supabase/supabase-js';
 import { PrismaLogo } from './components/PrismaLogo';
 import { PropertyDetails, TemplateId, AspectRatioId, BrandKit, TemplateOptions, SavedProperty } from './types';
 import { PropertyForm } from './components/PropertyForm';
@@ -19,6 +22,7 @@ import { TemplateRenderer } from './components/TemplateRenderer';
 import { MyProperties } from './components/MyProperties';
 
 export default function App() {
+  const [session, setSession] = useState<Session | null>(null);
   const [activeTab, setActiveTab] = useState<'criacao' | 'meus_imoveis'>('criacao');
   const [idEmEdicao, setIdEmEdicao] = useState<string | null>(null);
   const [details, setDetails] = useState<PropertyDetails>({
@@ -53,38 +57,41 @@ export default function App() {
   const [generatedCaption, setGeneratedCaption] = useState('');
   const [isCopied, setIsCopied] = useState(false);
 
-  useEffect(() => {
-    const type = details.propertyType || 'Imóvel';
-    const title = details.title ? `${details.title} ` : '';
-    const neighborhood = details.neighborhood || 'Localização privilegiada';
-    const l1 = `🚀 ${title}${type} exclusivo em ${neighborhood}!`;
+  const [targetAudience, setTargetAudience] = useState('Família/Conforto');
+  const [isGeneratingCopy, setIsGeneratingCopy] = useState(false);
 
-    const area = details.area ? `📐 ${details.area}m²` : '';
-    const beds = details.bedrooms ? `🛏️ ${details.bedrooms} Quartos` : '';
-    const suites = details.suites ? `(${details.suites} Suítes)` : '';
-    const parking = details.parking ? `🚘 ${details.parking} Vagas` : '';
-    
-    const metrics = [area, beds + (suites ? ` ${suites}` : ''), parking].filter(Boolean).join(' | ');
-    const l3 = metrics ? `${metrics}\n\n` : '';
+  const handleGenerateCopy = async () => {
+    setIsGeneratingCopy(true);
+    try {
+      const response = await fetch('/api/generate-caption', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          type: details.propertyType || 'Imóvel',
+          neighborhood: details.neighborhood || 'Não informado',
+          bedrooms: details.bedrooms || 'Não informado',
+          parking: details.parking || 'Não informado',
+          price: details.price || 'Não informado',
+          differentials: [...(details.differentials || []), ...(details.amenities || [])],
+          targetAudience,
+          whatsapp: details.whatsapp || brandKit?.whatsapp || ''
+        })
+      });
 
-    const diffs = [...(details.differentials || []), ...(details.amenities || [])];
-    let l5 = '';
-    if (diffs.length > 0) {
-      const list = diffs.map(d => `✅ ${d}`).join('\n');
-      l5 = `✨ Destaques do imóvel:\n${list}\n\n`;
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Erro ao gerar legenda');
+      }
+
+      setGeneratedCaption(data.caption);
+    } catch (err: any) {
+      alert(`Falha ao gerar legenda: ${err.message}`);
+    } finally {
+      setIsGeneratingCopy(false);
     }
-
-    const l8 = details.price ? `💰 Investimento: ${details.price}\n` : '';
-    const cityState = [details.city, details.state].filter(Boolean).join('/');
-    const l9 = `📍 ${[details.neighborhood, cityState].filter(Boolean).join(', ')}\n\n`;
-    
-    const phone = details.whatsapp || brandKit?.whatsapp || '';
-    const l11 = `📲 Entre em contato para mais detalhes e agendamento! ${phone}`;
-
-    const fullText = `${l1}\n\n${l3}${l5}${l8}${l9}${l11}`;
-    
-    setGeneratedCaption(fullText.trim());
-  }, [details, brandKit]);
+  };
 
   const handleCopyCaption = () => {
     navigator.clipboard.writeText(generatedCaption).then(() => {
@@ -289,18 +296,46 @@ export default function App() {
     localStorage.setItem('prisma_imoveis', JSON.stringify(updated));
   };
 
+  
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  if (!session) {
+    return <Auth />;
+  }
+
   return (
     <div className="w-full max-w-[100vw] overflow-x-hidden box-border flex flex-col md:flex-row min-h-screen md:h-screen bg-gray-50 dark:bg-zinc-950 transition-colors duration-200 text-gray-900 dark:text-gray-100">
       {/* Sidebar */}
       <aside className="w-full h-auto md:w-64 md:h-screen bg-white dark:bg-zinc-900 border-b md:border-b-0 md:border-r border-gray-200 dark:border-zinc-800 flex flex-col transition-colors duration-200 shrink-0 z-20">
         <div className="p-4 md:p-6 flex justify-between items-center">
           <PrismaLogo />
-          <div className="md:hidden">
+          <div className="md:hidden flex items-center gap-2">
+
             <button
               onClick={() => setIsDarkMode(!isDarkMode)}
               className="p-2 text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
             >
               {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button>
+          
+            <button
+              onClick={() => supabase.auth.signOut()}
+              className="p-2 text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+              title="Sair"
+            >
+              <LogOut className="w-5 h-5" />
             </button>
           </div>
         </div>
@@ -340,13 +375,22 @@ export default function App() {
             Criação Rápida
           </button>
         </nav>
-        <div className="hidden md:block p-4 border-t border-gray-200 dark:border-zinc-800">
+        <div className="hidden md:flex flex-col gap-2 p-4 border-t border-gray-200 dark:border-zinc-800">
+
           <button
             onClick={() => setIsDarkMode(!isDarkMode)}
             className="w-full flex items-center justify-center p-2 rounded-lg bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-zinc-400 hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors"
           >
             {isDarkMode ? <Sun className="w-5 h-5 mr-2" /> : <Moon className="w-5 h-5 mr-2" />}
             {isDarkMode ? 'Modo Claro' : 'Modo Escuro'}
+          </button>
+        
+          <button
+            onClick={() => supabase.auth.signOut()}
+            className="w-full flex items-center justify-center p-2 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors"
+          >
+            <LogOut className="w-5 h-5 mr-2" />
+            Sair
           </button>
         </div>
       </aside>
@@ -514,13 +558,34 @@ export default function App() {
             </div>
             {/* Smart Caption Module */}
             <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 transition-colors duration-200">
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Legenda para Redes Sociais</h3>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Legenda para Redes Sociais</h3>
+                  <div className="flex items-center gap-2">
+                    <select
+                      value={targetAudience}
+                      onChange={(e) => setTargetAudience(e.target.value)}
+                      className="px-3 py-2 bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-lg text-xs text-gray-700 dark:text-zinc-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="Família/Conforto">Família/Conforto</option>
+                      <option value="Investidor/ROI">Investidor/ROI</option>
+                      <option value="Alto Padrão/Exclusividade">Alto Padrão/Exclusividade</option>
+                    </select>
+                    <button
+                      onClick={handleGenerateCopy}
+                      disabled={isGeneratingCopy}
+                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg text-xs font-medium transition-colors whitespace-nowrap shadow-sm"
+                    >
+                      {isGeneratingCopy ? 'Escrevendo...' : '✨ Gerar Copy com IA (Pro)'}
+                    </button>
+                  </div>
+                </div>
                 <div className="relative">
                    <textarea 
                      readOnly 
                      rows={10} 
                      className="w-full max-w-full p-4 bg-gray-50 dark:bg-zinc-950 border border-gray-200 dark:border-zinc-800 rounded-xl text-sm text-gray-700 dark:text-zinc-300 resize-none focus:outline-none"
                      value={generatedCaption}
+                     placeholder="Clique em 'Gerar Copy com IA' para criar uma legenda profissional."
                    />
                    <button 
                      onClick={handleCopyCaption}
