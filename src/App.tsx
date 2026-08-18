@@ -74,9 +74,9 @@ export default function App() {
       const textoFinal = result.response.text();
       
       setGeneratedCaption(textoFinal);
-    } catch (error) {
-      console.error(error);
-      alert('Erro ao conectar com a IA. Verifique as chaves.');
+    } catch (error: any) {
+      console.error('ERRO DETALHADO DA API:', error);
+      alert('Erro do Google: ' + (error.message || JSON.stringify(error)));
     } finally {
       setIsGeneratingCopy(false);
     }
