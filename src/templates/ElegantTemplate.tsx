@@ -20,11 +20,13 @@ export function ElegantTemplate({ details, image, logo, aspectRatio, brandKit, o
     <div className="relative w-full h-full bg-slate-900 overflow-hidden font-sans" id="post-template">
       {/* Background Image */}
       {image ? (
-        <img 
-          src={image} 
-          alt="Imóvel" 
-          className="absolute inset-0 w-full h-full object-cover" 
-          style={{ objectPosition: `${imagePositionX}% center` }}
+        <div 
+          className="absolute inset-0 w-full h-full" 
+          style={{ 
+            backgroundImage: `url(${image})`, 
+            backgroundSize: 'cover', 
+            backgroundPosition: `${imagePositionX}% center` 
+          }}
         />
       ) : (
         <div className="absolute inset-0 bg-zinc-800 flex items-center justify-center text-gray-500">
@@ -47,7 +49,7 @@ export function ElegantTemplate({ details, image, logo, aspectRatio, brandKit, o
         ) : <div />}
         {whatsapp?.trim() && (
           <div className="flex items-center text-white drop-shadow-md bg-black/20 backdrop-blur-md px-[22px] py-[16px] rounded-full border border-white/10 shadow-lg">
-            <Phone className="w-[27px].5 h-[27px].5 mr-[9px].5 opacity-90" />
+            <Phone className="w-[27px] h-[27px] mr-[9px] opacity-90" />
             <span className="whitespace-nowrap text-[27px] font-semibold tracking-wide">{whatsapp}</span>
           </div>
         )}
@@ -79,7 +81,7 @@ export function ElegantTemplate({ details, image, logo, aspectRatio, brandKit, o
 
           {/* Price */}
           {details.price?.trim() && (
-            <div className="text-center font-bold text-white drop-shadow-lg mb-[9px].5">
+            <div className="text-center font-bold text-white drop-shadow-lg mb-[9px]">
               <span className={`${aspectRatio === 'story' ? 'text-[70px]' : 'text-[59px]'} tracking-tight`}>
                 {details.price}
               </span>
@@ -95,7 +97,7 @@ export function ElegantTemplate({ details, image, logo, aspectRatio, brandKit, o
           <div className="flex justify-center items-center flex-wrap w-full gap-x-2 gap-y-1 text-white text-[22px] drop-shadow-sm font-medium">
             {details.area?.trim() && (
               <div className="flex items-center">
-                <Maximize className="w-[27px].5 h-[27px].5 text-white/80 mr-[9px] stroke-[2]" />
+                <Maximize className="w-[27px] h-[27px] text-white/80 mr-[9px] stroke-[2]" />
                 <span>{details.area}m²</span>
               </div>
             )}
@@ -103,7 +105,7 @@ export function ElegantTemplate({ details, image, logo, aspectRatio, brandKit, o
             {details.bedrooms?.trim() && (
               <div className="flex items-center">
                 {details.area?.trim() && <span className="text-white/30 mr-[16px]">|</span>}
-                <BedDouble className="w-[27px].5 h-[27px].5 text-white/80 mr-[9px] stroke-[2]" />
+                <BedDouble className="w-[27px] h-[27px] text-white/80 mr-[9px] stroke-[2]" />
                 <span>{details.bedrooms} {Number(details.bedrooms) !== 1 ? 'Dorms' : 'Dorm'}</span>
               </div>
             )}
@@ -111,7 +113,7 @@ export function ElegantTemplate({ details, image, logo, aspectRatio, brandKit, o
             {(details.suites?.trim() || details.bathrooms?.trim()) && (
               <div className="flex items-center">
                 {(details.area?.trim() || details.bedrooms?.trim()) && <span className="text-white/30 mr-[16px]">|</span>}
-                <Bath className="w-[27px].5 h-[27px].5 text-white/80 mr-[9px] stroke-[2]" />
+                <Bath className="w-[27px] h-[27px] text-white/80 mr-[9px] stroke-[2]" />
                 <span>{details.suites?.trim() ? details.suites : details.bathrooms} {details.suites?.trim() ? (Number(details.suites) !== 1 ? 'Suítes' : 'Suíte') : (Number(details.bathrooms) !== 1 ? 'Banhs' : 'Banh')}</span>
               </div>
             )}
@@ -119,7 +121,7 @@ export function ElegantTemplate({ details, image, logo, aspectRatio, brandKit, o
             {details.parking?.trim() && (
               <div className="flex items-center">
                 {(details.area?.trim() || details.bedrooms?.trim() || details.suites?.trim() || details.bathrooms?.trim()) && <span className="text-white/30 mr-[16px]">|</span>}
-                <Car className="w-[27px].5 h-[27px].5 text-white/80 mr-[9px] stroke-[2]" />
+                <Car className="w-[27px] h-[27px] text-white/80 mr-[9px] stroke-[2]" />
                 <span>{details.parking} {Number(details.parking) !== 1 ? 'Vagas' : 'Vaga'}</span>
               </div>
             )}
@@ -127,7 +129,7 @@ export function ElegantTemplate({ details, image, logo, aspectRatio, brandKit, o
 
           {/* Differentials */}
           {tagsString && (
-            <div className="w-full flex flex-col items-center mt-[16px].5 pt-[16px] border-t border-white/15">
+            <div className="w-full flex flex-col items-center mt-[16px] pt-[16px] border-t border-white/15">
               <span className="text-[19px] text-white/90 uppercase tracking-widest font-medium drop-shadow-md text-center">
                 {tagsString}
               </span>

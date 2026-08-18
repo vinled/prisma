@@ -32,11 +32,13 @@ export function ModernTemplate({ details, image, logo, aspectRatio, brandKit, op
     <div className="relative w-full h-full bg-zinc-900 overflow-hidden shadow-lg font-sans" id="post-template">
       {/* Background Image */}
       {image ? (
-        <img 
-          src={image} 
-          alt="Imóvel" 
-          className="absolute inset-0 w-full h-full object-cover" 
-          style={{ objectPosition: `${imagePositionX}% center` }}
+        <div 
+          className="absolute inset-0 w-full h-full" 
+          style={{ 
+            backgroundImage: `url(${image})`, 
+            backgroundSize: 'cover', 
+            backgroundPosition: `${imagePositionX}% center` 
+          }}
         />
       ) : (
         <div className="absolute inset-0 bg-zinc-800 flex items-center justify-center text-zinc-600">
