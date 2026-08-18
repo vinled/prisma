@@ -4,7 +4,6 @@
  */
 
 import React, { useState, useRef, useEffect } from 'react';
-import * as htmlToImage from 'html-to-image';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { Download, Layout, Moon, Sun, Copy, Check, LogOut } from 'lucide-react';
@@ -18,7 +17,7 @@ import { BrandKitForm } from './components/BrandKitForm';
 import { ImageUploader } from './components/ImageUploader';
 import { TemplateSelector } from './components/TemplateSelector';
 import { AspectRatioSelector } from './components/AspectRatioSelector';
-import { TemplateRenderer } from './components/TemplateRenderer';
+import { KonvaCard } from './components/KonvaCard';
 import { MyProperties } from './components/MyProperties';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
@@ -122,7 +121,6 @@ export default function App() {
     }
   }, [isDarkMode]);
 
-  const previewRef = useRef<HTMLDivElement>(null);
   const previewContainerRef = useRef<HTMLDivElement>(null);
   const [previewScale, setPreviewScale] = useState(1);
   const hiddenRenderersRef = useRef<HTMLDivElement>(null);
@@ -188,58 +186,29 @@ export default function App() {
     alert('Alterações salvas com sucesso!');
   };
 
-  const handleDownload = async () => {
-    if (!hiddenRenderersRef.current) return;
-    
-    const postElements = hiddenRenderersRef.current.querySelectorAll('.post-template-export');
-    if (!postElements || postElements.length === 0) {
-      alert('Nenhuma imagem para exportar.');
-      return;
-    }
+  
+  const stageRef = useRef<any>(null);
 
+  const handleDownload = async () => {
+    if (!stageRef.current) return;
+    
     try {
       setIsExporting(true);
       await executeSave();
       
-      const scale = 1; // Export at 1x resolution because base is 1080px
-      const baseWidth = 1080;
-      const baseHeight = aspectRatio === 'story' ? 1920 : 1080;
-      
-      const options = {
-        width: baseWidth,
-        height: baseHeight,
-        pixelRatio: scale
-      };
-      
-      if (postElements.length === 1) {
-        const dataUrl = await htmlToImage.toPng(postElements[0] as HTMLElement, options);
-        const link = document.createElement('a');
-        link.href = dataUrl;
-        link.download = `post-imovel-1.png`;
-        link.click();
-      } else {
-        const zip = new JSZip();
-        
-        for (let i = 0; i < postElements.length; i++) {
-          const el = postElements[i] as HTMLElement;
-          const dataUrl = await htmlToImage.toPng(el, options);
-          const base64Data = dataUrl.replace(/^data:image\/png;base64,/, '');
-          zip.file(`post-imovel-${i + 1}.png`, base64Data, { base64: true });
-        }
-        
-        const content = await zip.generateAsync({ type: 'blob' });
-        saveAs(content, `posts-imoveis.zip`);
-      }
-      
-      // If we were creating a new one, we could set idEmEdicao to the new ID, 
-      // but it's fine to leave it to clear on next '+ Criação'.
+      const dataUrl = stageRef.current.toDataURL({ pixelRatio: 1 / previewScale });
+      const link = document.createElement('a');
+      link.href = dataUrl;
+      link.download = `post-imovel.png`;
+      link.click();
     } catch (error) {
       console.error('Failed to export image:', error);
-      alert('Erro ao gerar a imagem. Verifique se há imagens e tente novamente.');
+      alert('Erro ao gerar a imagem. Tente novamente.');
     } finally {
       setIsExporting(false);
     }
   };
+
 
   const handleEdit = (prop: SavedProperty) => {
     setPreviewIndex(0);
@@ -482,36 +451,27 @@ export default function App() {
               )}
 
               {/* The Preview Area */}
+              
               <div className="flex items-center justify-center w-full max-w-md mx-auto flex-shrink-0 overflow-hidden bg-gray-100 dark:bg-zinc-950 rounded-xl relative p-4 transition-colors duration-200">
                 {images.length > 0 ? (
-                  <div ref={previewContainerRef} className={`w-full relative overflow-hidden ${aspectRatio === 'story' ? 'aspect-[9/16]' : 'aspect-square'}`}>
-                  <div 
-                    ref={previewRef}
-                    className={`absolute top-0 left-0 shadow-xl transition-all duration-300 bg-white ${aspectRatio === 'feed' ? 'aspect-square' : 'aspect-[9/16]'}`}
-                    style={{ 
-                      width: '1080px', 
-                      height: aspectRatio === 'story' ? '1920px' : '1080px',
-                      transform: `scale(${previewScale})`,
-                      transformOrigin: 'top left',
-                      fontSize: '16px' // force base size
-                    }}
-                  >
-                    <TemplateRenderer 
-                      templateId={selectedTemplate} 
+                  <div ref={previewContainerRef} className={`w-full relative overflow-hidden flex justify-center items-center ${aspectRatio === 'story' ? 'aspect-[9/16]' : 'aspect-square'}`}>
+                    <KonvaCard 
                       details={details} 
                       image={images[previewIndex] || null} 
                       logo={brandKit?.logo || null}
                       aspectRatio={aspectRatio}
                       brandKit={brandKit}
-                      options={templateOptions}
+                      scale={previewScale}
+                      stageRef={stageRef}
                     />
-                  </div></div>
+                  </div>
                 ) : (
                   <div className="text-gray-400 text-center">
                     <p>Adicione fotos para visualizar</p>
                   </div>
                 )}
               </div>
+
               <p className="text-center text-sm text-gray-400 mt-4">
                 {images.length > 0 
                   ? `O post será gerado no formato ${aspectRatio === 'story' ? 'Story (9:16)' : 'Quadrado (1:1)'}.`
@@ -567,32 +527,6 @@ export default function App() {
         </div>
       )}</main>
             {/* Hidden containers for export */}
-      <div 
-        ref={hiddenRenderersRef} 
-        className="fixed top-0 left-0 pointer-events-none opacity-0 -z-50 flex flex-col"
-      >
-        {images.map((img, idx) => (
-          <div 
-            key={idx} 
-            className="post-template-export relative"
-            style={{ 
-              width: '1080px', 
-              height: aspectRatio === 'story' ? '1920px' : '1080px',
-              fontSize: '16px' // Keep standard base font size
-            }}
-          >
-            <TemplateRenderer 
-              templateId={selectedTemplate} 
-              details={details} 
-              image={img} 
-              logo={brandKit?.logo || null}
-              aspectRatio={aspectRatio}
-              brandKit={brandKit}
-              options={templateOptions}
-            />
           </div>
-        ))}
-      </div>
-    </div>
   );
 }
