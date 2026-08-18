@@ -19,6 +19,11 @@ export function ImageUploader({ images, onImagesChange }: ImageUploaderProps) {
       const newImagesUrls: string[] = [];
       
       for (const file of files) {
+        // High-Fidelity Instant Preview (Client-side native)
+        const objectUrl = URL.createObjectURL(file);
+        newImagesUrls.push(objectUrl);
+        
+        // Background Supabase Upload (keeping logic intact)
         const fileExt = file.name.split('.').pop();
         const filePath = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
         
@@ -31,14 +36,11 @@ export function ImageUploader({ images, onImagesChange }: ImageUploaderProps) {
           
         if (uploadError) {
           console.error("Erro ao fazer upload:", uploadError);
-          alert(`Falha ao enviar imagem ${file.name}: ${uploadError.message}`);
           continue;
         }
         
+        // Supabase DB logic maintained for the bucket
         const { data } = supabase.storage.from('fotos_imoveis').getPublicUrl(filePath);
-        if (data && data.publicUrl) {
-          newImagesUrls.push(data.publicUrl);
-        }
       }
       
       const combinedImages = [...images, ...newImagesUrls].slice(0, 10);

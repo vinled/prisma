@@ -483,12 +483,12 @@ export default function App() {
               )}
 
               {/* The Preview Area */}
-              <div className="flex items-center justify-center w-full overflow-hidden bg-gray-100 dark:bg-zinc-950 rounded-xl relative p-4 transition-colors duration-200">
+              <div className="flex items-center justify-center w-full max-w-md mx-auto flex-shrink-0 overflow-hidden bg-gray-100 dark:bg-zinc-950 rounded-xl relative p-4 transition-colors duration-200">
                 {images.length > 0 ? (
                   <div ref={previewContainerRef} className={`w-full max-w-[540px] h-auto ${aspectRatio === 'story' ? 'aspect-[9/16]' : 'aspect-square'} relative overflow-hidden flex items-center justify-center mx-auto`}>
                   <div 
                     ref={previewRef}
-                    className="absolute top-0 left-0 shadow-xl transition-all duration-300 bg-white"
+                    className={`absolute top-0 left-0 shadow-xl transition-all duration-300 bg-white ${aspectRatio === 'feed' ? 'aspect-square' : 'aspect-[9/16]'}`}
                     style={{ 
                       width: '540px', 
                       height: aspectRatio === 'story' ? '960px' : '540px',

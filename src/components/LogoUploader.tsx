@@ -11,11 +11,8 @@ export function LogoUploader({ logo, onLogoChange }: LogoUploaderProps) {
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (file) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          onLogoChange(reader.result as string);
-        };
-        reader.readAsDataURL(file);
+        const objectUrl = URL.createObjectURL(file);
+        onLogoChange(objectUrl);
       }
     },
     [onLogoChange]
