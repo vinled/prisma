@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { Upload, X } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 interface ImageUploaderProps {
   images: string[];
@@ -8,25 +9,45 @@ interface ImageUploaderProps {
 
 export function ImageUploader({ images, onImagesChange }: ImageUploaderProps) {
   const [isDragging, setIsDragging] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
-  const processFiles = (files: File[]) => {
+  const processFiles = async (files: File[]) => {
     if (files.length === 0) return;
+    setIsUploading(true);
     
-    const newImagesPromises = files.map((file) => {
-      return new Promise<string>((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          resolve(reader.result as string);
-        };
-        reader.readAsDataURL(file);
-      });
-    });
-
-    Promise.all(newImagesPromises).then((newImages) => {
-      // Limit to 10 images total
-      const combinedImages = [...images, ...newImages].slice(0, 10);
+    try {
+      const newImagesUrls: string[] = [];
+      
+      for (const file of files) {
+        const fileExt = file.name.split('.').pop();
+        const filePath = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+        
+        const { error: uploadError } = await supabase.storage
+          .from('fotos_imoveis')
+          .upload(filePath, file, {
+            cacheControl: '3600',
+            upsert: false
+          });
+          
+        if (uploadError) {
+          console.error("Erro ao fazer upload:", uploadError);
+          alert(`Falha ao enviar imagem ${file.name}: ${uploadError.message}`);
+          continue;
+        }
+        
+        const { data } = supabase.storage.from('fotos_imoveis').getPublicUrl(filePath);
+        if (data && data.publicUrl) {
+          newImagesUrls.push(data.publicUrl);
+        }
+      }
+      
+      const combinedImages = [...images, ...newImagesUrls].slice(0, 10);
       onImagesChange(combinedImages);
-    });
+    } catch (err) {
+      console.error("Erro inesperado no upload", err);
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleFileChange = useCallback(
@@ -90,11 +111,13 @@ export function ImageUploader({ images, onImagesChange }: ImageUploaderProps) {
           <div className="flex flex-col items-center justify-center pt-5 pb-6">
             <Upload className={`w-6 h-6 mb-2 ${isDragging ? 'text-blue-500' : 'text-gray-400 dark:text-zinc-500'}`} />
             <p className="mb-1 text-sm text-gray-500 dark:text-zinc-400 text-center px-4">
-              <span className="font-semibold text-gray-700 dark:text-zinc-300">Clique ou arraste imagens</span>
-              <br/>(até 10 fotos)
+              <span className="font-semibold text-gray-700 dark:text-zinc-300">
+                {isUploading ? 'Enviando fotos...' : 'Clique ou arraste imagens'}
+              </span>
+              {!isUploading && <><br/>(até 10 fotos)</>}
             </p>
           </div>
-          <input type="file" className="hidden" accept="image/*" multiple onChange={handleFileChange} />
+          <input type="file" className="hidden" accept="image/*" multiple onChange={handleFileChange} disabled={isUploading} />
         </label>
       )}
     </div>

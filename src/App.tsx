@@ -157,36 +157,11 @@ export default function App() {
   
   const executeSave = async (): Promise<void> => {
     return new Promise((resolve) => {
-      const generateThumbnail = (imageUrl: string): Promise<string> => {
-        return new Promise((res) => {
-          const img = new Image();
-          img.crossOrigin = "Anonymous";
-          img.onload = () => {
-            const canvas = document.createElement('canvas');
-            const size = 64;
-            canvas.width = size;
-            canvas.height = size;
-            const ctx = canvas.getContext('2d');
-            if (ctx) {
-              const minSize = Math.min(img.width, img.height);
-              const sx = (img.width - minSize) / 2;
-              const sy = (img.height - minSize) / 2;
-              ctx.drawImage(img, sx, sy, minSize, minSize, 0, 0, size, size);
-              res(canvas.toDataURL('image/jpeg', 0.6));
-            } else {
-              res('');
-            }
-          };
-          img.onerror = () => res('');
-          img.src = imageUrl;
-        });
-      };
-
-      const finalizeSave = (thumbnailStr?: string) => {
+      const finalizeSave = () => {
         const now = new Date();
         const dateStr = now.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
         
-        let finalThumbnail = thumbnailStr;
+        let finalThumbnail = images[0] || undefined;
         if (finalThumbnail === undefined && idEmEdicao) {
           finalThumbnail = savedProperties.find(p => p.id === idEmEdicao)?.thumbnail;
         }
@@ -214,7 +189,7 @@ export default function App() {
       };
 
       if (images.length > 0) {
-        generateThumbnail(images[0]).then(finalizeSave);
+        finalizeSave();
       } else {
         finalizeSave();
       }
