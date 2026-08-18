@@ -55,29 +55,29 @@ export function ModernTemplate({ details, image, logo, aspectRatio, brandKit, op
       />
 
       {/* Top Bar: Logo & WhatsApp */}
-      <div className={`absolute top-0 left-0 w-full flex justify-between items-start ${aspectRatio === 'story' ? 'p-10' : 'p-8'} z-10`}>
+      <div className={`absolute top-0 left-0 w-full flex justify-between items-start ${aspectRatio === 'story' ? 'p-[86px]' : 'p-[65px]'} z-10`}>
         {logo ? (
-          <img src={logo} alt="Logo" className={`object-contain ${aspectRatio === 'story' ? 'max-h-[70px]' : 'max-h-[50px]'} drop-shadow-md`} />
+          <img src={logo} alt="Logo" className={`object-contain ${aspectRatio === 'story' ? 'max-h-[130px]' : 'max-h-[86px]'} drop-shadow-md`} />
         ) : (
           <div /> // Spacer if no logo
         )}
         
         {whatsapp?.trim() && (
-          <div className={`flex items-center space-x-2 bg-black/30 backdrop-blur-md ${aspectRatio === 'story' ? 'px-5 py-2.5' : 'px-4 py-2'} rounded-full text-white border border-white/10 shadow-sm`}>
-            <MessageCircle className={`${aspectRatio === 'story' ? 'w-5 h-5' : 'w-4 h-4'} text-green-400`} />
-            <span className={`font-medium ${aspectRatio === 'story' ? 'text-lg' : 'text-sm'} tracking-wide whitespace-nowrap`}>{whatsapp}</span>
+          <div className={`flex items-center space-x-[16px] bg-black/30 backdrop-blur-md ${aspectRatio === 'story' ? 'px-[43px] py-[22px]' : 'px-[32px] py-[16px]'} rounded-[540px] text-white border border-white/10 shadow-sm`}>
+            <MessageCircle className={`${aspectRatio === 'story' ? 'w-[43px] h-[43px]' : 'w-[32px] h-[32px]'} text-green-400`} />
+            <span className={`font-medium ${aspectRatio === 'story' ? 'text-[43px]' : 'text-[27px]'} tracking-wide whitespace-nowrap`}>{whatsapp}</span>
           </div>
         )}
       </div>
 
       {/* Bottom Content */}
-      <div className={`absolute bottom-0 left-0 w-full flex flex-col ${aspectRatio === 'story' ? 'p-10 gap-5' : 'p-8 gap-4'} z-10`}>
+      <div className={`absolute bottom-0 left-0 w-full flex flex-col ${aspectRatio === 'story' ? 'p-[86px] gap-[43px]' : 'p-[65px] gap-[32px]'} z-10`}>
         
         {/* Chamada */}
         {details.title?.trim() && (
           <div className="self-start">
             <div 
-              className={`rounded-full ${aspectRatio === 'story' ? 'px-5 py-2 text-base' : 'px-4 py-1.5 text-xs'} font-bold tracking-widest uppercase text-white shadow-sm`}
+              className={`rounded-[540px] ${aspectRatio === 'story' ? 'px-[43px] py-[16px] text-[32px]' : 'px-[32px] py-[11px] text-[22px]'} font-bold tracking-widest uppercase text-white shadow-sm`}
               style={{ backgroundColor: primaryColor }}
             >
               {details.title}
@@ -86,15 +86,15 @@ export function ModernTemplate({ details, image, logo, aspectRatio, brandKit, op
         )}
 
         {/* Location & Price */}
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-[11px]">
           {locationString && (
-            <div className={`flex items-center text-gray-200 ${aspectRatio === 'story' ? 'text-xl mb-1' : 'text-base'} drop-shadow-sm`}>
-              <MapPin className={`${aspectRatio === 'story' ? 'w-5 h-5' : 'w-4 h-4'} mr-2 opacity-80 shrink-0`} />
+            <div className={`flex items-center text-gray-200 ${aspectRatio === 'story' ? 'text-[49px] mb-[11px]' : 'text-[32px]'} drop-shadow-sm`}>
+              <MapPin className={`${aspectRatio === 'story' ? 'w-[43px] h-[43px]' : 'w-[32px] h-[32px]'} mr-[16px] opacity-80 shrink-0`} />
               <span className="text-white font-bold tracking-wide truncate">{locationString}</span>
             </div>
           )}
           {details.price?.trim() && (
-            <div className={`whitespace-nowrap ${aspectRatio === 'story' ? 'text-6xl mb-1' : 'text-5xl'} font-black text-white tracking-tighter drop-shadow-md`}>
+            <div className={`whitespace-nowrap ${aspectRatio === 'story' ? 'text-[108px] mb-[11px]' : 'text-[86px]'} font-black text-white tracking-tighter drop-shadow-md`}>
               {details.price}
             </div>
           )}
@@ -102,26 +102,26 @@ export function ModernTemplate({ details, image, logo, aspectRatio, brandKit, op
 
         {/* Features Row */}
         {features.length > 0 && (
-          <div className={`flex flex-wrap items-center ${aspectRatio === 'story' ? 'gap-6 mt-1' : 'gap-5'} text-white/95`}>
+          <div className={`flex flex-wrap items-center ${aspectRatio === 'story' ? 'gap-[54px] mt-[11px]' : 'gap-[43px]'} text-white/95`}>
             {features.slice(0, 4).map((feat, i) => (
-              <div key={i} className="flex items-center space-x-2">
-                <feat.icon className={`${aspectRatio === 'story' ? 'w-6 h-6' : 'w-5 h-5'} opacity-70`} />
-                <span className={`whitespace-nowrap ${aspectRatio === 'story' ? 'text-xl' : 'text-base'} font-medium`}>{feat.label}</span>
+              <div key={i} className="flex items-center space-x-[16px]">
+                <feat.icon className={`${aspectRatio === 'story' ? 'w-[54px] h-[54px]' : 'w-[43px] h-[43px]'} opacity-70`} />
+                <span className={`whitespace-nowrap ${aspectRatio === 'story' ? 'text-[49px]' : 'text-[32px]'} font-medium`}>{feat.label}</span>
               </div>
             ))}
           </div>
         )}
 
         {/* Differentials & Code */}
-        <div className={`flex justify-between items-end ${aspectRatio === 'story' ? 'mt-3' : 'mt-2'}`}>
+        <div className={`flex justify-between items-end ${aspectRatio === 'story' ? 'mt-[32px]' : 'mt-[22px]'}`}>
           {tagsString && (
-            <div className={`${aspectRatio === 'story' ? 'text-xl' : 'text-sm'} font-bold text-gray-300 max-w-[75%] leading-relaxed`}>
+            <div className={`${aspectRatio === 'story' ? 'text-[49px]' : 'text-[27px]'} font-bold text-gray-300 max-w-[75%] leading-relaxed`}>
               {tagsString}
             </div>
           )}
           
           {details.propertyCode?.trim() && (
-            <div className={`${aspectRatio === 'story' ? 'text-lg' : 'text-xs'} text-white font-bold font-[Arial] tracking-wider ml-auto`}>
+            <div className={`${aspectRatio === 'story' ? 'text-[43px]' : 'text-[22px]'} text-white font-bold font-[Arial] tracking-wider ml-auto`}>
               Cód. {details.propertyCode}
             </div>
           )}

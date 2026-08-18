@@ -51,7 +51,7 @@ export function LuxuryTemplate({ details, image, logo, aspectRatio, brandKit, op
       />
 
       {/* Content Container */}
-      <div className={`absolute inset-0 z-10 ${aspectRatio === 'story' ? 'p-12' : 'p-8'} flex flex-col justify-between`}>
+      <div className={`absolute inset-0 z-10 ${aspectRatio === 'story' ? 'p-[108px]' : 'p-[65px]'} flex flex-col justify-between`}>
         
         {/* TOP SECTION: Logo, Title, Features */}
         <div className="flex flex-col">
@@ -61,26 +61,26 @@ export function LuxuryTemplate({ details, image, logo, aspectRatio, brandKit, op
               <img src={logo} alt="Logo" className="object-contain max-h-[45px] drop-shadow-md" />
             ) : <div />}
             {whatsapp?.trim() && (
-              <div className="flex items-center text-white/90 font-sans text-xs font-medium tracking-widest drop-shadow-md">
-                <Phone className="w-3 h-3 mr-1.5 opacity-80" />
+              <div className="flex items-center text-white/90 font-sans text-[22px] font-medium tracking-widest drop-shadow-md">
+                <Phone className="w-[27px] h-[27px] mr-[9px].5 opacity-80" />
                 <span>{whatsapp}</span>
               </div>
             )}
           </div>
 
           {/* Title & Location */}
-          <div className="flex mb-6">
-            <div className="w-[1.5px] bg-white/60 mr-4 shrink-0" />
+          <div className="flex mb-[54px]">
+            <div className="w-[1.5px] bg-white/60 mr-[32px] shrink-0" />
             <div className="flex flex-col justify-center">
               {details.title?.trim() && (
-                <h2 className={`font-serif ${aspectRatio === 'story' ? 'text-5xl' : 'text-2xl'} text-white font-bold uppercase tracking-widest leading-tight drop-shadow-md mb-1.5`}>
+                <h2 className={`font-serif ${aspectRatio === 'story' ? 'text-[86px]' : 'text-[59px]'} text-white font-bold uppercase tracking-widest leading-[1.2] drop-shadow-md mb-[9px].5`}>
                   {details.title}
                 </h2>
               )}
               {locationString && (
                 <div className="flex items-center text-white/90">
-                  <MapPin className="w-3.5 h-3.5 mr-1.5 opacity-90" />
-                  <span className={`font-sans font-semibold tracking-wide ${aspectRatio === 'story' ? 'text-lg' : 'text-xs'}`}>{locationString}</span>
+                  <MapPin className="w-[27px].5 h-[27px].5 mr-[9px].5 opacity-90" />
+                  <span className={`font-sans font-semibold tracking-wide ${aspectRatio === 'story' ? 'text-[43px]' : 'text-[22px]'}`}>{locationString}</span>
                 </div>
               )}
             </div>
@@ -88,12 +88,12 @@ export function LuxuryTemplate({ details, image, logo, aspectRatio, brandKit, op
 
           {/* Features */}
           {features.length > 0 && (
-            <div className={`flex items-center flex-wrap font-sans font-semibold text-white/95 ${aspectRatio === 'story' ? 'text-lg gap-5' : 'text-xs gap-3'} mb-3`}>
+            <div className={`flex items-center flex-wrap font-sans font-semibold text-white/95 ${aspectRatio === 'story' ? 'text-[43px] gap-[43px]' : 'text-[22px] gap-[22px]'} mb-[22px]`}>
               {features.map((feat, idx) => (
                 <React.Fragment key={idx}>
-                  {idx > 0 && <div className="w-[1px] h-3.5 bg-white/40" />}
+                  {idx > 0 && <div className="w-[1px] h-[27px].5 bg-white/40" />}
                   <div className="flex items-center">
-                    <feat.icon className="w-4 h-4 mr-1.5 opacity-80" strokeWidth={2} />
+                    <feat.icon className="w-[32px] h-[32px] mr-[9px].5 opacity-80" strokeWidth={2} />
                     <span>{feat.text}</span>
                   </div>
                 </React.Fragment>
@@ -103,7 +103,7 @@ export function LuxuryTemplate({ details, image, logo, aspectRatio, brandKit, op
 
           {/* Differentials */}
           {tagsString && (
-            <div className={`font-sans font-semibold text-white/90 ${aspectRatio === 'story' ? 'text-base' : 'text-xs'} max-w-[85%] leading-relaxed line-clamp-2`}>
+            <div className={`font-sans font-semibold text-white/90 ${aspectRatio === 'story' ? 'text-[32px]' : 'text-[22px]'} max-w-[85%] leading-relaxed line-clamp-2`}>
               {tagsString}
             </div>
           )}
@@ -112,7 +112,7 @@ export function LuxuryTemplate({ details, image, logo, aspectRatio, brandKit, op
         {/* BOTTOM SECTION: Price & Code */}
         <div className="flex flex-col w-full mt-auto">
           {details.price?.trim() && (
-            <h3 className={`font-serif ${aspectRatio === 'story' ? 'text-5xl' : 'text-[32px]'} text-white font-normal drop-shadow-lg tracking-tight mb-3`}>
+            <h3 className={`font-serif ${aspectRatio === 'story' ? 'text-[86px]' : 'text-[76px]'} text-white font-normal drop-shadow-lg tracking-tight mb-[22px]`}>
               {details.price}
             </h3>
           )}
@@ -120,7 +120,7 @@ export function LuxuryTemplate({ details, image, logo, aspectRatio, brandKit, op
           <div className="w-full h-[1px] bg-gradient-to-r from-white/40 via-white/10 to-transparent" />
           
           {details.propertyCode?.trim() && (
-            <div className="mt-2.5 text-white/50 font-sans text-[9px] font-medium tracking-widest uppercase">
+            <div className="mt-[16px].5 text-white/50 font-sans text-[19px] font-medium tracking-widest uppercase">
               Cód. {details.propertyCode}
             </div>
           )}

@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useRef, useEffect } from 'react';
-import domtoimage from 'dom-to-image-more';
+import * as htmlToImage from 'html-to-image';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { Download, Layout, Moon, Sun, Copy, Check, LogOut } from 'lucide-react';
@@ -132,8 +132,7 @@ export default function App() {
     const observer = new ResizeObserver((entries) => {
       for (const entry of entries) {
         const containerWidth = entry.contentRect.width;
-        let scale = containerWidth / 540;
-        if (scale > 1) scale = 1;
+        let scale = containerWidth / 1080;
         setPreviewScale(scale);
       }
     });
@@ -202,9 +201,9 @@ export default function App() {
       setIsExporting(true);
       await executeSave();
       
-      const scale = 2; // Export at 2x resolution
-      const baseWidth = 540;
-      const baseHeight = aspectRatio === 'story' ? 960 : 540;
+      const scale = 1; // Export at 1x resolution because base is 1080px
+      const baseWidth = 1080;
+      const baseHeight = aspectRatio === 'story' ? 1920 : 1080;
       
       const options = {
         width: baseWidth,
@@ -213,7 +212,7 @@ export default function App() {
       };
       
       if (postElements.length === 1) {
-        const dataUrl = await domtoimage.toPng(postElements[0] as HTMLElement, options);
+        const dataUrl = await htmlToImage.toPng(postElements[0] as HTMLElement, options);
         const link = document.createElement('a');
         link.href = dataUrl;
         link.download = `post-imovel-1.png`;
@@ -223,7 +222,7 @@ export default function App() {
         
         for (let i = 0; i < postElements.length; i++) {
           const el = postElements[i] as HTMLElement;
-          const dataUrl = await domtoimage.toPng(el, options);
+          const dataUrl = await htmlToImage.toPng(el, options);
           const base64Data = dataUrl.replace(/^data:image\/png;base64,/, '');
           zip.file(`post-imovel-${i + 1}.png`, base64Data, { base64: true });
         }
@@ -485,13 +484,13 @@ export default function App() {
               {/* The Preview Area */}
               <div className="flex items-center justify-center w-full max-w-md mx-auto flex-shrink-0 overflow-hidden bg-gray-100 dark:bg-zinc-950 rounded-xl relative p-4 transition-colors duration-200">
                 {images.length > 0 ? (
-                  <div ref={previewContainerRef} className={`w-full max-w-[540px] h-auto ${aspectRatio === 'story' ? 'aspect-[9/16]' : 'aspect-square'} relative overflow-hidden flex items-center justify-center mx-auto`}>
+                  <div ref={previewContainerRef} className={`w-full relative overflow-hidden ${aspectRatio === 'story' ? 'aspect-[9/16]' : 'aspect-square'}`}>
                   <div 
                     ref={previewRef}
                     className={`absolute top-0 left-0 shadow-xl transition-all duration-300 bg-white ${aspectRatio === 'feed' ? 'aspect-square' : 'aspect-[9/16]'}`}
                     style={{ 
-                      width: '540px', 
-                      height: aspectRatio === 'story' ? '960px' : '540px',
+                      width: '1080px', 
+                      height: aspectRatio === 'story' ? '1920px' : '1080px',
                       transform: `scale(${previewScale})`,
                       transformOrigin: 'top left',
                       fontSize: '16px' // force base size
@@ -577,8 +576,8 @@ export default function App() {
             key={idx} 
             className="post-template-export relative"
             style={{ 
-              width: '540px', 
-              height: aspectRatio === 'story' ? '960px' : '540px',
+              width: '1080px', 
+              height: aspectRatio === 'story' ? '1920px' : '1080px',
               fontSize: '16px' // Keep standard base font size
             }}
           >
