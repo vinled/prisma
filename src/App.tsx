@@ -68,19 +68,8 @@ export default function App() {
       const diffsStr = [...(details.differentials || []), ...(details.amenities || [])].join(", ");
       const promptText = `Você é um copywriter especialista em mercado imobiliário de alto padrão. Crie uma legenda persuasiva para o Instagram sobre este imóvel. Tipo: ${details.propertyType || 'Imóvel'}, Bairro: ${details.neighborhood || 'Não informado'}, Quartos: ${details.bedrooms || 'Não informado'}, Vagas: ${details.parking || 'Não informado'}, Preço: ${details.price || 'Não informado'}. Diferenciais: [${diffsStr}]. Adapte o tom de voz estritamente para o público: ${targetAudience}. Use emojis estrategicamente, bullet points limpos e finalize com uma CTA para este WhatsApp: ${details.whatsapp || brandKit?.whatsapp || ''}. Não invente dados.`;
 
-      let result;
-      try {
-        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash-latest' });
-        result = await model.generateContent(promptText);
-      } catch (innerError: any) {
-        if (innerError.message?.includes('404') || innerError.status === 404) {
-          const fallbackModel = genAI.getGenerativeModel({ model: 'gemini-pro' });
-          result = await fallbackModel.generateContent(promptText);
-        } else {
-          throw innerError;
-        }
-      }
-
+      const model = genAI.getGenerativeModel({ model: 'gemini-3.7-flash' });
+      const result = await model.generateContent(promptText);
       const textoFinal = result.response.text();
       
       setGeneratedCaption(textoFinal);
