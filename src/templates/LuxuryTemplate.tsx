@@ -18,9 +18,9 @@ export function LuxuryTemplate({ details, image, logo, aspectRatio, brandKit, op
 
   const features = [];
   if (details.area?.trim()) features.push({ icon: Maximize, text: `${details.area} m²` });
-  if (details.bedrooms?.trim()) features.push({ icon: BedDouble, text: `${details.bedrooms} Dorm.` });
-  if (details.suites?.trim() || details.bathrooms?.trim()) features.push({ icon: Bath, text: `${details.suites?.trim() ? details.suites : details.bathrooms} ${details.suites?.trim() ? 'Suítes' : 'Banh.'}` });
-  if (details.parking?.trim()) features.push({ icon: Car, text: `${details.parking} Vagas` });
+  if (details.bedrooms?.trim()) features.push({ icon: BedDouble, text: `${details.bedrooms} ${Number(details.bedrooms) !== 1 ? 'Dorms' : 'Dorm'}` });
+  if (details.suites?.trim() || details.bathrooms?.trim()) features.push({ icon: Bath, text: `${details.suites?.trim() ? details.suites : details.bathrooms} ${details.suites?.trim() ? (Number(details.suites) !== 1 ? 'Suítes' : 'Suíte') : (Number(details.bathrooms) !== 1 ? 'Banhs' : 'Banh')}` });
+  if (details.parking?.trim()) features.push({ icon: Car, text: `${details.parking} ${Number(details.parking) !== 1 ? 'Vagas' : 'Vaga'}` });
 
   return (
     <div className="relative w-full h-full bg-zinc-950 overflow-hidden font-serif" id="post-template">

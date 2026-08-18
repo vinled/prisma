@@ -104,7 +104,7 @@ export function ElegantTemplate({ details, image, logo, aspectRatio, brandKit, o
               <div className="flex items-center">
                 {details.area?.trim() && <span className="text-white/30 mr-2">|</span>}
                 <BedDouble className="w-3.5 h-3.5 text-white/80 mr-1 stroke-[2]" />
-                <span>{details.bedrooms}</span>
+                <span>{details.bedrooms} {Number(details.bedrooms) !== 1 ? 'Dorms' : 'Dorm'}</span>
               </div>
             )}
 
@@ -112,7 +112,7 @@ export function ElegantTemplate({ details, image, logo, aspectRatio, brandKit, o
               <div className="flex items-center">
                 {(details.area?.trim() || details.bedrooms?.trim()) && <span className="text-white/30 mr-2">|</span>}
                 <Bath className="w-3.5 h-3.5 text-white/80 mr-1 stroke-[2]" />
-                <span>{details.suites?.trim() ? details.suites : details.bathrooms}</span>
+                <span>{details.suites?.trim() ? details.suites : details.bathrooms} {details.suites?.trim() ? (Number(details.suites) !== 1 ? 'Suítes' : 'Suíte') : (Number(details.bathrooms) !== 1 ? 'Banhs' : 'Banh')}</span>
               </div>
             )}
 
@@ -120,7 +120,7 @@ export function ElegantTemplate({ details, image, logo, aspectRatio, brandKit, o
               <div className="flex items-center">
                 {(details.area?.trim() || details.bedrooms?.trim() || details.suites?.trim() || details.bathrooms?.trim()) && <span className="text-white/30 mr-2">|</span>}
                 <Car className="w-3.5 h-3.5 text-white/80 mr-1 stroke-[2]" />
-                <span>{details.parking}</span>
+                <span>{details.parking} {Number(details.parking) !== 1 ? 'Vagas' : 'Vaga'}</span>
               </div>
             )}
           </div>

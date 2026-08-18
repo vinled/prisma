@@ -20,13 +20,13 @@ export function ModernTemplate({ details, image, logo, aspectRatio, brandKit, op
   // Features prioritization
   const features = [];
   if (details.area?.trim()) features.push({ icon: Maximize, label: `${details.area} m²` });
-  if (details.bedrooms?.trim()) features.push({ icon: BedDouble, label: `${details.bedrooms} ${aspectRatio === 'story' ? 'Dorms' : 'Dorm'}` });
+  if (details.bedrooms?.trim()) features.push({ icon: BedDouble, label: `${details.bedrooms} ${Number(details.bedrooms) !== 1 ? 'Dorms' : 'Dorm'}` });
   if (details.suites?.trim()) {
-    features.push({ icon: Bath, label: `${details.suites} ${aspectRatio === 'story' ? 'Suítes' : 'Suíte'}` });
+    features.push({ icon: Bath, label: `${details.suites} ${Number(details.suites) !== 1 ? 'Suítes' : 'Suíte'}` });
   } else if (details.bathrooms?.trim()) {
-    features.push({ icon: Bath, label: `${details.bathrooms} ${aspectRatio === 'story' ? 'Banh' : 'Banh'}` });
+    features.push({ icon: Bath, label: `${details.bathrooms} ${Number(details.bathrooms) !== 1 ? 'Banhs' : 'Banh'}` });
   }
-  if (details.parking?.trim()) features.push({ icon: Car, label: `${details.parking} ${aspectRatio === 'story' ? 'Vagas' : 'Vaga'}` });
+  if (details.parking?.trim()) features.push({ icon: Car, label: `${details.parking} ${Number(details.parking) !== 1 ? 'Vagas' : 'Vaga'}` });
 
   return (
     <div className="relative w-full h-full bg-zinc-900 overflow-hidden shadow-lg font-sans" id="post-template">

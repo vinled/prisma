@@ -83,19 +83,19 @@ export function MinimalistTemplate({ details, image, logo, aspectRatio, brandKit
             {details.bedrooms?.trim() && (
               <div className="flex items-center">
                 <BedDouble className={`${aspectRatio === 'story' ? 'w-5 h-5 mr-2' : 'w-4 h-4 mr-1.5'}`} strokeWidth={2} />
-                <span>{details.bedrooms} {aspectRatio === 'story' ? 'Dorms' : 'Qts'}</span>
+                <span>{details.bedrooms} {Number(details.bedrooms) !== 1 ? 'Dorms' : 'Dorm'}</span>
               </div>
             )}
             {details.suites?.trim() && (
               <div className="flex items-center">
                 <Bath className={`${aspectRatio === 'story' ? 'w-5 h-5 mr-2' : 'w-4 h-4 mr-1.5'}`} strokeWidth={2} />
-                <span>{details.suites} {aspectRatio === 'story' ? 'Suítes' : 'Suít'}</span>
+                <span>{details.suites} {Number(details.suites) !== 1 ? 'Suítes' : 'Suíte'}</span>
               </div>
             )}
             {details.parking?.trim() && (
               <div className="flex items-center">
                 <Car className={`${aspectRatio === 'story' ? 'w-5 h-5 mr-2' : 'w-4 h-4 mr-1.5'}`} strokeWidth={2} />
-                <span>{details.parking} {aspectRatio === 'story' ? 'Vagas' : 'Vagas'}</span>
+                <span>{details.parking} {Number(details.parking) !== 1 ? 'Vagas' : 'Vaga'}</span>
               </div>
             )}
           </div>

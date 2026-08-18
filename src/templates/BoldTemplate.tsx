@@ -97,19 +97,19 @@ export function BoldTemplate({ details, image, logo, aspectRatio, brandKit, opti
           {details.bedrooms?.trim() && (
             <div className="flex flex-col items-start">
               <BedDouble className={`${aspectRatio === 'story' ? 'w-7 h-7 mb-2' : 'w-3.5 h-3.5 mb-1'} text-white opacity-90`} strokeWidth={2.5} />
-              <span className={`font-bold ${aspectRatio === 'story' ? 'text-lg' : 'text-[12px]'} drop-shadow`}>{details.bedrooms} Qts</span>
+              <span className={`font-bold ${aspectRatio === 'story' ? 'text-lg' : 'text-[12px]'} drop-shadow`}>{details.bedrooms} {Number(details.bedrooms) !== 1 ? 'Dorms' : 'Dorm'}</span>
             </div>
           )}
           {details.suites?.trim() && (
             <div className="flex flex-col items-start">
               <Bath className={`${aspectRatio === 'story' ? 'w-7 h-7 mb-2' : 'w-3.5 h-3.5 mb-1'} text-white opacity-90`} strokeWidth={2.5} />
-              <span className={`font-bold ${aspectRatio === 'story' ? 'text-lg' : 'text-[12px]'} drop-shadow`}>{details.suites} Suít</span>
+              <span className={`font-bold ${aspectRatio === 'story' ? 'text-lg' : 'text-[12px]'} drop-shadow`}>{details.suites} {Number(details.suites) !== 1 ? 'Suítes' : 'Suíte'}</span>
             </div>
           )}
           {details.parking?.trim() && (
             <div className="flex flex-col items-start">
               <Car className={`${aspectRatio === 'story' ? 'w-7 h-7 mb-2' : 'w-3.5 h-3.5 mb-1'} text-white opacity-90`} strokeWidth={2.5} />
-              <span className={`font-bold ${aspectRatio === 'story' ? 'text-lg' : 'text-[12px]'} drop-shadow`}>{details.parking} Vagas</span>
+              <span className={`font-bold ${aspectRatio === 'story' ? 'text-lg' : 'text-[12px]'} drop-shadow`}>{details.parking} {Number(details.parking) !== 1 ? 'Vagas' : 'Vaga'}</span>
             </div>
           )}
         </div>
