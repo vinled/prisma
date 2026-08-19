@@ -20,8 +20,9 @@ export function ImageUploader({ images, onImagesChange }: ImageUploaderProps) {
       
       for (const file of files) {
         // High-Fidelity Instant Preview (Client-side native)
-        const objectUrl = URL.createObjectURL(file);
-        newImagesUrls.push(objectUrl);
+        // Instant preview
+        // const objectUrl = URL.createObjectURL(file);
+        // newImagesUrls.push(objectUrl);
         
         // Background Supabase Upload (keeping logic intact)
         const fileExt = file.name.split('.').pop();
@@ -41,6 +42,7 @@ export function ImageUploader({ images, onImagesChange }: ImageUploaderProps) {
         
         // Supabase DB logic maintained for the bucket
         const { data } = supabase.storage.from('fotos_imoveis').getPublicUrl(filePath);
+        newImagesUrls.push(data.publicUrl);
       }
       
       const combinedImages = [...images, ...newImagesUrls].slice(0, 10);
@@ -89,7 +91,7 @@ export function ImageUploader({ images, onImagesChange }: ImageUploaderProps) {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
           {images.map((image, index) => (
             <div key={index} className="relative rounded-lg overflow-hidden border border-gray-200 aspect-video">
-              <img src={image} alt={`Imóvel ${index + 1}`} className="w-full h-full object-cover" />
+              <img src={image} alt={`Imóvel ${index + 1}`} className="w-full h-full object-cover" crossOrigin="anonymous" />
               <button
                 onClick={() => removeImage(index)}
                 className="absolute top-1 right-1 p-1 bg-white/90 rounded-full shadow-md hover:bg-red-50 hover:text-red-500 transition-colors"

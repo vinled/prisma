@@ -1,5 +1,6 @@
 import React from 'react';
 import { TemplateId, TemplateProps } from '../types';
+import { useSafeImage } from '../hooks/useSafeImage';
 import { ModernTemplate } from '../templates/ModernTemplate';
 import { LuxuryTemplate } from '../templates/LuxuryTemplate';
 import { BoldTemplate } from '../templates/BoldTemplate';
@@ -11,23 +12,26 @@ interface TemplateRendererProps extends TemplateProps {
 }
 
 export function TemplateRenderer({ templateId, details, image, logo, aspectRatio = 'feed', brandKit, options, userPlan = 'free' }: TemplateRendererProps) {
+  const safeImage = useSafeImage(image);
+  const safeLogo = useSafeImage(logo);
+
   let TemplateComponent = null;
 
   switch (templateId) {
     case 'modern':
-      TemplateComponent = <ModernTemplate details={details} image={image} logo={logo} aspectRatio={aspectRatio} brandKit={brandKit} options={options} />;
+      TemplateComponent = <ModernTemplate details={details} image={safeImage} logo={safeLogo} aspectRatio={aspectRatio} brandKit={brandKit} options={options} />;
       break;
     case 'luxury':
-      TemplateComponent = <LuxuryTemplate details={details} image={image} logo={logo} aspectRatio={aspectRatio} brandKit={brandKit} options={options} />;
+      TemplateComponent = <LuxuryTemplate details={details} image={safeImage} logo={safeLogo} aspectRatio={aspectRatio} brandKit={brandKit} options={options} />;
       break;
     case 'bold':
-      TemplateComponent = <BoldTemplate details={details} image={image} logo={logo} aspectRatio={aspectRatio} brandKit={brandKit} options={options} />;
+      TemplateComponent = <BoldTemplate details={details} image={safeImage} logo={safeLogo} aspectRatio={aspectRatio} brandKit={brandKit} options={options} />;
       break;
     case 'elegant':
-      TemplateComponent = <ElegantTemplate details={details} image={image} logo={logo} aspectRatio={aspectRatio} brandKit={brandKit} options={options} />;
+      TemplateComponent = <ElegantTemplate details={details} image={safeImage} logo={safeLogo} aspectRatio={aspectRatio} brandKit={brandKit} options={options} />;
       break;
     case 'minimalist':
-      TemplateComponent = <MinimalistTemplate details={details} image={image} logo={logo} aspectRatio={aspectRatio} brandKit={brandKit} options={options} />;
+      TemplateComponent = <MinimalistTemplate details={details} image={safeImage} logo={safeLogo} aspectRatio={aspectRatio} brandKit={brandKit} options={options} />;
       break;
   }
 
