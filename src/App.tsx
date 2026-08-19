@@ -704,9 +704,9 @@ export default function App() {
               )}
 
               {/* The Preview Area */}
-              <div ref={previewContainerRef} className="flex items-center justify-center w-full max-w-md mx-auto flex-shrink-0 bg-gray-100 dark:bg-zinc-950 rounded-xl relative p-4 transition-colors duration-200">
+              <div ref={previewContainerRef} className="flex items-center justify-center w-full max-w-md mx-auto flex-shrink-0 bg-gray-100 dark:bg-zinc-950 rounded-xl relative p-4 transition-colors duration-200 max-h-[50vh] md:max-h-none overflow-hidden">
                 {images.length > 0 ? (
-                  <div className={`w-full relative ${aspectRatio === 'story' ? 'aspect-[9/16]' : 'aspect-square'}`}>
+                  <div className="relative mx-auto" style={{ width: 1080 * previewScale, height: (aspectRatio === 'story' ? 1920 : 1080) * previewScale }}>
                   <div 
                     ref={previewRef}
                     className={`absolute top-0 left-0 shadow-xl transition-all duration-300 bg-white ${aspectRatio === 'feed' ? 'aspect-square' : 'aspect-[9/16]'}`}

@@ -172,6 +172,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
           <input
             type="text"
             name="price"
+            inputMode="numeric"
             value={details.price}
             onChange={handlePriceChange}
             placeholder="R$ 850.000"
@@ -183,6 +184,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
           <input
             type="text"
             name="area"
+            inputMode="numeric"
             value={details.area ? `${details.area.replace(/\D/g, '')}` : ''}
             onChange={(e) => handleNumberFormatChange(e, 'm²')}
             placeholder="120"
@@ -194,6 +196,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
           <input
             type="text"
             name="bedrooms"
+            inputMode="numeric"
             value={details.bedrooms ? `${details.bedrooms.replace(/\D/g, '')}` : ''}
             onChange={(e) => handleNumberFormatChange(e, 'dormitórios')}
             placeholder="3"
@@ -205,6 +208,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
           <input
             type="text"
             name="suites"
+            inputMode="numeric"
             value={details.suites ? `${details.suites.replace(/\D/g, '')}` : ''}
             onChange={(e) => handleNumberFormatChange(e, 'suítes')}
             placeholder="1"
@@ -216,6 +220,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
           <input
             type="text"
             name="bathrooms"
+            inputMode="numeric"
             value={details.bathrooms ? `${details.bathrooms.replace(/\D/g, '')}` : ''}
             onChange={(e) => handleNumberFormatChange(e, 'banheiros')}
             placeholder="2"
@@ -227,6 +232,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
           <input
             type="text"
             name="parking"
+            inputMode="numeric"
             value={details.parking ? `${details.parking.replace(/\D/g, '')}` : ''}
             onChange={(e) => handleNumberFormatChange(e, 'vagas')}
             placeholder="2"
@@ -240,6 +246,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
         <input
           type="text"
           name="propertyCode"
+            inputMode="numeric"
           value={details.propertyCode}
           onChange={handleChange}
           placeholder="Ex.: AP0123"
@@ -340,8 +347,9 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
             ) : (
               <div className="space-y-2">
                 <input
-                  type="text"
+                  type="tel"
                   name="whatsapp"
+                  inputMode="numeric"
                   value={details.whatsapp}
                   onChange={handleChange}
                   placeholder="Ex.: (11) 99999-9999"
@@ -359,8 +367,9 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
           </div>
         ) : (
           <input
-            type="text"
+            type="tel"
             name="whatsapp"
+            inputMode="numeric"
             value={details.whatsapp}
             onChange={handleChange}
             placeholder="Ex.: (11) 99999-9999"
