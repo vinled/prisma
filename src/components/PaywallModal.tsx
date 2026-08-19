@@ -1,0 +1,68 @@
+import React from 'react';
+import { Crown, Check } from 'lucide-react';
+
+interface PaywallModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onUpgrade: () => void;
+}
+
+export function PaywallModal({ isOpen, onClose, onUpgrade }: PaywallModalProps) {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+      <div className="bg-white dark:bg-zinc-900 w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div className="p-8 flex flex-col items-center text-center">
+          <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center mb-6">
+            <Crown className="w-8 h-8 text-purple-600 dark:text-purple-400" />
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            Eleve o nível das suas captações
+          </h2>
+          <p className="text-gray-500 dark:text-zinc-400 mb-8">
+            Assine o Prisma Pro para desbloquear a Inteligência Artificial avançada para imóveis de luxo.
+          </p>
+          
+          <ul className="w-full space-y-3 mb-8 text-left">
+            <li className="flex items-center text-gray-700 dark:text-zinc-300">
+              <Check className="w-5 h-5 text-emerald-500 mr-3 shrink-0" />
+              <span className="font-medium">IAs Especializadas (Luxo, Investidor)</span>
+            </li>
+            <li className="flex items-center text-gray-700 dark:text-zinc-300">
+              <Check className="w-5 h-5 text-emerald-500 mr-3 shrink-0" />
+              <span className="font-medium">Downloads Ilimitados</span>
+            </li>
+            <li className="flex items-center text-gray-700 dark:text-zinc-300">
+              <Check className="w-5 h-5 text-emerald-500 mr-3 shrink-0" />
+              <span className="font-medium">Remoção da Marca d'água</span>
+            </li>
+            <li className="flex items-center text-gray-700 dark:text-zinc-300">
+              <Check className="w-5 h-5 text-emerald-500 mr-3 shrink-0" />
+              <span className="font-medium">Brand Kit Automático</span>
+            </li>
+          </ul>
+
+          <a
+            href="https://www.asaas.com/c/i1j9wljny168xx47"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => {
+              onClose();
+            }}
+            className="w-full flex items-center justify-center bg-purple-600 hover:bg-purple-700 text-white py-4 px-4 rounded-xl font-bold text-lg transition-colors shadow-lg shadow-purple-600/25 mb-4"
+          >
+            Desbloquear o Prisma Pro - R$ 49,90/mês
+          </a>
+
+          <button
+            onClick={onClose}
+            className="text-sm font-medium text-gray-500 hover:text-gray-700 dark:text-zinc-400 dark:hover:text-zinc-200 transition-colors"
+          >
+            Agora não
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

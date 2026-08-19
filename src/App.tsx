@@ -23,6 +23,7 @@ import { TemplateRenderer } from './components/TemplateRenderer';
 import { MyProperties } from './components/MyProperties';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { MyAccount } from './components/MyAccount';
+import { PaywallModal } from './components/PaywallModal';
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -69,6 +70,8 @@ export default function App() {
   }, [brandKit]);
   
   const [applyBrandKit, setApplyBrandKit] = useState(true);
+  const [userPlan, setUserPlan] = useState<'free' | 'pro'>('free');
+  const [isPaywallOpen, setIsPaywallOpen] = useState(false);
   const [images, setImages] = useState<string[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateId>('modern');
   const [aspectRatio, setAspectRatio] = useState<AspectRatioId>('feed');
@@ -84,6 +87,10 @@ export default function App() {
   const [isGeneratingCopy, setIsGeneratingCopy] = useState(false);
 
   const handleGenerateCopy = async () => {
+    if (userPlan === 'free' && targetAudience.includes('(Pro)')) {
+      setIsPaywallOpen(true);
+      return;
+    }
     setIsGeneratingCopy(true);
     try {
       const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
@@ -155,7 +162,19 @@ export default function App() {
         const containerWidth = previewContainerRef.current.getBoundingClientRect().width;
         // The container has p-4 (16px padding on each side), so subtract 32px for the actual content area
         const contentWidth = containerWidth - 32;
-        let scale = contentWidth / 1080;
+        let scaleByWidth = contentWidth / 1080;
+        
+        // Mobile vertical height constraint (max 35% of vh to leave space for form)
+        const isMobile = window.innerWidth < 1024; // lg breakpoint is 1024px
+        let scale = scaleByWidth;
+        
+        if (isMobile) {
+           const maxMobileHeight = window.innerHeight * 0.35;
+           const targetHeight = aspectRatio === 'story' ? 1920 : 1080;
+           const scaleByHeight = maxMobileHeight / targetHeight;
+           scale = Math.min(scaleByWidth, scaleByHeight);
+        }
+        
         if (scale <= 0) scale = 0.1;
         setPreviewScale(scale);
       }
@@ -177,7 +196,7 @@ export default function App() {
       observer.disconnect();
       window.removeEventListener('resize', updateScale);
     };
-  }, [images.length]); // Re-run if images change, just in case layout shifts
+  }, [images.length, aspectRatio]); // Re-run if images or aspectRatio change
 
 
   
@@ -321,7 +340,16 @@ export default function App() {
   }
 
   return (
-    <div className="w-full max-w-[100vw] overflow-x-hidden box-border flex flex-col md:flex-row min-h-screen md:h-screen bg-gray-50 dark:bg-zinc-950 transition-colors duration-200 text-gray-900 dark:text-gray-100">
+    <>
+      <PaywallModal 
+        isOpen={isPaywallOpen} 
+        onClose={() => setIsPaywallOpen(false)}
+        onUpgrade={() => {
+          setIsPaywallOpen(false);
+          setActiveTab('minha_conta');
+        }}
+      />
+      <div className="w-full max-w-[100vw] overflow-x-hidden box-border flex flex-col md:flex-row min-h-screen md:h-screen bg-gray-50 dark:bg-zinc-950 transition-colors duration-200 text-gray-900 dark:text-gray-100">
       {/* Sidebar */}
       <aside className="w-full h-auto md:w-64 md:h-screen bg-white dark:bg-zinc-900 border-b md:border-b-0 md:border-r border-gray-200 dark:border-zinc-800 flex flex-col transition-colors duration-200 shrink-0 z-20">
         <div className="p-4 md:p-6 flex justify-between items-center">
@@ -530,7 +558,7 @@ export default function App() {
           </div>
 
           {/* Preview Side */}
-          <div className="order-1 lg:order-2 lg:sticky lg:top-6 lg:self-start w-full max-w-full space-y-6 min-w-0">
+          <div className="order-1 lg:order-2 sticky top-0 z-50 bg-gray-50 dark:bg-zinc-950 border-b border-gray-200 dark:border-zinc-800 pb-4 -mx-4 px-4 -mt-4 pt-4 lg:m-0 lg:p-0 lg:sticky lg:top-6 lg:border-none lg:bg-transparent lg:z-auto lg:self-start w-full max-w-full space-y-6 min-w-0">
             <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 flex flex-col transition-colors duration-200">
               <div className="flex flex-wrap w-full gap-2 items-start md:items-center justify-between mb-6">
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-white truncate max-w-full">Pré-visualização do Post</h2>
@@ -592,6 +620,7 @@ export default function App() {
                       aspectRatio={aspectRatio}
                       brandKit={applyBrandKit ? brandKit : undefined}
                       options={templateOptions}
+                      userPlan={userPlan}
                     />
                   </div></div>
                 ) : (
@@ -613,12 +642,21 @@ export default function App() {
                   <div className="flex items-center gap-2">
                     <select
                       value={targetAudience}
-                      onChange={(e) => setTargetAudience(e.target.value)}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (userPlan === 'free' && val.includes('(Pro)')) {
+                          setTargetAudience('Família/Conforto');
+                          setIsPaywallOpen(true);
+                          return;
+                        }
+                        setTargetAudience(val);
+                      }}
                       className="px-3 py-2 bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-lg text-xs text-gray-700 dark:text-zinc-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                       <option value="Família/Conforto">Família/Conforto</option>
-                      <option value="Investidor/ROI">Investidor/ROI</option>
-                      <option value="Alto Padrão/Exclusividade">Alto Padrão/Exclusividade</option>
+                      <option value="Jovem/Dinâmico">Jovem/Dinâmico</option>
+                      <option value="Luxo/Exclusividade (Pro)">Luxo/Exclusividade (Pro)</option>
+                      <option value="Investidor/ROI (Pro)">Investidor/ROI (Pro)</option>
                     </select>
                     <button
                       onClick={handleGenerateCopy}
@@ -677,10 +715,12 @@ export default function App() {
               aspectRatio={aspectRatio}
               brandKit={applyBrandKit ? brandKit : undefined}
               options={templateOptions}
+              userPlan={userPlan}
             />
           </div>
         ))}
       </div>
     </div>
+    </>
   );
 }

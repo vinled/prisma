@@ -213,7 +213,7 @@ export function MyAccount({ session, brandKit }: MyAccountProps) {
           </ul>
           
           <a 
-            href="#" 
+            href="https://www.asaas.com/c/i1j9wljny168xx47" 
             target="_blank" 
             rel="noopener noreferrer"
             className="w-full py-3 px-4 rounded-xl font-medium bg-purple-600 hover:bg-purple-700 text-white text-center transition-colors shadow-lg shadow-purple-600/20"

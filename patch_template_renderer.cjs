@@ -1,17 +1,22 @@
-import React from 'react';
-import { TemplateId, TemplateProps } from '../types';
-import { ModernTemplate } from '../templates/ModernTemplate';
-import { LuxuryTemplate } from '../templates/LuxuryTemplate';
-import { BoldTemplate } from '../templates/BoldTemplate';
-import { ElegantTemplate } from '../templates/ElegantTemplate';
-import { MinimalistTemplate } from '../templates/MinimalistTemplate';
+const fs = require('fs');
+let code = fs.readFileSync('src/components/TemplateRenderer.tsx', 'utf8');
 
-interface TemplateRendererProps extends TemplateProps {
-  templateId: TemplateId;
-}
+const oldReturn = `  switch (templateId) {
+    case 'modern':
+      return <ModernTemplate details={details} image={image} logo={logo} aspectRatio={aspectRatio} brandKit={brandKit} options={options} />;
+    case 'luxury':
+      return <LuxuryTemplate details={details} image={image} logo={logo} aspectRatio={aspectRatio} brandKit={brandKit} options={options} />;
+    case 'bold':
+      return <BoldTemplate details={details} image={image} logo={logo} aspectRatio={aspectRatio} brandKit={brandKit} options={options} />;
+    case 'elegant':
+      return <ElegantTemplate details={details} image={image} logo={logo} aspectRatio={aspectRatio} brandKit={brandKit} options={options} />;
+    case 'minimalist':
+      return <MinimalistTemplate details={details} image={image} logo={logo} aspectRatio={aspectRatio} brandKit={brandKit} options={options} />;
+    default:
+      return null;
+  }`;
 
-export function TemplateRenderer({ templateId, details, image, logo, aspectRatio = 'feed', brandKit, options, userPlan = 'free' }: TemplateRendererProps) {
-  let TemplateComponent = null;
+const newReturn = `  let TemplateComponent = null;
 
   switch (templateId) {
     case 'modern':
@@ -55,5 +60,13 @@ export function TemplateRenderer({ templateId, details, image, logo, aspectRatio
         </div>
       )}
     </>
-  );
-}
+  );`;
+
+code = code.replace(
+  'export function TemplateRenderer({ templateId, details, image, logo, aspectRatio = \'feed\', brandKit, options }: TemplateRendererProps)',
+  'export function TemplateRenderer({ templateId, details, image, logo, aspectRatio = \'feed\', brandKit, options, userPlan = \'free\' }: TemplateRendererProps)'
+);
+
+code = code.replace(oldReturn, newReturn);
+
+fs.writeFileSync('src/components/TemplateRenderer.tsx', code);

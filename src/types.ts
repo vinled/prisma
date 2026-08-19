@@ -43,6 +43,7 @@ export interface TemplateProps {
   aspectRatio?: AspectRatioId;
   brandKit?: BrandKit | null;
   options?: TemplateOptions;
+  userPlan?: 'free' | 'pro';
 }
 
 export interface SavedProperty {
