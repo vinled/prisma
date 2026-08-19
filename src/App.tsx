@@ -7,9 +7,10 @@ import React, { useState, useRef, useEffect } from 'react';
 import * as htmlToImage from 'html-to-image';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
-import { Download, Layout, Moon, Sun, Copy, Check, LogOut } from 'lucide-react';
+import { Download, Layout, Moon, Sun, Copy, Check, LogOut, User } from 'lucide-react';
 import { supabase } from './lib/supabase';
 import { Auth } from './components/Auth';
+import { ResetPassword } from './components/ResetPassword';
 import { Session } from '@supabase/supabase-js';
 import { PrismaLogo } from './components/PrismaLogo';
 import { PropertyDetails, TemplateId, AspectRatioId, BrandKit, TemplateOptions, SavedProperty } from './types';
@@ -21,10 +22,11 @@ import { AspectRatioSelector } from './components/AspectRatioSelector';
 import { TemplateRenderer } from './components/TemplateRenderer';
 import { MyProperties } from './components/MyProperties';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { MyAccount } from './components/MyAccount';
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
-  const [activeTab, setActiveTab] = useState<'criacao' | 'meus_imoveis'>('criacao');
+  const [activeTab, setActiveTab] = useState<'criacao' | 'meus_imoveis' | 'minha_marca' | 'minha_conta'>('criacao');
   const [idEmEdicao, setIdEmEdicao] = useState<string | null>(null);
   const [details, setDetails] = useState<PropertyDetails>({
     title: '',
@@ -46,7 +48,27 @@ export default function App() {
     whatsapp: '',
   });
   
-  const [brandKit, setBrandKit] = useState<BrandKit | null>(null);
+  const [brandKit, setBrandKit] = useState<BrandKit | null>(() => {
+    const saved = localStorage.getItem('globalBrandKit');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        return null;
+      }
+    }
+    return null;
+  });
+  
+  useEffect(() => {
+    if (brandKit) {
+      localStorage.setItem('globalBrandKit', JSON.stringify(brandKit));
+    } else {
+      localStorage.removeItem('globalBrandKit');
+    }
+  }, [brandKit]);
+  
+  const [applyBrandKit, setApplyBrandKit] = useState(true);
   const [images, setImages] = useState<string[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateId>('modern');
   const [aspectRatio, setAspectRatio] = useState<AspectRatioId>('feed');
@@ -66,7 +88,7 @@ export default function App() {
     try {
       const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
       const diffsStr = [...(details.differentials || []), ...(details.amenities || [])].join(", ");
-      const promptText = `Você é um copywriter especialista em mercado imobiliário de alto padrão. Crie uma legenda persuasiva para o Instagram sobre este imóvel. Tipo: ${details.propertyType || 'Imóvel'}, Bairro: ${details.neighborhood || 'Não informado'}, Quartos: ${details.bedrooms || 'Não informado'}, Vagas: ${details.parking || 'Não informado'}, Preço: ${details.price || 'Não informado'}. Diferenciais: [${diffsStr}]. Adapte o tom de voz estritamente para o público: ${targetAudience}. Use emojis estrategicamente, bullet points limpos e finalize com uma CTA para este WhatsApp: ${details.whatsapp || brandKit?.whatsapp || ''}. Não invente dados.`;
+      const promptText = `Você é um copywriter especialista em mercado imobiliário de alto padrão. Crie uma legenda persuasiva para o Instagram sobre este imóvel. Tipo: ${details.propertyType || 'Imóvel'}, Bairro: ${details.neighborhood || 'Não informado'}, Quartos: ${details.bedrooms || 'Não informado'}, Vagas: ${details.parking || 'Não informado'}, Preço: ${details.price || 'Não informado'}. Diferenciais: [${diffsStr}]. Adapte o tom de voz estritamente para o público: ${targetAudience}. Use emojis estrategicamente, bullet points limpos e finalize com uma CTA para este WhatsApp: ${details.whatsapp || (applyBrandKit ? brandKit?.whatsapp : '') || ''}. Não invente dados.`;
 
       const model = genAI.getGenerativeModel({ model: 'gemini-3.7-flash' });
       const result = await model.generateContent(promptText);
@@ -290,6 +312,10 @@ export default function App() {
     return () => subscription.unsubscribe();
   }, []);
 
+  if (window.location.pathname === '/reset-password') {
+    return <ResetPassword />;
+  }
+
   if (!session) {
     return <Auth />;
   }
@@ -318,7 +344,7 @@ export default function App() {
             </button>
           </div>
         </div>
-        <nav className="w-full grid grid-cols-2 gap-2 px-2 box-border md:flex md:flex-col md:flex-1 md:space-y-2 md:px-4 md:py-4 md:mt-4">
+        <nav className="w-full grid grid-cols-3 gap-2 px-2 box-border md:flex md:flex-col md:flex-1 md:space-y-2 md:px-4 md:py-4 md:mt-4">
           <button
             onClick={() => setActiveTab('meus_imoveis')}
             className={`w-full flex justify-center md:justify-start items-center text-center md:text-left text-sm p-2 md:px-4 md:py-3 overflow-hidden truncate rounded-xl transition-colors ${
@@ -353,6 +379,31 @@ export default function App() {
             </svg>
             Criação Rápida
           </button>
+          <button
+            onClick={() => setActiveTab('minha_marca')}
+            className={`w-full flex justify-center md:justify-start items-center text-center md:text-left text-sm p-2 md:px-4 md:py-3 overflow-hidden truncate rounded-xl transition-colors ${
+              activeTab === 'minha_marca' 
+                ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 font-semibold' 
+                : 'text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800'
+            }`}
+          >
+            <svg className="w-5 h-5 md:mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+            <span className="hidden md:inline">Minha Marca</span>
+          </button>
+          
+          <button
+            onClick={() => setActiveTab('minha_conta')}
+            className={`w-full flex justify-center md:justify-start items-center text-center md:text-left text-sm p-2 md:px-4 md:py-3 overflow-hidden truncate rounded-xl transition-colors ${
+              activeTab === 'minha_conta' 
+                ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 font-semibold' 
+                : 'text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800'
+            }`}
+          >
+            <User className="w-5 h-5 md:mr-3" />
+            <span className="hidden md:inline">Minha Conta</span>
+          </button>
         </nav>
         <div className="hidden md:flex flex-col gap-2 p-4 border-t border-gray-200 dark:border-zinc-800">
 
@@ -376,7 +427,19 @@ export default function App() {
 
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto overflow-x-hidden w-full">
-        {activeTab === 'meus_imoveis' ? (
+        {activeTab === 'minha_conta' && session ? (
+          <MyAccount session={session} brandKit={brandKit} />
+        ) : activeTab === 'minha_marca' ? (
+          <div className="max-w-3xl mx-auto p-4 sm:p-6 lg:p-8">
+            <header className="mb-8">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Minha Marca</h1>
+              <p className="text-gray-500 dark:text-zinc-400">Configure sua identidade visual para todos os posts.</p>
+            </header>
+            <section className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 transition-colors duration-200">
+              <BrandKitForm brandKit={brandKit} onChange={setBrandKit} />
+            </section>
+          </div>
+        ) : activeTab === 'meus_imoveis' ? (
           <MyProperties properties={savedProperties} onEdit={handleEdit} onDelete={handleDelete} />
         ) : (
           <div className="max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8">
@@ -391,9 +454,17 @@ export default function App() {
           
           {/* Controls Side */}
           <div className="space-y-8 order-2 lg:order-1 min-w-0 w-full max-w-full">
-            <section className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 transition-colors duration-200">
-              <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Identidade da marca</h2>
-              <BrandKitForm brandKit={brandKit} onChange={setBrandKit} />
+            <section className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 transition-colors duration-200 flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Aplicar Assinatura Visual</h2>
+                <p className="text-sm text-gray-500 dark:text-zinc-400">Usar dados globais de 'Minha Marca'</p>
+              </div>
+              <button 
+                onClick={() => setApplyBrandKit(!applyBrandKit)}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${applyBrandKit ? 'bg-purple-600' : 'bg-gray-200 dark:bg-zinc-700'}`}
+              >
+                <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${applyBrandKit ? 'translate-x-6' : 'translate-x-1'}`} />
+              </button>
             </section>
 
             <section className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 transition-colors duration-200">
@@ -411,7 +482,7 @@ export default function App() {
 
             <section className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 transition-colors duration-200">
               <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">2. Informações</h2>
-              <PropertyForm details={details} brandKit={brandKit} onChange={setDetails} />
+              <PropertyForm details={details} brandKit={applyBrandKit ? brandKit : null} onChange={setDetails} />
             </section>
 
             <section className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 transition-colors duration-200">
@@ -517,9 +588,9 @@ export default function App() {
                       templateId={selectedTemplate} 
                       details={details} 
                       image={images[previewIndex] || null} 
-                      logo={brandKit?.logo || null}
+                      logo={applyBrandKit ? (brandKit?.logo || null) : null}
                       aspectRatio={aspectRatio}
-                      brandKit={brandKit}
+                      brandKit={applyBrandKit ? brandKit : undefined}
                       options={templateOptions}
                     />
                   </div></div>
@@ -602,9 +673,9 @@ export default function App() {
               templateId={selectedTemplate} 
               details={details} 
               image={img} 
-              logo={brandKit?.logo || null}
+              logo={applyBrandKit ? (brandKit?.logo || null) : null}
               aspectRatio={aspectRatio}
-              brandKit={brandKit}
+              brandKit={applyBrandKit ? brandKit : undefined}
               options={templateOptions}
             />
           </div>

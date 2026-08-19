@@ -34,7 +34,7 @@ const DIFFERENTIALS = [
 
 export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps) {
   const [showCustomContact, setShowCustomContact] = useState(false);
-  const useBrandKitWhatsapp = brandKit?.isSaved && brandKit?.whatsapp && !showCustomContact;
+  const useBrandKitWhatsapp = brandKit?.whatsapp && !showCustomContact;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -318,7 +318,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
       <div className="pt-4 border-t border-gray-200">
         <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-2">Contato</label>
         
-        {brandKit?.isSaved && brandKit?.whatsapp ? (
+        {brandKit?.whatsapp ? (
           <div>
             {!showCustomContact ? (
               <div className="flex flex-col space-y-2">

@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+const fs = require('fs');
+
+let code = `import React, { useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { PrismaLogo } from './PrismaLogo';
 
@@ -44,7 +46,7 @@ export function Auth() {
     }
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, { 
-      redirectTo: `${window.location.origin}/reset-password` 
+      redirectTo: \`\${window.location.origin}/reset-password\` 
     });
     
     if (error) {
@@ -164,3 +166,6 @@ export function Auth() {
     </div>
   );
 }
+`;
+
+fs.writeFileSync('src/components/Auth.tsx', code);

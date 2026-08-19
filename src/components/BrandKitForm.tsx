@@ -17,7 +17,7 @@ export function BrandKitForm({ brandKit, onChange }: BrandKitFormProps) {
         whatsapp: '',
         primaryColor: '#2563eb',
         secondaryColor: '#1e40af',
-        isSaved: false,
+        isSaved: true,
         [field]: value
       });
     } else {
@@ -104,18 +104,7 @@ export function BrandKitForm({ brandKit, onChange }: BrandKitFormProps) {
         </div>
       </div>
       
-      <div className="flex items-center pt-2 mt-4">
-        <input
-          type="checkbox"
-          id="saveBrandKit"
-          className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-          checked={brandKit?.isSaved || false}
-          onChange={(e) => handleChange('isSaved', e.target.checked)}
-        />
-        <label htmlFor="saveBrandKit" className="ml-2 block text-sm text-gray-900 dark:text-zinc-300">
-          Salvar como minha identidade
-        </label>
-      </div>
+
     </div>
   );
 }
