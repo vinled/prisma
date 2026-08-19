@@ -7,7 +7,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import * as htmlToImage from 'html-to-image';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
-import { Download, Layout, Moon, Sun, Copy, Check, LogOut, User, Menu, X, PlusSquare, Palette } from 'lucide-react';
+import { Download, Layout, Moon, Sun, Copy, Check, LogOut, User, Menu, X, PlusSquare, Palette, Share2 } from 'lucide-react';
 import { supabase } from './lib/supabase';
 import { Auth } from './components/Auth';
 import { ResetPassword } from './components/ResetPassword';
@@ -247,7 +247,68 @@ export default function App() {
     alert('Alterações salvas com sucesso!');
   };
 
-  const handleDownload = async () => {
+    const handleShare = async () => {
+    if (!hiddenRenderersRef.current) return;
+    
+    const postElements = hiddenRenderersRef.current.querySelectorAll('.post-template-export');
+    if (!postElements || postElements.length === 0) {
+      alert('Nenhuma imagem para exportar.');
+      return;
+    }
+
+    try {
+      setIsExporting(true);
+      await executeSave();
+      
+      const scale = 1; 
+      const baseWidth = 1080;
+      const baseHeight = aspectRatio === 'story' ? 1920 : 1080;
+      
+      const options = {
+        width: baseWidth,
+        height: baseHeight,
+        pixelRatio: scale
+      };
+
+      const dataUrl = await htmlToImage.toPng(postElements[0], options);
+      
+      // Attempt to share
+      if (navigator.share && navigator.canShare) {
+        try {
+          const res = await fetch(dataUrl);
+          const blob = await res.blob();
+          const imageFile = new File([blob], 'post-imovel.png', { type: 'image/png' });
+          
+          if (navigator.canShare({ files: [imageFile] })) {
+            if (generatedCaption) {
+              await navigator.clipboard.writeText(generatedCaption);
+              alert('Legenda copiada! Escolha onde compartilhar.');
+            }
+            await navigator.share({
+              files: [imageFile],
+              title: 'Post Prisma'
+            });
+            return;
+          }
+        } catch (shareError) {
+          console.error("Share failed", shareError);
+        }
+      }
+      
+      // Fallback: download
+      const link = document.createElement('a');
+      link.href = dataUrl;
+      link.download = `post-imovel-1.png`;
+      link.click();
+    } catch (error) {
+      console.error('Erro na exportação:', error);
+      alert('Ocorreu um erro ao gerar a imagem.');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+const handleDownload = async () => {
     if (!hiddenRenderersRef.current) return;
     
     const postElements = hiddenRenderersRef.current.querySelectorAll('.post-template-export');
@@ -677,11 +738,18 @@ export default function App() {
                     </button>
                   )}
                   <button
-                    onClick={handleDownload}
+                    onClick={() => {
+                      if (window.innerWidth < 768) {
+                        handleShare();
+                      } else {
+                        handleDownload();
+                      }
+                    }}
                     disabled={isExporting || images.length === 0}
                     className="absolute bottom-4 right-4 z-10 p-3 rounded-full shadow-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium md:static md:p-2 md:px-4 md:rounded-lg md:shadow-none disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
                   >
-                    <Download className="w-5 h-5 md:w-4 md:h-4 md:mr-2" />
+                    <Share2 className="w-5 h-5 md:hidden" />
+                    <Download className="hidden md:block w-4 h-4 mr-2" />
                     <span className="hidden md:inline">
                       {isExporting ? 'Gerando...' : (images.length > 1 ? `Baixar Zip (${images.length})` : 'Baixar imagem')}
                     </span>
