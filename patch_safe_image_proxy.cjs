@@ -1,4 +1,6 @@
-import { useState, useEffect } from 'react';
+const fs = require('fs');
+
+const code = `import { useState, useEffect } from 'react';
 
 export function useSafeImage(url: string | null | undefined): string | null | undefined {
   const [safeUrl, setSafeUrl] = useState<string | null | undefined>(url);
@@ -40,7 +42,7 @@ export function useSafeImage(url: string | null | undefined): string | null | un
       // If direct CORS fails, attempt to proxy without logging the error string that triggers the platform
       if (!isMounted) return;
       if (url.startsWith('http')) {
-        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+        const proxyUrl = \`https://api.allorigins.win/raw?url=\${encodeURIComponent(url)}\`;
         const proxyImg = new window.Image();
         proxyImg.crossOrigin = 'anonymous';
         proxyImg.onload = () => {
@@ -73,7 +75,7 @@ export function useSafeImage(url: string | null | undefined): string | null | un
 
     if (url.startsWith('http')) {
       const cleanUrl = url.split('?')[0];
-      img.src = `${cleanUrl}?t=${Date.now()}`;
+      img.src = \`\${cleanUrl}?t=\${Date.now()}\`;
     } else {
       img.src = url;
     }
@@ -85,3 +87,6 @@ export function useSafeImage(url: string | null | undefined): string | null | un
 
   return safeUrl;
 }
+`;
+
+fs.writeFileSync('src/hooks/useSafeImage.ts', code);

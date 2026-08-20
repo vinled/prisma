@@ -11,7 +11,6 @@ export function ImageUploader({ images, onImagesChange }: ImageUploaderProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
-  const [loadingMsg, setLoadingMsg] = useState('Enviando fotos...');
 
   const processFiles = async (files: File[]) => {
     if (files.length === 0) return;
@@ -20,29 +19,7 @@ export function ImageUploader({ images, onImagesChange }: ImageUploaderProps) {
     try {
       const newImagesUrls: string[] = [];
       
-      for (let file of files) {
-        if (file.type === 'image/heic' || file.name.toLowerCase().endsWith('.heic')) {
-          try {
-            setLoadingMsg('Otimizando foto do iPhone...');
-            const heic2any = (await import('heic2any')).default;
-            const convertedBlob = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.8 });
-            
-            // heic2any can return an array of blobs if it's a sequence, we take the first one or just cast
-            const finalBlob = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
-            
-            file = new File([finalBlob], file.name.replace(/\.heic$/i, '.jpg'), { type: 'image/jpeg' });
-            setLoadingMsg('Enviando fotos...');
-          } catch (e) {
-            console.error("Erro ao converter HEIC", e);
-            continue;
-          }
-        }
-        // High-Fidelity Instant Preview (Client-side native)
-        // Instant preview
-        // const objectUrl = URL.createObjectURL(file);
-        // newImagesUrls.push(objectUrl);
-        
-        // Background Supabase Upload (keeping logic intact)
+      for (const file of files) {
         const fileExt = file.name.split('.').pop();
         const filePath = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
         
@@ -58,7 +35,6 @@ export function ImageUploader({ images, onImagesChange }: ImageUploaderProps) {
           continue;
         }
         
-        // Supabase DB logic maintained for the bucket
         const { data } = supabase.storage.from('fotos_imoveis').getPublicUrl(filePath);
         newImagesUrls.push(data.publicUrl);
       }
@@ -95,7 +71,7 @@ export function ImageUploader({ images, onImagesChange }: ImageUploaderProps) {
     setIsDragging(false);
     
     const files = Array.from(e.dataTransfer.files) as File[];
-    const imageFiles = files.filter(file => file.type.startsWith('image/') || file.name.toLowerCase().endsWith('.heic'));
+    const imageFiles = files.filter(file => file.type.startsWith('image/'));
     processFiles(imageFiles);
   };
 
@@ -109,7 +85,7 @@ export function ImageUploader({ images, onImagesChange }: ImageUploaderProps) {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
           {images.map((image, index) => (
             <div key={index} className="relative rounded-lg overflow-hidden border border-gray-200 aspect-video">
-              <img src={image} alt={`Imóvel ${index + 1}`} className="w-full h-full object-cover" crossOrigin="anonymous" />
+              <img src={image} alt={`Imóvel ${index + 1}`} className="w-full h-full object-cover"  />
               <button
                 onClick={() => removeImage(index)}
                 className="absolute top-1 right-1 p-1 bg-white/90 rounded-full shadow-md hover:bg-red-50 hover:text-red-500 transition-colors"
@@ -134,12 +110,12 @@ export function ImageUploader({ images, onImagesChange }: ImageUploaderProps) {
             <Upload className={`w-6 h-6 mb-2 ${isDragging ? 'text-blue-500' : 'text-gray-400 dark:text-zinc-500'}`} />
             <p className="mb-1 text-sm text-gray-500 dark:text-zinc-400 text-center px-4">
               <span className="font-semibold text-gray-700 dark:text-zinc-300">
-                {isUploading ? loadingMsg : 'Clique ou arraste imagens'}
+                {isUploading ? 'Enviando fotos...' : 'Clique ou arraste imagens'}
               </span>
               {!isUploading && <><br/>(até 10 fotos)</>}
             </p>
           </div>
-          <input type="file" className="hidden" accept="image/*,.heic,.HEIC" multiple onChange={handleFileChange} disabled={isUploading} />
+          <input type="file" className="hidden" accept="image/jpeg, image/png, image/webp" multiple onChange={handleFileChange} disabled={isUploading} />
         </label>
       )}
     </div>
