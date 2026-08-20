@@ -1,4 +1,6 @@
-import React, { useCallback, useState, useEffect } from 'react';
+const fs = require('fs');
+
+const code = `import React, { useCallback, useState, useEffect } from 'react';
 import { Upload, X } from 'lucide-react';
 // import { supabase } from '../lib/supabase'; // Removed as per instructions
 
@@ -34,13 +36,12 @@ export function ImageUploader({ images, onImagesChange }: ImageUploaderProps) {
               const heic2any = (await import('heic2any')).default;
               const conversionResult = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.8 });
               const singleBlob = Array.isArray(conversionResult) ? conversionResult[0] : conversionResult;
-              const newFile = new File([singleBlob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", { type: "image/jpeg" });
+              const newFile = new File([singleBlob], file.name.replace(/\\.[^/.]+$/, "") + ".jpg", { type: "image/jpeg" });
               
               // Instead of adding preview property (which is hard to type here since it's just File), we'll map to objectUrl later, or do it exactly as user asked
               return Object.assign(newFile, { preview: URL.createObjectURL(newFile) });
             } catch (error) {
               console.error("Erro no heic2any:", error);
-              alert("O formato desta foto da Apple não é suportado no navegador. Por favor, converta para JPG ou envie pelo celular.");
               return null; 
             }
           }
@@ -49,7 +50,7 @@ export function ImageUploader({ images, onImagesChange }: ImageUploaderProps) {
         })
       );
 
-      const validFiles = processedFiles.filter(f => f !== null);
+      const validFiles = processedFiles.filter((f): f !== null => f !== null);
       
       const newImagesUrls = validFiles.map((f: any) => f.preview);
       const combinedImages = [...images, ...newImagesUrls].slice(0, 10);
@@ -102,7 +103,7 @@ export function ImageUploader({ images, onImagesChange }: ImageUploaderProps) {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
           {images.map((image, index) => (
             <div key={index} className="relative rounded-lg overflow-hidden border border-gray-200 aspect-video">
-              <img src={image} alt={`Imóvel ${index + 1}`} className="w-full h-full object-cover"  />
+              <img src={image} alt={\`Imóvel \${index + 1}\`} className="w-full h-full object-cover"  />
               <button
                 onClick={() => removeImage(index)}
                 className="absolute top-1 right-1 p-1 bg-white/90 rounded-full shadow-md hover:bg-red-50 hover:text-red-500 transition-colors"
@@ -116,15 +117,15 @@ export function ImageUploader({ images, onImagesChange }: ImageUploaderProps) {
       
       {images.length < 10 && (
         <label 
-          className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
+          className={\`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer transition-colors \${
             isDragging ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-300 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-800/50 hover:bg-gray-100 dark:hover:bg-zinc-800'
-          }`}
+          }\`}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
         >
           <div className="flex flex-col items-center justify-center pt-5 pb-6">
-            <Upload className={`w-6 h-6 mb-2 ${isDragging ? 'text-blue-500' : 'text-gray-400 dark:text-zinc-500'}`} />
+            <Upload className={\`w-6 h-6 mb-2 \${isDragging ? 'text-blue-500' : 'text-gray-400 dark:text-zinc-500'}\`} />
             <p className="mb-1 text-sm text-gray-500 dark:text-zinc-400 text-center px-4">
               <span className="font-semibold text-gray-700 dark:text-zinc-300">
                 {isUploading ? loadingMsg : 'Clique ou arraste imagens'}
@@ -132,9 +133,12 @@ export function ImageUploader({ images, onImagesChange }: ImageUploaderProps) {
               {!isUploading && <><br/>(até 10 fotos)</>}
             </p>
           </div>
-          <input type="file" className="hidden" accept="image/jpeg, image/png, image/webp" multiple onChange={handleFileChange} disabled={isUploading} />
+          <input type="file" className="hidden" accept="image/jpeg, image/png, image/webp, image/heic, .heic, .HEIC" multiple onChange={handleFileChange} disabled={isUploading} />
         </label>
       )}
     </div>
   );
 }
+`;
+
+fs.writeFileSync('src/components/ImageUploader.tsx', code);

@@ -1,4 +1,6 @@
-import React, { useCallback, useEffect } from 'react';
+const fs = require('fs');
+
+const code = `import React, { useCallback, useEffect } from 'react';
 import { Upload, X } from 'lucide-react';
 
 interface LogoUploaderProps {
@@ -57,3 +59,6 @@ export function LogoUploader({ logo, onLogoChange }: LogoUploaderProps) {
     </div>
   );
 }
+`;
+
+fs.writeFileSync('src/components/LogoUploader.tsx', code);
