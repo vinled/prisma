@@ -621,7 +621,7 @@ const handleDownload = async () => {
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto w-full">
         {activeTab === 'minha_conta' && session ? (
-          <MyAccount session={session} brandKit={brandKit} />
+          <MyAccount session={session} brandKit={brandKit} userPlan={userPlan} />
         ) : activeTab === 'minha_marca' ? (
           <div className="max-w-3xl mx-auto p-4 sm:p-6 lg:p-8">
             <header className="mb-8">
@@ -728,6 +728,15 @@ const handleDownload = async () => {
               <div className="flex flex-wrap w-full gap-2 items-start md:items-center justify-between mb-6">
                 <h2 className="hidden md:block text-lg font-semibold text-gray-900 dark:text-white truncate max-w-full">Pré-visualização do Post</h2>
                 <div className="flex flex-wrap items-center gap-2 space-x-0">
+                  <button
+                    onClick={() => {
+                      setActiveTab('meus_imoveis');
+                      setIdEmEdicao(null);
+                    }}
+                    className="px-4 py-2 text-gray-600 border border-gray-300 hover:bg-gray-100 dark:text-gray-300 dark:border-zinc-700 dark:hover:bg-zinc-800 font-medium rounded-lg transition-colors"
+                  >
+                    Voltar
+                  </button>
                   {idEmEdicao && (
                     <button
                       onClick={handleSaveOnly}

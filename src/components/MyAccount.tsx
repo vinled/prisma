@@ -7,11 +7,12 @@ import { BrandKit } from '../types';
 interface MyAccountProps {
   session: Session;
   brandKit?: BrandKit | null;
+  userPlan?: "free" | "pro";
 }
 
-export function MyAccount({ session, brandKit }: MyAccountProps) {
+export function MyAccount({ session, brandKit, userPlan = "free" }: MyAccountProps) {
   // Mock data for the Freemium flow
-  const currentPlan = 'Grátis';
+  const currentPlan = userPlan === 'pro' ? 'Pro' : 'Grátis';
   const creditsUsed = 3;
   const creditsTotal = 5;
   const progressPercent = (creditsUsed / creditsTotal) * 100;

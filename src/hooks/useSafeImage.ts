@@ -19,10 +19,12 @@ export function useSafeImage(url: string | null | undefined): string | null | un
     img.onload = () => {
       try {
         const canvas = document.createElement('canvas');
-        canvas.width = img.width;
-        canvas.height = img.height;
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
         const ctx = canvas.getContext('2d');
         if (ctx) {
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = "high";
           ctx.drawImage(img, 0, 0);
           setSafeUrl(canvas.toDataURL('image/png'));
         } else {
