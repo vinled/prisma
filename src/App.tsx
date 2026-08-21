@@ -76,6 +76,7 @@ export default function App() {
   const [images, setImages] = useState<string[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateId>('modern');
   const [aspectRatio, setAspectRatio] = useState<AspectRatioId>('feed');
+  const [seloAtivo, setSeloAtivo] = useState("");
   const [templateOptions, setTemplateOptions] = useState<TemplateOptions>({
     gradientOpacity: 60,
     imagePositionX: 50,
@@ -673,6 +674,30 @@ const handleDownload = async () => {
               />
             </section>
 
+            <section className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 transition-colors duration-200 mt-6">
+              <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Selo (Opcional)</h2>
+              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                {['Nenhum', 'VENDIDO', 'EXCLUSIVIDADE', 'BAIXOU O VALOR', 'OPORTUNIDADE'].map(selo => {
+                  const isNenhum = selo === 'Nenhum';
+                  const isActive = isNenhum ? seloAtivo === '' : seloAtivo === selo;
+                  return (
+                    <button
+                      key={selo}
+                      onClick={() => setSeloAtivo(isNenhum ? '' : selo)}
+                      className={`shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors border ${
+                        isActive 
+                          ? 'bg-indigo-600 text-white border-indigo-600 shadow-md' 
+                          : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700 dark:hover:bg-zinc-700'
+                      }`}
+                    >
+                      {selo}
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+
+
             <section className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 transition-colors duration-200">
               <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">2. Informações</h2>
               <PropertyForm details={details} brandKit={applyBrandKit ? brandKit : null} onChange={setDetails} />
@@ -802,7 +827,7 @@ const handleDownload = async () => {
                       logo={applyBrandKit ? (brandKit?.logo || null) : null}
                       aspectRatio={aspectRatio}
                       brandKit={applyBrandKit ? brandKit : undefined}
-                      options={templateOptions}
+                      options={{...templateOptions, badge: seloAtivo}}
                       userPlan={userPlan}
                     />
                   </div></div>
@@ -897,7 +922,7 @@ const handleDownload = async () => {
               logo={applyBrandKit ? (brandKit?.logo || null) : null}
               aspectRatio={aspectRatio}
               brandKit={applyBrandKit ? brandKit : undefined}
-              options={templateOptions}
+              options={{...templateOptions, badge: seloAtivo}}
               userPlan={userPlan}
             />
           </div>
