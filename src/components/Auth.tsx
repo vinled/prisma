@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { supabase } from '../lib/supabase';
-import { PrismaLogo } from './PrismaLogo';
+import { PostNaMaoLogo } from './PostNaMaoLogo';
 
 export function Auth() {
   const [isRecovery, setIsRecovery] = useState(false);
@@ -59,7 +59,7 @@ export function Auth() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-zinc-950 p-4 text-gray-900 dark:text-gray-100">
       <div className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-2xl shadow-xl p-8 border border-gray-100 dark:border-zinc-800 transition-colors duration-200">
         <div className="flex justify-center mb-8">
-          <PrismaLogo />
+          <div className="flex justify-center items-center gap-2 mb-6"><PostNaMaoLogo className="w-12 h-12" /><span className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-orange-500 dark:from-white dark:to-orange-400">PostNaMão</span></div>
         </div>
         
         <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-white mb-6">
@@ -85,7 +85,7 @@ export function Auth() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white transition-colors"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white transition-colors"
               placeholder="seu@email.com"
               required
             />
@@ -98,7 +98,7 @@ export function Auth() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white transition-colors"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white transition-colors"
                 placeholder="••••••••"
                 required
               />
@@ -110,7 +110,7 @@ export function Auth() {
                     setError(null);
                     setMessage(null);
                   }}
-                  className="text-xs text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300 transition-colors"
+                  className="text-xs text-orange-600 dark:text-orange-400 hover:text-orange-800 dark:hover:text-orange-300 transition-colors"
                 >
                   Esqueci minha senha
                 </button>
@@ -124,7 +124,7 @@ export function Auth() {
                 <button
                   onClick={handleResetPassword}
                   disabled={loading}
-                  className="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-lg font-medium transition-colors disabled:opacity-50"
+                  className="w-full bg-orange-600 hover:bg-orange-700 text-white py-2 px-4 rounded-lg font-medium transition-colors disabled:opacity-50"
                 >
                   {loading ? 'Aguarde...' : 'Enviar link de recuperação'}
                 </button>
@@ -145,7 +145,7 @@ export function Auth() {
                 <button
                   onClick={handleLogin}
                   disabled={loading}
-                  className="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-lg font-medium transition-colors disabled:opacity-50"
+                  className="flex-1 bg-orange-600 hover:bg-orange-700 text-white py-2 px-4 rounded-lg font-medium transition-colors disabled:opacity-50"
                 >
                   {loading ? 'Aguarde...' : 'Entrar'}
                 </button>

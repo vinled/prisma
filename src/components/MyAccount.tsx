@@ -45,7 +45,7 @@ export function MyAccount({ session, brandKit, userPlan = "free" }: MyAccountPro
     setIsSavingName(false);
   };
 
-  const textoSuporte = encodeURIComponent(`Olá equipe do Prisma! Meu nome é ${userName} e preciso de ajuda com a minha assinatura.`);
+  const textoSuporte = encodeURIComponent(`Olá equipe do PostNaMão! Meu nome é ${userName} e preciso de ajuda com a minha assinatura.`);
   const whatsappLink = `https://wa.me/5513988806648?text=${textoSuporte}`;
 
   return (
@@ -61,7 +61,7 @@ export function MyAccount({ session, brandKit, userPlan = "free" }: MyAccountPro
           
           {/* Coluna Esquerda (Perfil Humanizado) */}
           <div className="flex items-center gap-4 border-b md:border-b-0 md:border-r border-gray-100 dark:border-zinc-800 pb-6 md:pb-0 md:pr-6">
-            <div className="w-14 h-14 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold text-xl shrink-0 shadow-sm overflow-hidden relative">
+            <div className="w-14 h-14 bg-orange-600 text-white rounded-full flex items-center justify-center font-bold text-xl shrink-0 shadow-sm overflow-hidden relative">
               {brandKit?.logo ? (
                 <img src={brandKit.logo} alt="Logo" className="w-full h-full object-cover absolute inset-0" />
               ) : (
@@ -75,7 +75,7 @@ export function MyAccount({ session, brandKit, userPlan = "free" }: MyAccountPro
                     type="text"
                     value={newName}
                     onChange={(e) => setNewName(e.target.value)}
-                    className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-zinc-700 rounded focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white"
+                    className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-zinc-700 rounded focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white"
                     placeholder="Seu nome"
                     autoFocus
                   />
@@ -137,7 +137,7 @@ export function MyAccount({ session, brandKit, userPlan = "free" }: MyAccountPro
               </div>
               <div className="w-full bg-gray-100 dark:bg-zinc-800 rounded-full h-2">
                 <div 
-                  className="bg-purple-600 h-2 rounded-full transition-all" 
+                  className="bg-orange-600 h-2 rounded-full transition-all" 
                   style={{ width: `${progressPercent}%` }}
                 />
               </div>
@@ -185,9 +185,9 @@ export function MyAccount({ session, brandKit, userPlan = "free" }: MyAccountPro
         </div>
 
         {/* Plano Pro */}
-        <div className="bg-gradient-to-b from-purple-50 to-white dark:from-purple-900/20 dark:to-zinc-900 p-8 rounded-2xl shadow-sm border-2 border-purple-200 dark:border-purple-800 flex flex-col transition-colors duration-200 relative overflow-hidden">
+        <div className="bg-gradient-to-b from-orange-50 to-white dark:from-orange-900/20 dark:to-zinc-900 p-8 rounded-2xl shadow-sm border-2 border-orange-200 dark:border-orange-800 flex flex-col transition-colors duration-200 relative overflow-hidden">
           <div className="mb-6">
-            <h3 className="text-lg font-semibold text-purple-700 dark:text-purple-400 mb-2">Plano Pro</h3>
+            <h3 className="text-lg font-semibold text-orange-700 dark:text-orange-400 mb-2">Plano Pro</h3>
             <div className="flex items-baseline gap-1">
               <span className="text-3xl font-bold text-gray-900 dark:text-white">R$ 49,90</span>
               <span className="text-gray-500 dark:text-zinc-400">/mês</span>
@@ -196,19 +196,19 @@ export function MyAccount({ session, brandKit, userPlan = "free" }: MyAccountPro
           
           <ul className="space-y-4 mb-8 flex-1">
             <li className="flex items-start">
-              <Zap className="w-5 h-5 text-purple-600 dark:text-purple-400 mr-3 shrink-0" />
+              <Zap className="w-5 h-5 text-orange-600 dark:text-orange-400 mr-3 shrink-0" />
               <span className="text-gray-900 dark:text-zinc-100 font-medium">Artes ilimitadas</span>
             </li>
             <li className="flex items-start">
-              <Check className="w-5 h-5 text-purple-600 dark:text-purple-400 mr-3 shrink-0" />
+              <Check className="w-5 h-5 text-orange-600 dark:text-orange-400 mr-3 shrink-0" />
               <span className="text-gray-600 dark:text-zinc-300">IA de legendas Avançada (Gemini Luxo)</span>
             </li>
             <li className="flex items-start">
-              <Check className="w-5 h-5 text-purple-600 dark:text-purple-400 mr-3 shrink-0" />
+              <Check className="w-5 h-5 text-orange-600 dark:text-orange-400 mr-3 shrink-0" />
               <span className="text-gray-600 dark:text-zinc-300">Brand Kit Global Automático</span>
             </li>
             <li className="flex items-start">
-              <Check className="w-5 h-5 text-purple-600 dark:text-purple-400 mr-3 shrink-0" />
+              <Check className="w-5 h-5 text-orange-600 dark:text-orange-400 mr-3 shrink-0" />
               <span className="text-gray-600 dark:text-zinc-300">Sem marca d'água</span>
             </li>
           </ul>
@@ -217,7 +217,7 @@ export function MyAccount({ session, brandKit, userPlan = "free" }: MyAccountPro
             href="https://www.asaas.com/c/i1j9wljny168xx47" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="w-full py-3 px-4 rounded-xl font-medium bg-purple-600 hover:bg-purple-700 text-white text-center transition-colors shadow-lg shadow-purple-600/20"
+            className="w-full py-3 px-4 rounded-xl font-medium bg-orange-600 hover:bg-orange-700 text-white text-center transition-colors shadow-lg shadow-orange-600/20"
           >
             Assinar Plano Pro
           </a>
@@ -228,7 +228,7 @@ export function MyAccount({ session, brandKit, userPlan = "free" }: MyAccountPro
       <section className="bg-white dark:bg-zinc-900 p-6 sm:p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 transition-colors duration-200">
         <div>
           <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Suporte e Ajuda</h3>
-          <p className="text-gray-500 dark:text-zinc-400 text-sm">Problemas com sua assinatura ou dúvidas sobre o Prisma?</p>
+          <p className="text-gray-500 dark:text-zinc-400 text-sm">Problemas com sua assinatura ou dúvidas sobre o PostNaMão?</p>
         </div>
         <a 
           href={whatsappLink} 

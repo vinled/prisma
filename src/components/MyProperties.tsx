@@ -118,7 +118,7 @@ export function MyProperties({ properties, onEdit, onDelete }: Props) {
                         <div className="flex items-center justify-end space-x-2">
                           <button 
                             onClick={() => onEdit(property)}
-                            className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 dark:hover:text-indigo-400 rounded-lg transition-colors"
+                            className="p-2 text-gray-400 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/30 dark:hover:text-orange-400 rounded-lg transition-colors"
                             title="Editar Arte"
                           >
                             <Edit2 className="w-4 h-4" />
@@ -186,7 +186,7 @@ export function MyProperties({ properties, onEdit, onDelete }: Props) {
                         <div className="flex gap-3 text-gray-500">
                           <button 
                             onClick={() => onEdit(property)}
-                            className="p-1.5 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-lg transition-colors"
+                            className="p-1.5 hover:text-orange-600 dark:hover:text-orange-400 rounded-lg transition-colors"
                           >
                             <Edit2 className="w-4 h-4" />
                           </button>

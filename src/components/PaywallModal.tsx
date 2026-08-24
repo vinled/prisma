@@ -14,14 +14,14 @@ export function PaywallModal({ isOpen, onClose, onUpgrade }: PaywallModalProps) 
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
       <div className="bg-white dark:bg-zinc-900 w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         <div className="p-8 flex flex-col items-center text-center">
-          <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center mb-6">
-            <Crown className="w-8 h-8 text-purple-600 dark:text-purple-400" />
+          <div className="w-16 h-16 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center mb-6">
+            <Crown className="w-8 h-8 text-orange-600 dark:text-orange-400" />
           </div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
             Eleve o nível das suas captações
           </h2>
           <p className="text-gray-500 dark:text-zinc-400 mb-8">
-            Assine o Prisma Pro para desbloquear a Inteligência Artificial avançada para imóveis de luxo.
+            Assine o PostNaMão Pro para desbloquear a Inteligência Artificial avançada para imóveis de luxo.
           </p>
           
           <ul className="w-full space-y-3 mb-8 text-left">
@@ -50,9 +50,9 @@ export function PaywallModal({ isOpen, onClose, onUpgrade }: PaywallModalProps) 
             onClick={() => {
               onClose();
             }}
-            className="w-full flex items-center justify-center bg-purple-600 hover:bg-purple-700 text-white py-4 px-4 rounded-xl font-bold text-lg transition-colors shadow-lg shadow-purple-600/25 mb-4"
+            className="w-full flex items-center justify-center bg-orange-600 hover:bg-orange-700 text-white py-4 px-4 rounded-xl font-bold text-lg transition-colors shadow-lg shadow-orange-600/25 mb-4"
           >
-            Desbloquear o Prisma Pro - R$ 49,90/mês
+            Desbloquear o PostNaMão Pro - R$ 49,90/mês
           </a>
 
           <button

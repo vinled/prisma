@@ -12,7 +12,7 @@ import { supabase } from './lib/supabase';
 import { Auth } from './components/Auth';
 import { ResetPassword } from './components/ResetPassword';
 import { Session } from '@supabase/supabase-js';
-import { PrismaLogo } from './components/PrismaLogo';
+import { PostNaMaoLogo } from './components/PostNaMaoLogo';
 import { PropertyDetails, TemplateId, AspectRatioId, BrandKit, TemplateOptions, SavedProperty } from './types';
 import { PropertyForm } from './components/PropertyForm';
 import { BrandKitForm } from './components/BrandKitForm';
@@ -87,8 +87,14 @@ export default function App() {
 
   const [targetAudience, setTargetAudience] = useState('Família/Conforto');
   const [isGeneratingCopy, setIsGeneratingCopy] = useState(false);
+  const [destinoCopy, setDestinoCopy] = useState('instagram');
 
   const handleGenerateCopy = async () => {
+    if (userPlan !== 'pro') {
+      alert('Recurso exclusivo do Plano Pro. Faça o upgrade para usar a IA!');
+      setIsPaywallOpen(true);
+      return;
+    }
     if (userPlan === 'free' && targetAudience.includes('(Pro)')) {
       setIsPaywallOpen(true);
       return;
@@ -97,7 +103,16 @@ export default function App() {
     try {
       const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
       const diffsStr = [...(details.differentials || []), ...(details.amenities || [])].join(", ");
-      const promptText = `Você é um copywriter especialista em mercado imobiliário de alto padrão. Crie uma legenda persuasiva para o Instagram sobre este imóvel. Tipo: ${details.propertyType || 'Imóvel'}, Bairro: ${details.neighborhood || 'Não informado'}, Quartos: ${details.bedrooms || 'Não informado'}, Vagas: ${details.parking || 'Não informado'}, Preço: ${details.price || 'Não informado'}. Diferenciais: [${diffsStr}]. Adapte o tom de voz estritamente para o público: ${targetAudience}. Use emojis estrategicamente, bullet points limpos e finalize com uma CTA para este WhatsApp: ${details.whatsapp || (applyBrandKit ? brandKit?.whatsapp : '') || ''}. Não invente dados.`;
+      
+      let regrasDeFormato = '';
+      if (destinoCopy === 'instagram') {
+        regrasDeFormato = "Formate como um post de Instagram. Use parágrafos curtos, emojis espaçados para leitura fluida, inclua hashtags relevantes no final e crie uma chamada para ação (CTA) convidando para comentar ou enviar direct.";
+      } else if (destinoCopy === 'whatsapp') {
+        regrasDeFormato = "Formate como uma mensagem privada de WhatsApp enviada de um corretor para um cliente vip. Seja extremamente direto, persuasivo e curto. NÃO use hashtags. Use formatação nativa do WhatsApp (ex: *negrito* para o preço e destaques). Termine com uma pergunta fechada de engajamento, como 'Podemos agendar uma visita amanhã?' ou 'Faz sentido para você?'";
+      }
+
+      const promptText = `Você é um copywriter de alto padrão no mercado imobiliário. Crie um texto para o imóvel com os dados: Tipo: ${details.propertyType || 'Imóvel'}, Bairro: ${details.neighborhood || 'Não informado'}, Quartos: ${details.bedrooms || 'Não informado'}, Vagas: ${details.parking || 'Não informado'}, Preço: ${details.price || 'Não informado'}, Diferenciais: [${diffsStr}]. ${regrasDeFormato} O Tom do texto deve ser: ${targetAudience}. Adicione CTA para este WhatsApp: ${details.whatsapp || (applyBrandKit ? brandKit?.whatsapp : '') || ''}. Não invente dados.`;
+
 
       const model = genAI.getGenerativeModel({ model: 'gemini-3.7-flash' });
       const result = await model.generateContent(promptText);
@@ -123,7 +138,7 @@ export default function App() {
 
   const [savedProperties, setSavedProperties] = useState<SavedProperty[]>(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('prisma_imoveis');
+      const saved = localStorage.getItem('postnamao_imoveis');
       if (saved) {
         try {
           return JSON.parse(saved);
@@ -202,7 +217,13 @@ export default function App() {
 
 
   
-  const executeSave = async (): Promise<void> => {
+  const executeSave = async (): Promise<boolean> => {
+    if (userPlan !== 'pro' && !idEmEdicao && savedProperties.length >= 3) {
+      alert('Limite do plano Grátis atingido (3 imóveis). Assine o PostNaMão Pro!');
+      setIsPaywallOpen(true);
+      return false;
+    }
+
     return new Promise((resolve) => {
       const finalizeSave = () => {
         const now = new Date();
@@ -231,8 +252,8 @@ export default function App() {
         }
         
         setSavedProperties(updated);
-        localStorage.setItem('prisma_imoveis', JSON.stringify(updated));
-        resolve();
+        localStorage.setItem('postnamao_imoveis', JSON.stringify(updated));
+        resolve(true);
       };
 
       if (images.length > 0) {
@@ -244,8 +265,10 @@ export default function App() {
   };
 
   const handleSaveOnly = async () => {
-    await executeSave();
-    alert('Alterações salvas com sucesso!');
+    const success = await executeSave();
+    if (success) {
+      alert('Alterações salvas com sucesso!');
+    }
   };
 
     const handleShare = async () => {
@@ -259,7 +282,11 @@ export default function App() {
 
     try {
       setIsExporting(true);
-      await executeSave();
+      const success = await executeSave();
+      if (!success) {
+        setIsExporting(false);
+        return;
+      }
       
       const scale = 1; 
       const baseWidth = 1080;
@@ -287,7 +314,7 @@ export default function App() {
             }
             await navigator.share({
               files: [imageFile],
-              title: 'Post Prisma'
+              title: 'Post PostNaMão'
             });
             return;
           }
@@ -320,7 +347,11 @@ const handleDownload = async () => {
 
     try {
       setIsExporting(true);
-      await executeSave();
+      const success = await executeSave();
+      if (!success) {
+        setIsExporting(false);
+        return;
+      }
       
       const scale = 1; // Export at 1x resolution because base is 1080px
       const baseWidth = 1080;
@@ -376,7 +407,7 @@ const handleDownload = async () => {
   const handleDelete = (id: string) => {
     const updated = savedProperties.filter(p => p.id !== id);
     setSavedProperties(updated);
-    localStorage.setItem('prisma_imoveis', JSON.stringify(updated));
+    localStorage.setItem('postnamao_imoveis', JSON.stringify(updated));
   };
 
   
@@ -416,7 +447,7 @@ const handleDownload = async () => {
 
       {/* Mobile Topbar */}
       <header className="md:hidden flex items-center justify-between p-4 border-b border-gray-200 dark:border-zinc-800 bg-white dark:bg-[#0f111a] z-30 shrink-0">
-        <PrismaLogo />
+        <div className="flex items-center gap-2"><PostNaMaoLogo className="w-8 h-8" /><span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-orange-500 dark:from-white dark:to-orange-400">PostNaMão</span></div>
         <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg transition-colors">
           <Menu className="w-6 h-6" />
         </button>
@@ -439,7 +470,7 @@ const handleDownload = async () => {
                 onClick={() => { setActiveTab('meus_imoveis'); setIsMobileMenuOpen(false); }}
                 className={`flex items-center text-sm p-3 rounded-xl transition-colors ${
                   activeTab === 'meus_imoveis' 
-                    ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 font-semibold' 
+                    ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 font-semibold' 
                     : 'text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800'
                 }`}
               >
@@ -463,7 +494,7 @@ const handleDownload = async () => {
                 }}
                 className={`flex items-center text-sm p-3 rounded-xl transition-colors ${
                   activeTab === 'criacao' 
-                    ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 font-semibold' 
+                    ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 font-semibold' 
                     : 'text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800'
                 }`}
               >
@@ -475,7 +506,7 @@ const handleDownload = async () => {
                 onClick={() => { setActiveTab('minha_marca'); setIsMobileMenuOpen(false); }}
                 className={`flex items-center text-sm p-3 rounded-xl transition-colors ${
                   activeTab === 'minha_marca' 
-                    ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 font-semibold' 
+                    ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 font-semibold' 
                     : 'text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800'
                 }`}
               >
@@ -487,7 +518,7 @@ const handleDownload = async () => {
                 onClick={() => { setActiveTab('minha_conta'); setIsMobileMenuOpen(false); }}
                 className={`flex items-center text-sm p-3 rounded-xl transition-colors ${
                   activeTab === 'minha_conta' 
-                    ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 font-semibold' 
+                    ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 font-semibold' 
                     : 'text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800'
                 }`}
               >
@@ -519,7 +550,7 @@ const handleDownload = async () => {
       {/* Sidebar */}
       <aside className="hidden md:flex w-full h-auto md:w-64 md:h-screen bg-white dark:bg-zinc-900 border-r border-gray-200 dark:border-zinc-800 flex-col transition-colors duration-200 shrink-0 z-20">
         <div className={`p-4 md:p-6 flex justify-between items-center ${activeTab === 'criacao' ? 'hidden md:flex' : ''}`}>
-          <PrismaLogo />
+          <div className="flex items-center gap-2"><PostNaMaoLogo className="w-8 h-8" /><span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-orange-500 dark:from-white dark:to-orange-400">PostNaMão</span></div>
           <div className="md:hidden flex items-center gap-2">
 
             <button
@@ -543,7 +574,7 @@ const handleDownload = async () => {
             onClick={() => setActiveTab('meus_imoveis')}
             className={`w-full flex justify-center md:justify-start items-center text-center md:text-left text-sm p-2 md:px-4 md:py-3 overflow-hidden truncate rounded-xl transition-colors ${
               activeTab === 'meus_imoveis' 
-                ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 font-semibold' 
+                ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 font-semibold' 
                 : 'text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800'
             }`}
           >
@@ -564,7 +595,7 @@ const handleDownload = async () => {
             }}
             className={`w-full flex justify-center md:justify-start items-center text-center md:text-left text-sm p-2 md:px-4 md:py-3 overflow-hidden truncate rounded-xl transition-colors ${
               activeTab === 'criacao' 
-                ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 font-semibold' 
+                ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 font-semibold' 
                 : 'text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800'
             }`}
           >
@@ -577,7 +608,7 @@ const handleDownload = async () => {
             onClick={() => setActiveTab('minha_marca')}
             className={`w-full flex justify-center md:justify-start items-center text-center md:text-left text-sm p-2 md:px-4 md:py-3 overflow-hidden truncate rounded-xl transition-colors ${
               activeTab === 'minha_marca' 
-                ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 font-semibold' 
+                ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 font-semibold' 
                 : 'text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800'
             }`}
           >
@@ -591,7 +622,7 @@ const handleDownload = async () => {
             onClick={() => setActiveTab('minha_conta')}
             className={`w-full flex justify-center md:justify-start items-center text-center md:text-left text-sm p-2 md:px-4 md:py-3 overflow-hidden truncate rounded-xl transition-colors ${
               activeTab === 'minha_conta' 
-                ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 font-semibold' 
+                ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 font-semibold' 
                 : 'text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800'
             }`}
           >
@@ -655,7 +686,7 @@ const handleDownload = async () => {
               </div>
               <button 
                 onClick={() => setApplyBrandKit(!applyBrandKit)}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${applyBrandKit ? 'bg-purple-600' : 'bg-gray-200 dark:bg-zinc-700'}`}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${applyBrandKit ? 'bg-orange-600' : 'bg-gray-200 dark:bg-zinc-700'}`}
               >
                 <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${applyBrandKit ? 'translate-x-6' : 'translate-x-1'}`} />
               </button>
@@ -686,7 +717,7 @@ const handleDownload = async () => {
                       onClick={() => setSeloAtivo(isNenhum ? '' : selo)}
                       className={`shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors border ${
                         isActive 
-                          ? 'bg-indigo-600 text-white border-indigo-600 shadow-md' 
+                          ? 'bg-slate-900 dark:bg-slate-700 text-white border-slate-900 dark:border-slate-700 shadow-md' 
                           : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700 dark:hover:bg-zinc-700'
                       }`}
                     >
@@ -845,9 +876,27 @@ const handleDownload = async () => {
             </div>
             {/* Smart Caption Module */}
             <div className="order-3 lg:order-none mt-6 lg:mt-0 bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 transition-colors duration-200">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Legenda para Redes Sociais</h3>
-                  <div className="flex flex-col md:flex-row gap-3 w-full">
+                <div className="flex flex-col mb-4 gap-3">
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Gerador de Textos com IA</h3>
+                  
+                  <div className="flex flex-col gap-3 w-full">
+                    <div className="flex bg-gray-100 dark:bg-zinc-800 p-1 rounded-lg">
+                      <button
+                        onClick={() => setDestinoCopy('instagram')}
+                        className={`flex-1 py-1.5 px-3 text-xs font-medium rounded-md transition-colors ${destinoCopy === 'instagram' ? 'bg-white dark:bg-zinc-700 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-zinc-400 hover:text-gray-700 dark:hover:text-zinc-300'}`}
+                      >
+                        Post para Feed/Instagram
+                      </button>
+                      <button
+                        onClick={() => setDestinoCopy('whatsapp')}
+                        className={`flex-1 py-1.5 px-3 text-xs font-medium rounded-md transition-colors ${destinoCopy === 'whatsapp' ? 'bg-white dark:bg-zinc-700 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-zinc-400 hover:text-gray-700 dark:hover:text-zinc-300'}`}
+                      >
+                        Mensagem para WhatsApp
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div className="flex flex-col md:flex-row gap-3 w-full justify-end">
                     <select
                       value={targetAudience}
                       onChange={(e) => {
@@ -871,7 +920,7 @@ const handleDownload = async () => {
                       disabled={isGeneratingCopy}
                       className="w-full md:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg text-xs font-medium transition-colors whitespace-nowrap shadow-sm"
                     >
-                      {isGeneratingCopy ? 'Escrevendo...' : '✨ Gerar Copy com IA (Pro)'}
+                      {isGeneratingCopy ? 'Escrevendo...' : '✨ Gerar Copy com IA'}
                     </button>
                   </div>
                 </div>
@@ -899,7 +948,10 @@ const handleDownload = async () => {
 
         </div>
         </div>
-      )}</main>
+      )}  <footer className="text-center py-6 text-sm text-gray-500 dark:text-zinc-400 mt-auto border-t border-gray-100 dark:border-zinc-800">
+        © 2026 PostNaMão. Todos os direitos reservados.
+      </footer>
+</main>
             {/* Hidden containers for export */}
       <div 
         ref={hiddenRenderersRef} 

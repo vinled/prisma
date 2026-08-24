@@ -55,7 +55,7 @@ export function TemplateRenderer({ templateId, details, image, logo, aspectRatio
             fontWeight: 500
           }}
         >
-          Criado com Prisma Imóveis
+          Criado com PostNaMão
         </div>
       )}
     </>
