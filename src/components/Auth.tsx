@@ -1,9 +1,15 @@
 import React, { useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { PostNaMaoLogo } from './PostNaMaoLogo';
+import { ArrowLeft } from 'lucide-react';
 
-export function Auth() {
+interface AuthProps {
+  onBack?: () => void;
+}
+
+export function Auth({ onBack }: AuthProps) {
   const [isRecovery, setIsRecovery] = useState(false);
+
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -57,8 +63,17 @@ export function Auth() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-zinc-950 p-4 text-gray-900 dark:text-gray-100">
-      <div className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-2xl shadow-xl p-8 border border-gray-100 dark:border-zinc-800 transition-colors duration-200">
-        <div className="flex justify-center mb-8">
+      <div className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-2xl shadow-xl p-8 border border-gray-100 dark:border-zinc-800 transition-colors duration-200 relative">
+        {onBack && (
+          <button 
+            onClick={onBack}
+            className="absolute top-6 left-6 text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+            title="Voltar"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+        )}
+        <div className="flex justify-center mb-8 mt-2">
           <div className="flex justify-center items-center mb-6"><PostNaMaoLogo className="h-16 w-auto" /></div>
         </div>
         

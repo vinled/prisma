@@ -24,9 +24,11 @@ import { MyProperties } from './components/MyProperties';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { MyAccount } from './components/MyAccount';
 import { PaywallModal } from './components/PaywallModal';
+import { LandingPage } from './components/LandingPage';
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
+  const [showAuth, setShowAuth] = useState(false);
   const [activeTab, setActiveTab] = useState<'criacao' | 'meus_imoveis' | 'minha_marca' | 'minha_conta'>('criacao');
   const [idEmEdicao, setIdEmEdicao] = useState<string | null>(null);
   const [details, setDetails] = useState<PropertyDetails>({
@@ -430,7 +432,10 @@ const handleDownload = async () => {
   }
 
   if (!session) {
-    return <Auth />;
+    if (showAuth) {
+      return <Auth onBack={() => setShowAuth(false)} />;
+    }
+    return <LandingPage onLoginClick={() => setShowAuth(true)} />;
   }
 
   return (
