@@ -447,7 +447,7 @@ const handleDownload = async () => {
 
       {/* Mobile Topbar */}
       <header className="md:hidden flex items-center justify-between p-4 border-b border-gray-200 dark:border-zinc-800 bg-white dark:bg-[#0f111a] z-30 shrink-0">
-        <div className="flex items-center gap-2"><PostNaMaoLogo className="w-8 h-8" /><span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-orange-500 dark:from-white dark:to-orange-400">PostNaMão</span></div>
+        <PostNaMaoLogo className="h-8 w-auto" />
         <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg transition-colors">
           <Menu className="w-6 h-6" />
         </button>
@@ -550,7 +550,7 @@ const handleDownload = async () => {
       {/* Sidebar */}
       <aside className="hidden md:flex w-full h-auto md:w-64 md:h-screen bg-white dark:bg-zinc-900 border-r border-gray-200 dark:border-zinc-800 flex-col transition-colors duration-200 shrink-0 z-20">
         <div className={`p-4 md:p-6 flex justify-between items-center ${activeTab === 'criacao' ? 'hidden md:flex' : ''}`}>
-          <div className="flex items-center gap-2"><PostNaMaoLogo className="w-8 h-8" /><span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-orange-500 dark:from-white dark:to-orange-400">PostNaMão</span></div>
+          <PostNaMaoLogo className="h-8 w-auto" />
           <div className="md:hidden flex items-center gap-2">
 
             <button

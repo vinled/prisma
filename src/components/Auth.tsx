@@ -59,7 +59,7 @@ export function Auth() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-zinc-950 p-4 text-gray-900 dark:text-gray-100">
       <div className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-2xl shadow-xl p-8 border border-gray-100 dark:border-zinc-800 transition-colors duration-200">
         <div className="flex justify-center mb-8">
-          <div className="flex justify-center items-center gap-2 mb-6"><PostNaMaoLogo className="w-12 h-12" /><span className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-orange-500 dark:from-white dark:to-orange-400">PostNaMão</span></div>
+          <div className="flex justify-center items-center mb-6"><PostNaMaoLogo className="h-16 w-auto" /></div>
         </div>
         
         <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-white mb-6">
