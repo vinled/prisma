@@ -1,5 +1,5 @@
 import React from 'react';
-import { Smartphone, Tags, Zap, CheckCircle2, XCircle, Sparkles, Check, ShieldCheck, Star, ChevronDown } from 'lucide-react';
+import { Smartphone, Tags, Zap, CheckCircle2, XCircle, Sparkles, Check, ShieldCheck, Star, ChevronDown, Home } from 'lucide-react';
 import { PostNaMaoLogo } from './PostNaMaoLogo';
 
 interface LandingPageProps {
@@ -35,11 +35,16 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
       <main className="flex-grow">
         {/* Hero Section */}
         <section className="pt-20 pb-24 sm:pt-32 sm:pb-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
+          <div className="flex justify-center mb-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-orange-100/50 border border-orange-200 text-orange-700 font-semibold text-sm shadow-sm">
+              🔥 O Segredo dos Corretores Top Producers
+            </div>
+          </div>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight mb-6 leading-tight max-w-4xl mx-auto">
-            Suas Captações Prontas para o <span className="bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-orange-400">Instagram em 3 Segundos.</span>
+            Suas Captações de Imóveis prontas para o <span className="bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-orange-400">Instagram em 3 Segundos.</span>
           </h1>
           <p className="text-lg sm:text-xl text-slate-600 mb-10 max-w-2xl mx-auto leading-relaxed">
-            Esqueça horas editando fotos. O PostNaMão aplica selos de venda, ajusta o formato e entrega sua arte imobiliária pronta para atrair clientes de alto padrão.
+            A primeira ferramenta de marketing exclusiva para corretores. Aplique selos de Vendido ou Exclusividade, ajuste o formato da fachada e gere textos com IA sem perder horas editando.
           </p>
           <div className="flex justify-center mb-16">
             <button 
@@ -56,9 +61,17 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
             <div className="bg-slate-900 rounded-3xl sm:rounded-[3rem] p-4 sm:p-8 shadow-2xl border border-slate-800">
               <div className="bg-slate-800 rounded-2xl sm:rounded-[2rem] aspect-[16/9] sm:aspect-[21/9] flex items-center justify-center relative overflow-hidden border border-slate-700">
                 <div className="absolute inset-0 flex items-center justify-center">
+                   {/* Placeholder: Simulação de uma Fachada de Casa de Alto Padrão recebendo um selo de venda */}
                    <div className="flex flex-col items-center gap-4">
-                     <PostNaMaoLogo className="h-20 w-auto opacity-50 grayscale" />
-                     <p className="text-slate-500 font-medium">Interface do Aplicativo</p>
+                     <div className="w-full max-w-xs aspect-square bg-slate-700 rounded-xl flex items-center justify-center relative overflow-hidden">
+                        {/* Mock de imagem de casa */}
+                        <Home className="w-16 h-16 text-slate-500 opacity-50" />
+                        {/* Mock do selo */}
+                        <div className="absolute top-4 left-4 bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full transform -rotate-12">
+                           EXCLUSIVIDADE
+                        </div>
+                     </div>
+                     <p className="text-slate-500 font-medium text-sm">Preview: Fachada Alto Padrão + Selo</p>
                    </div>
                 </div>
               </div>
@@ -130,9 +143,9 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
               <div className="w-14 h-14 bg-orange-100 rounded-2xl flex items-center justify-center mb-6">
                 <Zap className="w-7 h-7 text-orange-600" />
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">Zero Dificuldade</h3>
+              <h3 className="text-xl font-bold text-slate-900 mb-3">Focado em Vendas, Não em Design</h3>
               <p className="text-slate-600 leading-relaxed">
-                Interface intuitiva projetada especificamente para corretores. Você não precisa ser designer.
+                Você precisa estar na rua fazendo visitas, não no computador alinhando textos. Interface pensada para a correria do corretor.
               </p>
             </div>
           </div>

@@ -220,8 +220,8 @@ export default function App() {
 
   
   const executeSave = async (): Promise<boolean> => {
-    if (userPlan !== 'pro' && !idEmEdicao && savedProperties.length >= 3) {
-      alert('Limite do plano Grátis atingido (3 imóveis). Assine o PostNaMão Pro!');
+    if (userPlan !== 'pro' && !idEmEdicao && savedProperties.length >= 10) {
+      alert('Limite do plano Grátis atingido (10 artes). Assine o PostNaMão Pro!');
       setIsPaywallOpen(true);
       return false;
     }
@@ -414,14 +414,28 @@ const handleDownload = async () => {
 
   
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
       setSession(session);
-    });
+      
+      const path = window.location.pathname;
+      if (!session && path !== '/' && path !== '/reset-password') {
+        window.history.replaceState({}, '', '/');
+        setShowAuth(true);
+      }
+    };
+    checkSession();
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
+      
+      const path = window.location.pathname;
+      if (!session && path !== '/' && path !== '/reset-password') {
+        window.history.replaceState({}, '', '/');
+        setShowAuth(true);
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -431,7 +445,9 @@ const handleDownload = async () => {
     return <ResetPassword />;
   }
 
-  if (!session) {
+  const isValidSession = session && session.user && session.user.email;
+
+  if (!isValidSession) {
     if (showAuth) {
       return <Auth onBack={() => setShowAuth(false)} />;
     }

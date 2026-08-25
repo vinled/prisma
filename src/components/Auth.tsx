@@ -18,6 +18,10 @@ export function Auth({ onBack }: AuthProps) {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!email || !password) {
+      setError('Por favor, preencha o e-mail e a senha.');
+      return;
+    }
     setLoading(true);
     setError(null);
     setMessage(null);
@@ -28,6 +32,10 @@ export function Auth({ onBack }: AuthProps) {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!email || !password) {
+      setError('Por favor, preencha o e-mail e a senha.');
+      return;
+    }
     setLoading(true);
     setError(null);
     setMessage(null);
@@ -39,6 +47,10 @@ export function Auth({ onBack }: AuthProps) {
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!email || !password) {
+      setError('Por favor, preencha o e-mail e a senha.');
+      return;
+    }
     setLoading(true);
     setError(null);
     setMessage(null);
