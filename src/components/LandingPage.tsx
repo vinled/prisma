@@ -1,5 +1,5 @@
 import React from 'react';
-import { Smartphone, Tags, Zap, CheckCircle2, XCircle } from 'lucide-react';
+import { Smartphone, Tags, Zap, CheckCircle2, XCircle, Sparkles, Check } from 'lucide-react';
 import { PostNaMaoLogo } from './PostNaMaoLogo';
 
 interface LandingPageProps {
@@ -134,6 +134,137 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
               <p className="text-slate-600 leading-relaxed">
                 Interface intuitiva projetada especificamente para corretores. Você não precisa ser designer.
               </p>
+            </div>
+          </div>
+        </section>
+
+        {/* AI Copywriter Section */}
+        <section className="py-24 bg-white px-4 sm:px-6 lg:px-8 border-y border-slate-200">
+          <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-orange-100 text-orange-700 font-semibold text-sm mb-6">
+                <Sparkles className="w-4 h-4" /> IA Copywriter
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-6 leading-tight">
+                Não sabe o que escrever? A Inteligência Artificial faz isso por você.
+              </h2>
+              <p className="text-lg text-slate-600 leading-relaxed mb-8">
+                O PostNaMão não cria apenas a arte. Nossa IA analisa o seu imóvel e gera instantaneamente legendas magnéticas para o Instagram e mensagens persuasivas prontas para você disparar no WhatsApp dos seus clientes.
+              </p>
+            </div>
+            <div className="relative">
+               {/* Visual Chat Bubble Mockup */}
+               <div className="bg-slate-50 border border-slate-200 rounded-3xl p-6 shadow-lg relative z-10">
+                  <div className="flex items-center gap-3 mb-4 border-b border-slate-200 pb-4">
+                    <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center">
+                       <Sparkles className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-slate-900">Assistente IA</h4>
+                      <p className="text-xs text-slate-500">Online agora</p>
+                    </div>
+                  </div>
+                  <div className="bg-white border border-slate-100 p-4 rounded-2xl rounded-tl-none shadow-sm text-slate-700 text-sm leading-relaxed">
+                    🏡 <strong>Mansão Suspensa com Vista Mar!</strong><br/><br/>
+                    Acorde todos os dias com a brisa do mar. 4 suítes, varanda gourmet e acabamento em mármore.<br/><br/>
+                    💎 <em>Oportunidade única para quem não abre mão do melhor.</em><br/><br/>
+                    👉 Clique no link da bio e agende sua visita hoje mesmo!
+                  </div>
+                  <div className="mt-4 flex justify-end">
+                    <div className="bg-orange-500 text-white p-4 rounded-2xl rounded-tr-none shadow-sm text-sm inline-block">
+                      Perfeito! Vou enviar pro cliente. 🚀
+                    </div>
+                  </div>
+               </div>
+               {/* Decoration */}
+               <div className="absolute -top-6 -right-6 w-24 h-24 bg-orange-200 rounded-full blur-2xl opacity-50 z-0"></div>
+               <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-slate-300 rounded-full blur-2xl opacity-50 z-0"></div>
+            </div>
+          </div>
+        </section>
+
+        {/* Pricing Section */}
+        <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">
+              Escolha o plano ideal para alavancar suas captações
+            </h2>
+            <p className="text-lg text-slate-600">Sem surpresas, sem taxas ocultas. Cancele quando quiser.</p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {/* Free Plan */}
+            <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm flex flex-col">
+              <div className="mb-8">
+                <h3 className="text-xl font-bold text-slate-900 mb-2">Gratuito</h3>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-4xl font-extrabold text-slate-900">R$ 0</span>
+                </div>
+                <p className="text-slate-500 mt-2 text-sm">Para testar a ferramenta</p>
+              </div>
+              <ul className="space-y-4 mb-8 flex-grow">
+                <li className="flex items-start gap-3 text-slate-600">
+                  <Check className="w-5 h-5 text-orange-500 shrink-0" />
+                  <span>Acesso ao painel</span>
+                </li>
+                <li className="flex items-start gap-3 text-slate-600">
+                  <Check className="w-5 h-5 text-orange-500 shrink-0" />
+                  <span>Geração de arte com marca d'água</span>
+                </li>
+                <li className="flex items-start gap-3 text-slate-600">
+                  <Check className="w-5 h-5 text-orange-500 shrink-0" />
+                  <span>Teste da IA de textos</span>
+                </li>
+              </ul>
+              <button 
+                onClick={onLoginClick}
+                className="w-full py-4 rounded-xl font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors border border-slate-200"
+              >
+                Começar Grátis
+              </button>
+            </div>
+
+            {/* Pro Plan */}
+            <div className="bg-slate-900 rounded-3xl p-8 border-2 border-orange-500 shadow-xl shadow-orange-500/20 flex flex-col relative transform md:-translate-y-4">
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-orange-500 text-white px-4 py-1 rounded-full text-sm font-bold tracking-wide shadow-sm">
+                MAIS ESCOLHIDO
+              </div>
+              <div className="mb-8 mt-2">
+                <h3 className="text-xl font-bold text-white mb-2">Plano Pro</h3>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-4xl font-extrabold text-white">R$ 49,90</span>
+                  <span className="text-slate-400">/ mês</span>
+                </div>
+                <p className="text-slate-400 mt-2 text-sm">Tudo liberado para alta conversão</p>
+              </div>
+              <ul className="space-y-4 mb-8 flex-grow">
+                <li className="flex items-start gap-3 text-slate-300">
+                  <Check className="w-5 h-5 text-orange-500 shrink-0" />
+                  <span><strong className="text-white">Artes ilimitadas</strong></span>
+                </li>
+                <li className="flex items-start gap-3 text-slate-300">
+                  <Check className="w-5 h-5 text-orange-500 shrink-0" />
+                  <span>Sem marca d'água</span>
+                </li>
+                <li className="flex items-start gap-3 text-slate-300">
+                  <Check className="w-5 h-5 text-orange-500 shrink-0" />
+                  <span>Selos exclusivos (Vendido, Oportunidade)</span>
+                </li>
+                <li className="flex items-start gap-3 text-slate-300">
+                  <Check className="w-5 h-5 text-orange-500 shrink-0" />
+                  <span>Copywriter de IA liberado</span>
+                </li>
+                <li className="flex items-start gap-3 text-slate-300">
+                  <Check className="w-5 h-5 text-orange-500 shrink-0" />
+                  <span>Suporte prioritário</span>
+                </li>
+              </ul>
+              <button 
+                onClick={onLoginClick}
+                className="w-full py-4 rounded-xl font-bold text-white bg-orange-500 hover:bg-orange-600 transition-colors shadow-lg shadow-orange-500/30"
+              >
+                Assinar o PostNaMão Pro
+              </button>
             </div>
           </div>
         </section>
