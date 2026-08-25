@@ -25,6 +25,8 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import { MyAccount } from './components/MyAccount';
 import { PaywallModal } from './components/PaywallModal';
 import { LandingPage } from './components/LandingPage';
+import { TermosDeUso } from './components/TermosDeUso';
+import { PoliticaPrivacidade } from './components/PoliticaPrivacidade';
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -419,7 +421,7 @@ const handleDownload = async () => {
       setSession(session);
       
       const path = window.location.pathname;
-      if (!session && path !== '/' && path !== '/reset-password') {
+      if (!session && path !== '/' && path !== '/reset-password' && path !== '/termos' && path !== '/privacidade') {
         window.history.replaceState({}, '', '/');
         setShowAuth(true);
       }
@@ -432,7 +434,7 @@ const handleDownload = async () => {
       setSession(session);
       
       const path = window.location.pathname;
-      if (!session && path !== '/' && path !== '/reset-password') {
+      if (!session && path !== '/' && path !== '/reset-password' && path !== '/termos' && path !== '/privacidade') {
         window.history.replaceState({}, '', '/');
         setShowAuth(true);
       }
@@ -443,6 +445,14 @@ const handleDownload = async () => {
 
   if (window.location.pathname === '/reset-password') {
     return <ResetPassword />;
+  }
+
+  if (window.location.pathname === '/termos') {
+    return <TermosDeUso />;
+  }
+
+  if (window.location.pathname === '/privacidade') {
+    return <PoliticaPrivacidade />;
   }
 
   const isValidSession = session && session.user && session.user.email;

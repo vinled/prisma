@@ -401,8 +401,8 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
             <span className="text-slate-500 font-medium text-sm">© 2026 PostNaMão. Todos os direitos reservados.</span>
           </div>
           <div className="flex flex-wrap justify-center gap-6 text-sm font-medium text-slate-500">
-            <a href="#" className="hover:text-orange-500 transition-colors">Termos de Uso</a>
-            <a href="#" className="hover:text-orange-500 transition-colors">Política de Privacidade</a>
+            <a href="/termos" className="hover:text-orange-500 transition-colors">Termos de Uso</a>
+            <a href="/privacidade" className="hover:text-orange-500 transition-colors">Política de Privacidade</a>
             <a href="#" className="hover:text-orange-500 transition-colors">Contato</a>
           </div>
         </div>
