@@ -14,7 +14,7 @@ export function MyAccount({ session, brandKit, userPlan = "free" }: MyAccountPro
   // Mock data for the Freemium flow
   const currentPlan = userPlan === 'pro' ? 'Pro' : 'Grátis';
   const creditsUsed = 3;
-  const creditsTotal = 5;
+  const creditsTotal = 10;
   const progressPercent = (creditsUsed / creditsTotal) * 100;
   
   // State for user name
@@ -164,7 +164,7 @@ export function MyAccount({ session, brandKit, userPlan = "free" }: MyAccountPro
           <ul className="space-y-4 mb-8 flex-1">
             <li className="flex items-start">
               <Check className="w-5 h-5 text-gray-400 mr-3 shrink-0" />
-              <span className="text-gray-600 dark:text-zinc-300">5 artes gratuitas por mês</span>
+              <span className="text-gray-600 dark:text-zinc-300">10 artes gratuitas por mês</span>
             </li>
             <li className="flex items-start">
               <Check className="w-5 h-5 text-gray-400 mr-3 shrink-0" />
