@@ -477,8 +477,8 @@ const handleDownload = async () => {
       {/* Mobile Overlay & Drawer */}
       {isMobileMenuOpen && (
         <>
-          <div className="md:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-40" onClick={() => setIsMobileMenuOpen(false)}></div>
-          <div className="md:hidden fixed inset-y-0 right-0 w-64 bg-white dark:bg-[#0f111a] shadow-xl z-[100] transform transition-transform flex flex-col overflow-y-auto">
+          <div className="md:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-40 animate-in fade-in duration-300" onClick={() => setIsMobileMenuOpen(false)}></div>
+          <div className="md:hidden fixed inset-y-0 right-0 w-64 bg-white dark:bg-[#0f111a] shadow-xl z-[100] transform transition-transform flex flex-col overflow-y-auto animate-in slide-in-from-right duration-300">
             <div className="p-4 flex justify-between items-center border-b border-gray-200 dark:border-zinc-800">
               <span className="font-bold text-gray-900 dark:text-white">Menu</span>
               <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg">
@@ -818,7 +818,7 @@ const handleDownload = async () => {
                     <button
                       onClick={handleSaveOnly}
                       disabled={isExporting}
-                      className="px-4 py-2 bg-transparent border border-emerald-600 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 font-medium rounded-lg transition-colors disabled:opacity-50"
+                      className="px-4 py-2 bg-transparent border border-emerald-600 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 font-medium rounded-lg transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100"
                     >
                       Salvar
                     </button>
@@ -832,7 +832,7 @@ const handleDownload = async () => {
                       }
                     }}
                     disabled={isExporting || images.length === 0}
-                    className="absolute bottom-4 right-4 z-10 p-3 rounded-full shadow-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium md:static md:p-2 md:px-4 md:rounded-lg md:shadow-none disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
+                    className="absolute bottom-4 right-4 z-10 p-3 rounded-full shadow-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium md:static md:p-2 md:px-4 md:rounded-lg md:shadow-none disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 hover:shadow-xl"
                   >
                     <Share2 className="w-5 h-5 md:hidden" />
                     <Download className="hidden md:block w-4 h-4 mr-2" />
@@ -939,7 +939,7 @@ const handleDownload = async () => {
                     <button
                       onClick={handleGenerateCopy}
                       disabled={isGeneratingCopy}
-                      className="w-full md:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg text-xs font-medium transition-colors whitespace-nowrap shadow-sm"
+                      className="w-full md:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg text-xs font-medium transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 whitespace-nowrap shadow-sm hover:shadow-lg"
                     >
                       {isGeneratingCopy ? 'Escrevendo...' : '✨ Gerar Copy com IA'}
                     </button>

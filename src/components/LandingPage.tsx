@@ -49,7 +49,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
           <div className="flex justify-center mb-16">
             <button 
               onClick={onLoginClick}
-              className="text-lg font-bold bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-2xl transition-all shadow-xl shadow-orange-500/30 hover:shadow-orange-500/50 hover:-translate-y-1"
+              className="text-lg font-bold bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-2xl transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 shadow-xl shadow-orange-500/30 hover:shadow-orange-500/50 hover:-translate-y-1"
             >
               Criar meu primeiro post
             </button>
@@ -119,7 +119,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
         {/* Features Section */}
         <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
+            <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-xl">
               <div className="w-14 h-14 bg-orange-100 rounded-2xl flex items-center justify-center mb-6">
                 <Smartphone className="w-7 h-7 text-orange-600" />
               </div>
@@ -129,7 +129,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
               </p>
             </div>
 
-            <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
+            <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-xl">
               <div className="w-14 h-14 bg-orange-100 rounded-2xl flex items-center justify-center mb-6">
                 <Tags className="w-7 h-7 text-orange-600" />
               </div>
@@ -139,7 +139,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
               </p>
             </div>
 
-            <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
+            <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-xl">
               <div className="w-14 h-14 bg-orange-100 rounded-2xl flex items-center justify-center mb-6">
                 <Zap className="w-7 h-7 text-orange-600" />
               </div>
@@ -207,7 +207,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
 
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Free Plan */}
-            <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm flex flex-col">
+            <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm flex flex-col transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-xl">
               <div className="mb-8">
                 <h3 className="text-xl font-bold text-slate-900 mb-2">Gratuito</h3>
                 <div className="flex items-baseline gap-1">
@@ -231,14 +231,14 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
               </ul>
               <button 
                 onClick={onLoginClick}
-                className="w-full py-4 rounded-xl font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors border border-slate-200"
+                className="w-full py-4 rounded-xl font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 hover:shadow-lg border border-slate-200"
               >
                 Começar Grátis
               </button>
             </div>
 
             {/* Pro Plan */}
-            <div className="bg-slate-900 rounded-3xl p-8 border-2 border-orange-500 shadow-xl shadow-orange-500/20 flex flex-col relative transform md:-translate-y-4">
+            <div className="bg-slate-900 rounded-3xl p-8 border-2 border-orange-500 shadow-xl shadow-orange-500/20 flex flex-col relative transform md:-translate-y-4 transition-all duration-300 ease-in-out hover:-translate-y-6 hover:shadow-2xl">
               <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-orange-500 text-white px-4 py-1 rounded-full text-sm font-bold tracking-wide shadow-sm">
                 MAIS ESCOLHIDO
               </div>
@@ -276,7 +276,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
                 href="https://www.asaas.com/c/j299iil4aqkray3j"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full py-4 rounded-xl font-bold text-white bg-orange-500 hover:bg-orange-600 transition-colors shadow-lg shadow-orange-500/30 text-center block"
+                className="w-full py-4 rounded-xl font-bold text-white bg-orange-500 hover:bg-orange-600 transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 text-center block"
               >
                 Assinar o PostNaMão Pro
               </a>
@@ -305,7 +305,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
             
             <div className="grid md:grid-cols-3 gap-8">
               {/* Testimonial 1 */}
-              <div className="bg-slate-800 rounded-3xl p-8 border border-slate-700">
+              <div className="bg-slate-800 rounded-3xl p-8 border border-slate-700 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-xl">
                 <div className="flex gap-1 mb-6">
                   {[...Array(5)].map((_, i) => <Star key={i} className="w-5 h-5 text-orange-400 fill-orange-400" />)}
                 </div>
@@ -319,7 +319,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
               </div>
 
               {/* Testimonial 2 */}
-              <div className="bg-slate-800 rounded-3xl p-8 border border-slate-700">
+              <div className="bg-slate-800 rounded-3xl p-8 border border-slate-700 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-xl">
                 <div className="flex gap-1 mb-6">
                   {[...Array(5)].map((_, i) => <Star key={i} className="w-5 h-5 text-orange-400 fill-orange-400" />)}
                 </div>
@@ -333,7 +333,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
               </div>
 
               {/* Testimonial 3 */}
-              <div className="bg-slate-800 rounded-3xl p-8 border border-slate-700">
+              <div className="bg-slate-800 rounded-3xl p-8 border border-slate-700 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-xl">
                 <div className="flex gap-1 mb-6">
                   {[...Array(5)].map((_, i) => <Star key={i} className="w-5 h-5 text-orange-400 fill-orange-400" />)}
                 </div>
