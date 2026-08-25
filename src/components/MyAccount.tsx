@@ -214,7 +214,7 @@ export function MyAccount({ session, brandKit, userPlan = "free" }: MyAccountPro
           </ul>
           
           <a 
-            href="https://www.asaas.com/c/i1j9wljny168xx47" 
+            href="https://www.asaas.com/c/j299iil4aqkray3j" 
             target="_blank" 
             rel="noopener noreferrer"
             className="w-full py-3 px-4 rounded-xl font-medium bg-orange-600 hover:bg-orange-700 text-white text-center transition-colors shadow-lg shadow-orange-600/20"

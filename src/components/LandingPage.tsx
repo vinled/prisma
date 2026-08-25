@@ -259,12 +259,14 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
                   <span>Suporte prioritário</span>
                 </li>
               </ul>
-              <button 
-                onClick={onLoginClick}
-                className="w-full py-4 rounded-xl font-bold text-white bg-orange-500 hover:bg-orange-600 transition-colors shadow-lg shadow-orange-500/30"
+              <a 
+                href="https://www.asaas.com/c/j299iil4aqkray3j"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full py-4 rounded-xl font-bold text-white bg-orange-500 hover:bg-orange-600 transition-colors shadow-lg shadow-orange-500/30 text-center block"
               >
                 Assinar o PostNaMão Pro
-              </button>
+              </a>
             </div>
           </div>
 

@@ -44,7 +44,7 @@ export function PaywallModal({ isOpen, onClose, onUpgrade }: PaywallModalProps) 
           </ul>
 
           <a
-            href="https://www.asaas.com/c/i1j9wljny168xx47"
+            href="https://www.asaas.com/c/j299iil4aqkray3j"
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => {
