@@ -1,5 +1,5 @@
 import React from 'react';
-import { Smartphone, Tags, Zap, CheckCircle2, XCircle, Sparkles, Check } from 'lucide-react';
+import { Smartphone, Tags, Zap, CheckCircle2, XCircle, Sparkles, Check, ShieldCheck, Star, ChevronDown } from 'lucide-react';
 import { PostNaMaoLogo } from './PostNaMaoLogo';
 
 interface LandingPageProps {
@@ -267,12 +267,130 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
               </button>
             </div>
           </div>
+
+          {/* Risk Reversal */}
+          <div className="mt-16 flex flex-col items-center justify-center text-center max-w-2xl mx-auto">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-6">
+              <ShieldCheck className="w-8 h-8 text-green-600" />
+            </div>
+            <p className="text-slate-600 font-medium text-lg leading-relaxed">
+              <strong className="text-slate-900">Risco Zero.</strong> Teste o Plano Pro por 7 dias. Se não gostar, devolvemos 100% do seu dinheiro com um clique.
+            </p>
+          </div>
+        </section>
+        {/* Testimonials Section */}
+        <section className="py-24 bg-slate-900 text-white px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+                O que os corretores estão dizendo
+              </h2>
+              <p className="text-slate-400 text-lg">Junte-se a centenas de profissionais que já automatizaram seu marketing.</p>
+            </div>
+            
+            <div className="grid md:grid-cols-3 gap-8">
+              {/* Testimonial 1 */}
+              <div className="bg-slate-800 rounded-3xl p-8 border border-slate-700">
+                <div className="flex gap-1 mb-6">
+                  {[...Array(5)].map((_, i) => <Star key={i} className="w-5 h-5 text-orange-400 fill-orange-400" />)}
+                </div>
+                <p className="text-slate-300 text-lg leading-relaxed mb-8">
+                  "Parei de perder tempo no Canva. Clico num botão e a captação vai direto pro Instagram. Surreal."
+                </p>
+                <div>
+                  <h4 className="font-bold text-white">Carlos E.</h4>
+                  <p className="text-sm text-slate-500">Corretor Autônomo</p>
+                </div>
+              </div>
+
+              {/* Testimonial 2 */}
+              <div className="bg-slate-800 rounded-3xl p-8 border border-slate-700">
+                <div className="flex gap-1 mb-6">
+                  {[...Array(5)].map((_, i) => <Star key={i} className="w-5 h-5 text-orange-400 fill-orange-400" />)}
+                </div>
+                <p className="text-slate-300 text-lg leading-relaxed mb-8">
+                  "A IA que escreve as legendas já me salvou várias vezes. Mando direto pro WhatsApp do cliente."
+                </p>
+                <div>
+                  <h4 className="font-bold text-white">Mariana T.</h4>
+                  <p className="text-sm text-slate-500">Especialista em Alto Padrão</p>
+                </div>
+              </div>
+
+              {/* Testimonial 3 */}
+              <div className="bg-slate-800 rounded-3xl p-8 border border-slate-700">
+                <div className="flex gap-1 mb-6">
+                  {[...Array(5)].map((_, i) => <Star key={i} className="w-5 h-5 text-orange-400 fill-orange-400" />)}
+                </div>
+                <p className="text-slate-300 text-lg leading-relaxed mb-8">
+                  "Colocar o selo de Vendido nunca foi tão fácil. Dá muita autoridade pro meu perfil."
+                </p>
+                <div>
+                  <h4 className="font-bold text-white">Roberto F.</h4>
+                  <p className="text-sm text-slate-500">Sócio de Imobiliária</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ Section */}
+        <section className="py-24 bg-slate-50 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-3xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">
+                Perguntas Frequentes
+              </h2>
+            </div>
+            
+            <div className="space-y-4">
+              <details className="group bg-white border border-slate-200 rounded-2xl [&_summary::-webkit-details-marker]:hidden">
+                <summary className="flex items-center justify-between p-6 cursor-pointer font-bold text-slate-900 text-lg">
+                  Preciso instalar algum aplicativo?
+                  <ChevronDown className="w-5 h-5 text-slate-500 group-open:rotate-180 transition-transform" />
+                </summary>
+                <div className="px-6 pb-6 text-slate-600 leading-relaxed">
+                  Não, o PostNaMão funciona 100% no navegador do seu celular ou computador.
+                </div>
+              </details>
+
+              <details className="group bg-white border border-slate-200 rounded-2xl [&_summary::-webkit-details-marker]:hidden">
+                <summary className="flex items-center justify-between p-6 cursor-pointer font-bold text-slate-900 text-lg">
+                  Como funciona o limite do plano gratuito?
+                  <ChevronDown className="w-5 h-5 text-slate-500 group-open:rotate-180 transition-transform" />
+                </summary>
+                <div className="px-6 pb-6 text-slate-600 leading-relaxed">
+                  Você pode gerar até 10 artes por mês com a nossa marca d'água.
+                </div>
+              </details>
+
+              <details className="group bg-white border border-slate-200 rounded-2xl [&_summary::-webkit-details-marker]:hidden">
+                <summary className="flex items-center justify-between p-6 cursor-pointer font-bold text-slate-900 text-lg">
+                  Posso cancelar o Plano Pro quando quiser?
+                  <ChevronDown className="w-5 h-5 text-slate-500 group-open:rotate-180 transition-transform" />
+                </summary>
+                <div className="px-6 pb-6 text-slate-600 leading-relaxed">
+                  Sim, sem multas e sem burocracia, direto no painel.
+                </div>
+              </details>
+            </div>
+          </div>
         </section>
       </main>
 
       {/* Footer */}
-      <footer className="py-8 text-center text-slate-500 border-t border-slate-200">
-        <p>© 2026 PostNaMão. Todos os direitos reservados.</p>
+      <footer className="bg-white py-12 border-t border-slate-200 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex items-center gap-2">
+            <PostNaMaoLogo className="h-8 w-auto grayscale opacity-50" />
+            <span className="text-slate-500 font-medium text-sm">© 2026 PostNaMão. Todos os direitos reservados.</span>
+          </div>
+          <div className="flex flex-wrap justify-center gap-6 text-sm font-medium text-slate-500">
+            <a href="#" className="hover:text-orange-500 transition-colors">Termos de Uso</a>
+            <a href="#" className="hover:text-orange-500 transition-colors">Política de Privacidade</a>
+            <a href="#" className="hover:text-orange-500 transition-colors">Contato</a>
+          </div>
+        </div>
       </footer>
     </div>
   );
