@@ -20,14 +20,14 @@ export function LogoUploader({ logo, onLogoChange }: LogoUploaderProps) {
           const fileExt = file.type.split('/')[1] || 'png';
           const fileName = `logo_${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
           
-          const { error: uploadError } = await supabase.storage.from('imoveis').upload(fileName, file, {
+          const { error: uploadError } = await supabase.storage.from('fotos_imoveis').upload(fileName, file, {
             contentType: file.type,
             upsert: false
           });
           
           if (uploadError) throw uploadError;
           
-          const { data } = supabase.storage.from('imoveis').getPublicUrl(fileName);
+          const { data } = supabase.storage.from('fotos_imoveis').getPublicUrl(fileName);
           onLogoChange(data.publicUrl);
         } catch (error) {
           console.error('Erro no upload do logo:', error);

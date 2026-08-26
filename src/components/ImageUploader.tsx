@@ -141,7 +141,7 @@ export function ImageUploader({ images, onImagesChange }: ImageUploaderProps) {
               {!isUploading && <><br/>(até 10 fotos)</>}
             </p>
           </div>
-          <input type="file" className="hidden" accept="image/*" capture="environment" multiple onChange={handleFileChange} disabled={isUploading} />
+          <input type="file" className="hidden" accept="image/*" multiple onChange={handleFileChange} disabled={isUploading} />
         </label>
       )}
     </div>
