@@ -14,6 +14,39 @@ async function startServer() {
   
   app.post("/api/generate-caption", async (req, res) => {
     try {
+      const authHeader = req.headers.authorization;
+      if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        return res.status(401).json({ error: "Unauthorized: Missing or invalid token" });
+      }
+      const token = authHeader.split(" ")[1];
+
+      const supabaseUrl = process.env.VITE_SUPABASE_URL;
+      const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY;
+
+      if (!supabaseUrl || !supabaseAnonKey) {
+        return res.status(500).json({ error: "Supabase config missing in server" });
+      }
+
+      const supabase = createClient(supabaseUrl, supabaseAnonKey);
+      
+      // Validate token
+      const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+      
+      if (authError || !user) {
+        return res.status(401).json({ error: "Unauthorized: Invalid token" });
+      }
+
+      // Check user privileges (Pro Plan)
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("plan")
+        .eq("id", user.id)
+        .single();
+
+      if (!profile || profile.plan !== "pro") {
+        return res.status(403).json({ error: "Forbidden: Recurso exclusivo do Plano Pro." });
+      }
+
       const apiKey = process.env.GEMINI_API_KEY;
       if (!apiKey) {
         return res.status(500).json({ error: "A chave GEMINI_API_KEY não foi configurada nas variáveis de ambiente do servidor." });
@@ -41,7 +74,8 @@ async function startServer() {
       res.status(500).json({ error: error.message || "Erro interno na API." });
     }
   });
-app.post("/api/webhook/asaas", async (req, res) => {
+
+  app.post("/api/webhook/asaas", async (req, res) => {
     try {
       const token = req.headers["asaas-access-token"];
       if (token !== process.env.ASAAS_WEBHOOK_TOKEN) {
