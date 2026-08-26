@@ -89,80 +89,69 @@ export function ElegantTemplate({ details, image, logo, aspectRatio, brandKit, o
           </div>
         )}
 
-        {/* The Glass Panel (now without frosted glass, just a subtle gradient) */}
-        <div className={`w-[70%] max-w-[320px] bg-gradient-to-b from-black/50 to-black/10 border border-white/10 rounded-[54px] ${aspectRatio === 'story' ? 'p-[32px]' : 'p-[22px]'} shadow-[0_12px_40px_rgba(0,0,0,0.35)] flex flex-col relative`}>
+        {/* The Glass Panel (Wide and Rectangular) */}
+        <div className={`w-[92%] mx-auto bg-black/65 backdrop-blur-md border border-white/10 rounded-[48px] ${aspectRatio === 'story' ? 'p-[64px]' : 'p-[48px]'} shadow-[0_12px_40px_rgba(0,0,0,0.5)] flex flex-col relative`}>
           {/* inner highlight reflection */}
-          <div className="absolute inset-0 rounded-[54px] ring-1 ring-inset ring-white/5 pointer-events-none" />
+          <div className="absolute inset-0 rounded-[48px] ring-1 ring-inset ring-white/10 pointer-events-none" />
           
           {/* Location */}
           {locationString && (
-            <div className="flex items-center justify-center text-white/90 mb-[9px] drop-shadow-md">
-              <MapPin className="w-[27px] h-[27px] mr-[9px] opacity-80" />
-              <span className="text-[19px] font-medium uppercase tracking-widest">{locationString}</span>
+            <div className="flex items-center justify-center text-white/90 drop-shadow-md mb-[16px]">
+              <MapPin className="w-[32px] h-[32px] mr-[12px] opacity-80" />
+              <span className="text-[28px] font-medium uppercase tracking-widest">{locationString}</span>
             </div>
           )}
-
-          {/* Price */}
+          {/* Price - Maior Destaque */}
           {details.price?.trim() && (
-            <div className="text-center font-bold text-white drop-shadow-lg mb-[9px]">
-              <span className={`${aspectRatio === 'story' ? 'text-[70px]' : 'text-[59px]'} tracking-tight`}>
+            <div className="text-center font-extrabold text-white drop-shadow-xl mb-[24px]">
+              <span className={`${aspectRatio === 'story' ? 'text-[108px]' : 'text-[96px]'} tracking-tight`}>
                 {details.price}
               </span>
             </div>
           )}
-
-          {/* Subtle horizontal divider */}
-          <div className="w-full flex justify-center mb-[16px]">
-            <div className="w-2/3 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
-          </div>
-
-          {/* Features Row */}
-          <div className="flex justify-center items-center flex-wrap w-full gap-x-2 gap-y-1 text-white text-[22px] drop-shadow-sm font-medium">
+          
+          {/* Features Row - Em linha única */}
+          <div className="flex flex-row flex-wrap justify-center items-center w-full gap-x-[48px] gap-y-[16px] text-white text-[36px] drop-shadow-md font-medium">
             {details.area?.trim() && (
               <div className="flex items-center">
-                <Maximize className="w-[27px] h-[27px] text-white/80 mr-[9px] stroke-[2]" />
-                <span>{details.area}m²</span>
+                <Maximize className="w-[48px] h-[48px] text-white/90 mr-[16px] stroke-[2]" />
+                <span>{details.area} m²</span>
               </div>
             )}
             
             {details.bedrooms?.trim() && (
               <div className="flex items-center">
-                {details.area?.trim() && <span className="text-white/30 mr-[16px]">|</span>}
-                <BedDouble className="w-[27px] h-[27px] text-white/80 mr-[9px] stroke-[2]" />
+                <BedDouble className="w-[48px] h-[48px] text-white/90 mr-[16px] stroke-[2]" />
                 <span>{details.bedrooms} {Number(details.bedrooms) !== 1 ? 'Dorms' : 'Dorm'}</span>
               </div>
             )}
-
             {(details.suites?.trim() || details.bathrooms?.trim()) && (
               <div className="flex items-center">
-                {(details.area?.trim() || details.bedrooms?.trim()) && <span className="text-white/30 mr-[16px]">|</span>}
-                <Bath className="w-[27px] h-[27px] text-white/80 mr-[9px] stroke-[2]" />
+                <Bath className="w-[48px] h-[48px] text-white/90 mr-[16px] stroke-[2]" />
                 <span>{details.suites?.trim() ? details.suites : details.bathrooms} {details.suites?.trim() ? (Number(details.suites) !== 1 ? 'Suítes' : 'Suíte') : (Number(details.bathrooms) !== 1 ? 'Banhs' : 'Banh')}</span>
               </div>
             )}
-
             {details.parking?.trim() && (
               <div className="flex items-center">
-                {(details.area?.trim() || details.bedrooms?.trim() || details.suites?.trim() || details.bathrooms?.trim()) && <span className="text-white/30 mr-[16px]">|</span>}
-                <Car className="w-[27px] h-[27px] text-white/80 mr-[9px] stroke-[2]" />
+                <Car className="w-[48px] h-[48px] text-white/90 mr-[16px] stroke-[2]" />
                 <span>{details.parking} {Number(details.parking) !== 1 ? 'Vagas' : 'Vaga'}</span>
               </div>
             )}
           </div>
-
-          {/* Differentials */}
+          
+          {/* Differentials - Linha única centralizada */}
           {tagsString && (
-            <div className="w-full flex flex-col items-center mt-[16px] pt-[16px] border-t border-white/15">
-              <span className="text-[19px] text-white/90 uppercase tracking-widest font-medium drop-shadow-md text-center">
+            <div className="w-full flex flex-col items-center mt-[32px] pt-[24px] border-t border-white/10">
+              <span className="text-[28px] text-gray-200 uppercase tracking-widest font-normal text-center drop-shadow-sm">
                 {tagsString}
               </span>
             </div>
           )}
-
+          
           {/* Property Code */}
           {details.propertyCode?.trim() && (
-            <div className="w-full text-center mt-[16px]">
-              <span className="text-[8px] text-white/40 tracking-wider">Cód. {details.propertyCode}</span>
+            <div className="w-full text-center mt-[24px]">
+              <span className="text-[18px] text-white/40 tracking-wider">Cód. {details.propertyCode}</span>
             </div>
           )}
         </div>
