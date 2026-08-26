@@ -11,6 +11,7 @@ async function startServer() {
   app.use(express.json());
 
   // API route for generating caption
+  
   app.post("/api/generate-caption", async (req, res) => {
     try {
       const apiKey = process.env.GEMINI_API_KEY;
@@ -18,17 +19,8 @@ async function startServer() {
         return res.status(500).json({ error: "A chave GEMINI_API_KEY não foi configurada nas variáveis de ambiente do servidor." });
       }
 
-      const {
-        type,
-        neighborhood,
-        bedrooms,
-        parking,
-        price,
-        differentials,
-        targetAudience,
-        whatsapp
-      } = req.body;
-
+      const { promptText } = req.body;
+      
       const ai = new GoogleGenAI({
         apiKey: apiKey,
         httpOptions: {
@@ -38,15 +30,9 @@ async function startServer() {
         }
       });
 
-      const diffsStr = differentials && differentials.length > 0 
-        ? differentials.join(", ") 
-        : "Nenhum diferencial listado";
-
-      const prompt = `Você é um copywriter especialista em mercado imobiliário de alto padrão. Crie uma legenda persuasiva para o Instagram sobre este imóvel. Tipo: ${type}, Bairro: ${neighborhood}, Quartos: ${bedrooms}, Vagas: ${parking}, Preço: ${price}. Diferenciais: [${diffsStr}]. Adapte o tom de voz estritamente para o público: ${targetAudience}. Use emojis estrategicamente, bullet points limpos e finalize com uma CTA para este WhatsApp: ${whatsapp}. Não invente dados.`;
-
       const response = await ai.models.generateContent({
         model: "gemini-1.5-flash",
-        contents: prompt,
+        contents: promptText,
       });
 
       res.json({ caption: response.text });
@@ -55,10 +41,7 @@ async function startServer() {
       res.status(500).json({ error: error.message || "Erro interno na API." });
     }
   });
-
-  
-  // Asaas Webhook API route
-  app.post("/api/webhook/asaas", async (req, res) => {
+app.post("/api/webhook/asaas", async (req, res) => {
     try {
       const token = req.headers["asaas-access-token"];
       if (token !== process.env.ASAAS_WEBHOOK_TOKEN) {

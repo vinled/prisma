@@ -47,8 +47,8 @@ export function Auth({ onBack }: AuthProps) {
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) {
-      setError('Por favor, preencha o e-mail e a senha.');
+    if (!email) {
+      setError('Por favor, preencha o e-mail.');
       return;
     }
     setLoading(true);

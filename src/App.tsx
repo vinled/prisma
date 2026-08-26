@@ -53,25 +53,32 @@ export default function App() {
     whatsapp: '',
   });
   
-  const [brandKit, setBrandKit] = useState<BrandKit | null>(() => {
-    const saved = localStorage.getItem('globalBrandKit');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        return null;
-      }
+  const [brandKit, setBrandKit] = useState<BrandKit | null>(null);
+
+  const [isSavingBrand, setIsSavingBrand] = useState(false);
+  
+  const handleSaveBrandKit = async () => {
+    if (!session?.user) return;
+    setIsSavingBrand(true);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ brand_kit: brandKit })
+        .eq('id', session.user.id);
+      if (error) throw error;
+      alert('Marca salva com sucesso!');
+    } catch (e) {
+      console.error(e);
+      alert('Erro ao salvar a marca.');
+    } finally {
+      setIsSavingBrand(false);
     }
-    return null;
-  });
+  };
+
   
   useEffect(() => {
-    if (brandKit) {
-      localStorage.setItem('globalBrandKit', JSON.stringify(brandKit));
-    } else {
-      localStorage.removeItem('globalBrandKit');
-    }
-  }, [brandKit]);
+    // BrandKit will be saved to Supabase explicitly, not via effect
+  }, []);
   
   const [applyBrandKit, setApplyBrandKit] = useState(true);
   const [userPlan, setUserPlan] = useState<'free' | 'pro'>('free');
@@ -105,7 +112,6 @@ export default function App() {
     }
     setIsGeneratingCopy(true);
     try {
-      const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
       const diffsStr = [...(details.differentials || []), ...(details.amenities || [])].join(", ");
       
       let regrasDeFormato = '';
@@ -117,15 +123,22 @@ export default function App() {
 
       const promptText = `Você é um copywriter de alto padrão no mercado imobiliário. Crie um texto para o imóvel com os dados: Tipo: ${details.propertyType || 'Imóvel'}, Bairro: ${details.neighborhood || 'Não informado'}, Quartos: ${details.bedrooms || 'Não informado'}, Vagas: ${details.parking || 'Não informado'}, Preço: ${details.price || 'Não informado'}, Diferenciais: [${diffsStr}]. ${regrasDeFormato} O Tom do texto deve ser: ${targetAudience}. Adicione CTA para este WhatsApp: ${details.whatsapp || (applyBrandKit ? brandKit?.whatsapp : '') || ''}. Não invente dados.`;
 
+      const response = await fetch('/api/generate-caption', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ promptText })
+      });
 
-      const model = genAI.getGenerativeModel({ model: 'gemini-3.7-flash' });
-      const result = await model.generateContent(promptText);
-      const textoFinal = result.response.text();
-      
-      setGeneratedCaption(textoFinal);
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || 'Erro na API');
+      }
+
+      const result = await response.json();
+      setGeneratedCaption(result.caption);
     } catch (error: any) {
       console.error('ERRO DETALHADO DA API:', error);
-      alert('Erro do Google: ' + (error.message || JSON.stringify(error)));
+      alert('Erro ao gerar copy: ' + (error.message || JSON.stringify(error)));
     } finally {
       setIsGeneratingCopy(false);
     }
@@ -140,19 +153,7 @@ export default function App() {
   const [isExporting, setIsExporting] = useState(false);
   const [previewIndex, setPreviewIndex] = useState(0);
 
-  const [savedProperties, setSavedProperties] = useState<SavedProperty[]>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('postnamao_imoveis');
-      if (saved) {
-        try {
-          return JSON.parse(saved);
-        } catch (e) {
-          console.error('Failed to parse saved properties', e);
-        }
-      }
-    }
-    return [];
-  });
+  const [savedProperties, setSavedProperties] = useState<SavedProperty[]>([]);
   
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -286,7 +287,23 @@ export default function App() {
         }
         
         setSavedProperties(updated);
-        localStorage.setItem('postnamao_imoveis', JSON.stringify(updated));
+        
+        // Save to Supabase
+        if (session?.user) {
+          supabase.from('properties').upsert({
+            id: propertyData.id,
+            user_id: session.user.id,
+            date: propertyData.date,
+            details: propertyData.details,
+            selected_template: propertyData.selectedTemplate,
+            aspect_ratio: propertyData.aspectRatio,
+            template_options: propertyData.templateOptions,
+            thumbnail: propertyData.thumbnail
+          }).then(({ error }) => {
+            if (error) console.error("Erro ao salvar no banco:", error);
+          });
+        }
+        
         resolve(true);
       };
 
@@ -433,10 +450,16 @@ const handleDownload = async () => {
     setActiveTab('criacao');
   };
 
-  const handleDelete = (id: string) => {
-    const updated = savedProperties.filter(p => p.id !== id);
-    setSavedProperties(updated);
-    localStorage.setItem('postnamao_imoveis', JSON.stringify(updated));
+  const handleDelete = async (id: string) => {
+    if (confirm('Tem certeza que deseja excluir esta arte?')) {
+      const updated = savedProperties.filter(p => p.id !== id);
+      setSavedProperties(updated);
+      
+      if (session?.user) {
+        const { error } = await supabase.from('properties').delete().eq('id', id).eq('user_id', session.user.id);
+        if (error) console.error("Erro ao deletar:", error);
+      }
+    }
   };
 
   
@@ -450,12 +473,49 @@ const handleDownload = async () => {
         window.history.replaceState({}, '', '/');
         setShowAuth(true);
       }
+
+      if (session?.user) {
+        // Load user plan and brand kit
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('plan, brand_kit')
+          .eq('id', session.user.id)
+          .single();
+          
+        if (profile) {
+          setUserPlan(profile.plan || 'free');
+          if (profile.brand_kit) {
+            setBrandKit(profile.brand_kit);
+          }
+        }
+
+        // Load properties
+        const { data: propertiesData } = await supabase
+          .from('properties')
+          .select('*')
+          .eq('user_id', session.user.id)
+          .order('created_at', { ascending: false });
+          
+        if (propertiesData) {
+          const loaded = propertiesData.map(p => ({
+            id: p.id,
+            date: p.date || new Date(p.created_at).toLocaleDateString('pt-BR'),
+            details: p.details,
+            selectedTemplate: p.selected_template,
+            aspectRatio: p.aspect_ratio,
+            templateOptions: p.template_options,
+            thumbnail: p.thumbnail
+          }));
+          setSavedProperties(loaded);
+        }
+      }
+
     };
     checkSession();
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setSession(session);
       
       const path = window.location.pathname;
@@ -463,6 +523,43 @@ const handleDownload = async () => {
         window.history.replaceState({}, '', '/');
         setShowAuth(true);
       }
+
+      if (session?.user) {
+        // Load user plan and brand kit
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('plan, brand_kit')
+          .eq('id', session.user.id)
+          .single();
+          
+        if (profile) {
+          setUserPlan(profile.plan || 'free');
+          if (profile.brand_kit) {
+            setBrandKit(profile.brand_kit);
+          }
+        }
+
+        // Load properties
+        const { data: propertiesData } = await supabase
+          .from('properties')
+          .select('*')
+          .eq('user_id', session.user.id)
+          .order('created_at', { ascending: false });
+          
+        if (propertiesData) {
+          const loaded = propertiesData.map(p => ({
+            id: p.id,
+            date: p.date || new Date(p.created_at).toLocaleDateString('pt-BR'),
+            details: p.details,
+            selectedTemplate: p.selected_template,
+            aspectRatio: p.aspect_ratio,
+            templateOptions: p.template_options,
+            thumbnail: p.thumbnail
+          }));
+          setSavedProperties(loaded);
+        }
+      }
+
     });
 
     return () => subscription.unsubscribe();
@@ -718,6 +815,15 @@ const handleDownload = async () => {
             </header>
             <section className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 transition-colors duration-200">
               <BrandKitForm brandKit={brandKit} onChange={setBrandKit} />
+              <div className="mt-6 flex justify-end">
+                <button
+                  onClick={handleSaveBrandKit}
+                  disabled={isSavingBrand}
+                  className="px-6 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium shadow-sm transition-all disabled:opacity-50"
+                >
+                  {isSavingBrand ? 'Salvando...' : 'Salvar Marca'}
+                </button>
+              </div>
             </section>
           </div>
         ) : activeTab === 'meus_imoveis' ? (

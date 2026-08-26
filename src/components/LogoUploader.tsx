@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useState } from 'react';
+import { supabase } from '../lib/supabase';
 import { Upload, X } from 'lucide-react';
 
 interface LogoUploaderProps {
@@ -8,18 +9,35 @@ interface LogoUploaderProps {
 
 export function LogoUploader({ logo, onLogoChange }: LogoUploaderProps) {
 
+  const [isUploading, setIsUploading] = useState(false);
+
   const handleFileChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (file) {
-        if (logo && logo.startsWith('blob:')) {
-          URL.revokeObjectURL(logo);
+        try {
+          setIsUploading(true);
+          const fileExt = file.type.split('/')[1] || 'png';
+          const fileName = `logo_${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+          
+          const { error: uploadError } = await supabase.storage.from('imoveis').upload(fileName, file, {
+            contentType: file.type,
+            upsert: false
+          });
+          
+          if (uploadError) throw uploadError;
+          
+          const { data } = supabase.storage.from('imoveis').getPublicUrl(fileName);
+          onLogoChange(data.publicUrl);
+        } catch (error) {
+          console.error('Erro no upload do logo:', error);
+          alert('Erro ao enviar o logo. Tente novamente.');
+        } finally {
+          setIsUploading(false);
         }
-        const objectUrl = URL.createObjectURL(file);
-        onLogoChange(objectUrl);
       }
     },
-    [logo, onLogoChange]
+    [onLogoChange]
   );
   
   const handleRemove = () => {
@@ -47,7 +65,7 @@ export function LogoUploader({ logo, onLogoChange }: LogoUploaderProps) {
           <div className="flex flex-col items-center justify-center pt-5 pb-6 text-center">
             <Upload className="w-6 h-6 mb-2 text-gray-400 dark:text-zinc-500" />
             <p className="mb-1 text-sm text-gray-500 dark:text-zinc-400">
-              Upload do logo
+              {isUploading ? "Enviando..." : "Upload do logo"}
             </p>
             <p className="text-xs text-gray-400 dark:text-zinc-500">Fundo transparente recomendado (PNG)</p>
           </div>
