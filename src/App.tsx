@@ -61,15 +61,24 @@ export default function App() {
     if (!session?.user) return;
     setIsSavingBrand(true);
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ brand_kit: brandKit })
-        .eq('id', session.user.id);
+      const { data: profileData } = await supabase.from('profiles').select('id').eq('id', session.user.id).single();
+      
+      let error;
+      if (profileData) {
+        // Exists, update
+        const { error: err } = await supabase.from('profiles').update({ brand_kit: brandKit }).eq('id', session.user.id);
+        error = err;
+      } else {
+        // Doesn't exist, insert
+        const { error: err } = await supabase.from('profiles').insert({ id: session.user.id, brand_kit: brandKit, plan: 'free' });
+        error = err;
+      }
+      
       if (error) throw error;
       alert('Marca salva com sucesso!');
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
-      alert('Erro ao salvar a marca.');
+      alert('Erro ao salvar a marca: ' + (e.message || 'Erro desconhecido'));
     } finally {
       setIsSavingBrand(false);
     }

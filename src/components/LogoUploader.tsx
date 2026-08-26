@@ -8,7 +8,6 @@ interface LogoUploaderProps {
 }
 
 export function LogoUploader({ logo, onLogoChange }: LogoUploaderProps) {
-
   const [isUploading, setIsUploading] = useState(false);
 
   const handleFileChange = useCallback(
@@ -17,17 +16,63 @@ export function LogoUploader({ logo, onLogoChange }: LogoUploaderProps) {
       if (file) {
         try {
           setIsUploading(true);
-          const fileExt = file.type.split('/')[1] || 'png';
+          
+          // Helper to compress and preserve PNG alpha
+          const processedBlob = await new Promise<Blob>((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => {
+              const canvas = document.createElement('canvas');
+              let width = img.width;
+              let height = img.height;
+              const maxDim = 800; // Resize logo to max 800px
+
+              if (width > height && width > maxDim) {
+                height = Math.round((height * maxDim) / width);
+                width = maxDim;
+              } else if (height > maxDim) {
+                width = Math.round((width * maxDim) / height);
+                height = maxDim;
+              }
+
+              canvas.width = width;
+              canvas.height = height;
+              const ctx = canvas.getContext('2d');
+              if (!ctx) return reject('No canvas context');
+
+              // DO NOT fill background with white if it's a PNG!
+              if (file.type !== 'image/png') {
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillRect(0, 0, width, height);
+              } else {
+                ctx.clearRect(0, 0, width, height); // ensure transparent
+              }
+
+              ctx.drawImage(img, 0, 0, width, height);
+              
+              const outType = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+              const quality = outType === 'image/jpeg' ? 0.9 : undefined;
+              
+              canvas.toBlob((blob) => {
+                if (blob) resolve(blob);
+                else reject('Blob conversion failed');
+              }, outType, quality);
+            };
+            img.onerror = () => reject('Image load failed');
+            img.src = URL.createObjectURL(file);
+          });
+
+          const isPng = file.type === 'image/png';
+          const fileExt = isPng ? 'png' : 'jpg';
           const fileName = `logo_${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
           
-          const { error: uploadError } = await supabase.storage.from('fotos_imoveis').upload(fileName, file, {
-            contentType: file.type,
+          const { error: uploadError } = await supabase.storage.from('logos').upload(fileName, processedBlob, {
+            contentType: isPng ? 'image/png' : 'image/jpeg',
             upsert: false
           });
           
           if (uploadError) throw uploadError;
           
-          const { data } = supabase.storage.from('fotos_imoveis').getPublicUrl(fileName);
+          const { data } = supabase.storage.from('logos').getPublicUrl(fileName);
           onLogoChange(data.publicUrl);
         } catch (error) {
           console.error('Erro no upload do logo:', error);
@@ -51,11 +96,11 @@ export function LogoUploader({ logo, onLogoChange }: LogoUploaderProps) {
     <div className="w-full mt-6 pt-6 border-t border-gray-100 dark:border-zinc-800">
       <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-2">Logo da Imobiliária (Opcional)</label>
       {logo ? (
-        <div className="relative rounded-lg overflow-hidden border border-gray-200 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-800/50 flex items-center justify-center p-4 h-32">
-          <img src={logo} alt="Logo" className="max-h-full max-w-full object-contain" />
+        <div className="relative rounded-lg overflow-hidden border border-gray-200 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-800/50 flex items-center justify-center p-4 h-32" style={{ backgroundImage: 'linear-gradient(45deg, #ccc 25%, transparent 25%, transparent 75%, #ccc 75%, #ccc), linear-gradient(45deg, #ccc 25%, transparent 25%, transparent 75%, #ccc 75%, #ccc)', backgroundSize: '16px 16px', backgroundPosition: '0 0, 8px 8px' }}>
+          <img src={logo} alt="Logo" className="max-h-full max-w-full object-contain relative z-10" />
           <button
             onClick={handleRemove}
-            className="absolute top-2 right-2 p-1 bg-white dark:bg-zinc-700 rounded-full shadow-md hover:bg-gray-100 dark:hover:bg-zinc-600 transition-colors"
+            className="absolute top-2 right-2 p-1 z-20 bg-white dark:bg-zinc-700 rounded-full shadow-md hover:bg-gray-100 dark:hover:bg-zinc-600 transition-colors"
           >
             <X className="w-4 h-4 text-gray-700 dark:text-zinc-300" />
           </button>
