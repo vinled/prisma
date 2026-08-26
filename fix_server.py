@@ -3,46 +3,131 @@ import re
 with open('server.ts', 'r') as f:
     content = f.read()
 
-new_endpoint = """
-  app.post("/api/generate-caption", async (req, res) => {
-    try {
-      const apiKey = process.env.GEMINI_API_KEY;
-      if (!apiKey) {
-        return res.status(500).json({ error: "A chave GEMINI_API_KEY não foi configurada nas variáveis de ambiente do servidor." });
+# 1. Update /api/generate-caption
+old_generate = """      const supabaseUrl = process.env.VITE_SUPABASE_URL;
+      const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY;
+      if (!supabaseUrl || !supabaseAnonKey) {
+        return res.status(500).json({ error: "Supabase config missing in server" });
+      }
+      const supabase = createClient(supabaseUrl, supabaseAnonKey);
+            
+      // Validate token
+      const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+            
+      if (authError || !user) {
+        return res.status(401).json({ error: "Unauthorized: Invalid token" });
+      }
+      // Check user privileges (Pro Plan)
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("plan")
+        .eq("id", user.id)
+        .single();"""
+
+new_generate = """      const supabaseUrl = process.env.VITE_SUPABASE_URL;
+      const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY;
+      const supabaseServiceRole = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+      if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceRole) {
+        return res.status(500).json({ error: "Supabase config missing in server" });
       }
 
-      const { promptText } = req.body;
-      
-      const ai = new GoogleGenAI({
-        apiKey: apiKey,
-        httpOptions: {
-          headers: {
-            'User-Agent': 'aistudio-build',
+      const supabase = createClient(supabaseUrl, supabaseAnonKey);
+      const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRole);
+            
+      // Validate token
+      const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+            
+      if (authError || !user) {
+        return res.status(401).json({ error: "Unauthorized: Invalid token" });
+      }
+
+      // Check user privileges (Pro Plan) via Admin Bypass
+      const { data: profile } = await supabaseAdmin
+        .from("profiles")
+        .select("plan")
+        .eq("id", user.id)
+        .single();"""
+
+content = content.replace(old_generate, new_generate)
+
+# 2. Update /api/webhook/asaas
+old_webhook = """      const { event, payment } = req.body;
+      if (event === "PAYMENT_RECEIVED" || event === "PAYMENT_CONFIRMED") {
+        const userId = payment?.externalReference || payment?.customer;
+                
+        if (userId) {
+          const supabaseUrl = process.env.VITE_SUPABASE_URL;
+          const supabaseServiceRole = process.env.SUPABASE_SERVICE_ROLE_KEY;
+                    
+          if (!supabaseUrl || !supabaseServiceRole) {
+            console.error("Supabase credentials missing for webhook");
+            return res.status(500).json({ error: "Supabase config missing" });
           }
+                    
+          const supabase = createClient(supabaseUrl, supabaseServiceRole);
+                    
+          // Assuming 'profiles' table stores the plan
+          const { error } = await supabase
+            .from("profiles")
+            .update({ plan: "pro" })
+            .eq("id", userId);
+                      
+          if (error) {
+            console.error("Failed to update user plan:", error);
+            throw error;
+          }
+          console.log(`User ${userId} upgraded to pro successfully.`);
         }
-      });
+      }"""
 
-      const response = await ai.models.generateContent({
-        model: "gemini-1.5-flash",
-        contents: promptText,
-      });
+new_webhook = """      const { event, payment } = req.body;
+      if (event === "PAYMENT_RECEIVED" || event === "PAYMENT_CONFIRMED") {
+        const customerEmail = payment?.customerEmail || payment?.email || req.body?.customerEmail;
+        
+        const supabaseUrl = process.env.VITE_SUPABASE_URL;
+        const supabaseServiceRole = process.env.SUPABASE_SERVICE_ROLE_KEY;
+        
+        if (!supabaseUrl || !supabaseServiceRole) {
+          console.error("Supabase credentials missing for webhook");
+          return res.status(500).json({ error: "Supabase config missing" });
+        }
+        
+        const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRole);
+        
+        let userId = payment?.externalReference;
+        
+        if (!userId && customerEmail) {
+           // Search user by email using admin auth
+           const { data: usersData, error: usersError } = await supabaseAdmin.auth.admin.listUsers();
+           if (!usersError && usersData?.users) {
+             const foundUser = usersData.users.find((u: any) => u.email === customerEmail);
+             if (foundUser) {
+               userId = foundUser.id;
+             }
+           }
+        }
+        
+        if (userId) {
+          // Assuming 'profiles' table stores the plan
+          const { error } = await supabaseAdmin
+            .from("profiles")
+            .update({ plan: "pro" })
+            .eq("id", userId);
+            
+          if (error) {
+            console.error("Failed to update user plan:", error);
+            throw error;
+          }
+          console.log(`User ${userId} upgraded to pro successfully.`);
+        } else {
+           console.log(`Webhook: Could not find user ID for email: ${customerEmail}`);
+        }
+      }"""
 
-      res.json({ caption: response.text });
-    } catch (error: any) {
-      console.error("API error:", error);
-      res.status(500).json({ error: error.message || "Erro interno na API." });
-    }
-  });
-"""
+content = content.replace(old_webhook, new_webhook)
 
-# Replace existing route
-start_idx = content.find('app.post("/api/generate-caption"')
-end_idx = content.find('app.post("/api/webhook/asaas"')
+with open('server.ts', 'w') as f:
+    f.write(content)
 
-if start_idx != -1 and end_idx != -1:
-    before = content[:start_idx]
-    after = content[end_idx:]
-    content = before + new_endpoint + after
-    with open('server.ts', 'w') as f:
-        f.write(content)
-        print("Updated server.ts")
+print("Updates applied")
