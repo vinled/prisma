@@ -294,7 +294,7 @@ export default function App() {
       const propertyData: SavedProperty = {
         id: idEmEdicao || Date.now().toString(),
         date: dateStr,
-        details,
+        details: { ...details, images: finalImages },
         selectedTemplate,
         aspectRatio,
         templateOptions,
@@ -466,7 +466,7 @@ const handleDownload = async () => {
 
   const handleEdit = (prop: SavedProperty) => {
     setPreviewIndex(0);
-    setImages(prop.thumbnail ? [prop.thumbnail] : []);
+    setImages(prop.details.images && prop.details.images.length > 0 ? prop.details.images : (prop.thumbnail ? [prop.thumbnail] : []));
     setIdEmEdicao(prop.id);
     setDetails(prop.details);
     setSelectedTemplate(prop.selectedTemplate);

@@ -16,6 +16,7 @@ export interface PropertyDetails {
   differentials: string[];
   leisureArea: boolean | null;
   whatsapp: string;
+  images?: string[];
 }
 
 export type TemplateId = 'modern' | 'luxury' | 'bold' | 'elegant' | 'minimalist';
