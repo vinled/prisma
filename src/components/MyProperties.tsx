@@ -1,8 +1,31 @@
 import React, { useState } from 'react';
-import { Edit2, Copy, Trash2, Image as ImageIcon, Home, Search } from 'lucide-react';
+import { Edit2, Copy, Trash2, Image as ImageIcon, Home, Search, Camera } from 'lucide-react';
 import { SavedProperty } from '../types';
 
+
+const SafeImage = ({ src, alt, className, iconClassName }: any) => {
+  const [error, setError] = React.useState(false);
+  
+  if (!src || error) {
+    return (
+      <div className={`${className} bg-gray-100 dark:bg-zinc-800 flex items-center justify-center`}>
+        <Camera className={iconClassName || "w-5 h-5 text-gray-400"} />
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className={className}
+      onError={() => setError(true)}
+    />
+  );
+};
+
 interface Props {
+
   properties: SavedProperty[];
   onEdit: (property: SavedProperty) => void;
   onDelete: (id: string) => void;
@@ -91,17 +114,7 @@ export function MyProperties({ properties, onEdit, onDelete }: Props) {
                     <tr key={property.id} className="hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors group">
                       <td className="p-4">
                         <div className="flex items-center space-x-4">
-                          {property.thumbnail ? (
-                            <img 
-                              src={property.thumbnail} 
-                              alt={title}
-                              className="w-12 h-12 rounded-lg object-cover border border-gray-200 dark:border-zinc-700 shrink-0"
-                            />
-                          ) : (
-                            <div className="w-12 h-12 rounded-lg bg-gray-100 dark:bg-zinc-800 flex items-center justify-center border border-gray-200 dark:border-zinc-700 shrink-0">
-                              <ImageIcon className="w-5 h-5 text-gray-400" />
-                            </div>
-                          )}
+                          <SafeImage src={property.thumbnail} alt={title} className="w-12 h-12 rounded-lg object-cover border border-gray-200 dark:border-zinc-700 shrink-0" iconClassName="w-5 h-5 text-gray-400" />
                           <div className="flex flex-col">
                             <span className="font-bold text-gray-900 dark:text-white">{title}</span>
                             <span className="text-sm text-[#666] dark:text-zinc-400 mt-0.5">{location}</span>
@@ -159,17 +172,7 @@ export function MyProperties({ properties, onEdit, onDelete }: Props) {
                   return (
                     <div key={property.id} className="bg-white dark:bg-[#1a1c23] rounded-lg border border-gray-200 dark:border-zinc-800 p-4 shadow-sm flex flex-col">
                       <div className="flex gap-4 items-start">
-                        {property.thumbnail ? (
-                          <img
-                             src={property.thumbnail}
-                             alt={title}
-                            className="w-16 h-16 rounded-md object-cover border border-gray-200 dark:border-zinc-700 shrink-0"
-                          />
-                        ) : (
-                          <div className="w-16 h-16 rounded-md bg-gray-100 dark:bg-zinc-800 flex items-center justify-center border border-gray-200 dark:border-zinc-700 shrink-0">
-                            <ImageIcon className="w-6 h-6 text-gray-400" />
-                          </div>
-                        )}
+                        <SafeImage src={property.thumbnail} alt={title} className="w-16 h-16 rounded-md object-cover border border-gray-200 dark:border-zinc-700 shrink-0" iconClassName="w-6 h-6 text-gray-400" />
                         <div className="flex flex-col flex-1 min-w-0 pt-1">
                           <span className="font-bold text-gray-900 dark:text-white truncate">{title}</span>
                           <span className="text-sm text-gray-500 dark:text-zinc-400 mt-0.5 truncate">{location}</span>

@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useEffect } from 'react';
-import { Upload, X } from 'lucide-react';
+import { Upload, X, Camera } from 'lucide-react';
 // import { supabase } from '../lib/supabase'; // Removed as per instructions
 
 interface ImageUploaderProps {
@@ -102,7 +102,16 @@ export function ImageUploader({ images, onImagesChange }: ImageUploaderProps) {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
           {images.map((image, index) => (
             <div key={index} className="relative rounded-lg overflow-hidden border border-gray-200 aspect-video">
-              <img src={image} alt={`Imóvel ${index + 1}`} className="w-full h-full object-cover"  />
+              <img src={image} alt={`Imóvel ${index + 1}`} className="w-full h-full object-cover" onError={(e) => {
+                const target = e.currentTarget;
+                target.style.display = 'none';
+                if (target.nextElementSibling) {
+                  target.nextElementSibling.classList.remove('hidden');
+                }
+              }} />
+              <div className="hidden w-full h-full bg-gray-100 dark:bg-zinc-800 flex items-center justify-center">
+                <Camera className="w-6 h-6 text-gray-400" />
+              </div>
               <button
                 onClick={() => removeImage(index)}
                 className="absolute top-1 right-1 p-1 bg-white/90 rounded-full shadow-md hover:bg-red-50 hover:text-red-500 transition-colors"

@@ -228,12 +228,42 @@ export default function App() {
       return false;
     }
 
+    setIsExporting(true);
+    const finalImages = [];
+    try {
+      for (const imgUrl of images) {
+        if (imgUrl.startsWith('blob:') || imgUrl.startsWith('data:')) {
+          try {
+            const response = await fetch(imgUrl);
+            const blob = await response.blob();
+            const fileExt = blob.type.split('/')[1] || 'jpg';
+            const fileName = `imovel_${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+            const { error: uploadError } = await supabase.storage.from('imoveis').upload(fileName, blob, {
+              contentType: blob.type,
+              upsert: false
+            });
+            if (uploadError) throw uploadError;
+            const { data } = supabase.storage.from('imoveis').getPublicUrl(fileName);
+            finalImages.push(data.publicUrl);
+          } catch (e) {
+            console.error('Erro ao fazer upload da imagem:', e);
+            finalImages.push(imgUrl); // Fallback to original url
+          }
+        } else {
+          finalImages.push(imgUrl);
+        }
+      }
+    } finally {
+      setIsExporting(false);
+    }
+    setImages(finalImages);
+
     return new Promise((resolve) => {
       const finalizeSave = () => {
         const now = new Date();
         const dateStr = now.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
         
-        let finalThumbnail = images[0] || undefined;
+        let finalThumbnail = finalImages[0] || undefined;
         if (finalThumbnail === undefined && idEmEdicao) {
           finalThumbnail = savedProperties.find(p => p.id === idEmEdicao)?.thumbnail;
         }
@@ -260,14 +290,9 @@ export default function App() {
         resolve(true);
       };
 
-      if (images.length > 0) {
-        finalizeSave();
-      } else {
-        finalizeSave();
-      }
+      finalizeSave();
     });
-  };
-
+}
   const handleSaveOnly = async () => {
     const success = await executeSave();
     if (success) {
