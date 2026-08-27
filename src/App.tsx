@@ -366,7 +366,8 @@ export default function App() {
       const options = {
         width: baseWidth,
         height: baseHeight,
-        pixelRatio: scale
+        pixelRatio: scale,
+        backgroundColor: 'rgba(0,0,0,0)'
       };
 
       const dataUrl = await htmlToImage.toPng(postElements[0], options);
@@ -431,7 +432,8 @@ const handleDownload = async () => {
       const options = {
         width: baseWidth,
         height: baseHeight,
-        pixelRatio: scale
+        pixelRatio: scale,
+        backgroundColor: 'rgba(0,0,0,0)'
       };
       
       if (postElements.length === 1) {

@@ -1,3 +1,4 @@
+import imageCompression from 'browser-image-compression';
 import React, { useCallback, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { Upload, X } from 'lucide-react';
@@ -17,56 +18,20 @@ export function LogoUploader({ logo, onLogoChange }: LogoUploaderProps) {
         try {
           setIsUploading(true);
           
-          // Helper to compress and preserve PNG alpha
-          const processedBlob = await new Promise<Blob>((resolve, reject) => {
-            const img = new Image();
-            img.onload = () => {
-              const canvas = document.createElement('canvas');
-              let width = img.width;
-              let height = img.height;
-              const maxDim = 800; // Resize logo to max 800px
-
-              if (width > height && width > maxDim) {
-                height = Math.round((height * maxDim) / width);
-                width = maxDim;
-              } else if (height > maxDim) {
-                width = Math.round((width * maxDim) / height);
-                height = maxDim;
-              }
-
-              canvas.width = width;
-              canvas.height = height;
-              const ctx = canvas.getContext('2d');
-              if (!ctx) return reject('No canvas context');
-
-              // DO NOT fill background with white if it's a PNG!
-              if (file.type !== 'image/png') {
-                ctx.fillStyle = '#FFFFFF';
-                ctx.fillRect(0, 0, width, height);
-              } else {
-                ctx.clearRect(0, 0, width, height); // ensure transparent
-              }
-
-              ctx.drawImage(img, 0, 0, width, height);
-              
-              const outType = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
-              const quality = outType === 'image/jpeg' ? 0.9 : undefined;
-              
-              canvas.toBlob((blob) => {
-                if (blob) resolve(blob);
-                else reject('Blob conversion failed');
-              }, outType, quality);
-            };
-            img.onerror = () => reject('Image load failed');
-            img.src = URL.createObjectURL(file);
-          });
-
-          const isPng = file.type === 'image/png';
-          const fileExt = isPng ? 'png' : 'jpg';
-          const fileName = `logo_${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+          const options = {
+            maxSizeMB: 1,
+            maxWidthOrHeight: 800,
+            useWebWorker: true,
+            fileType: 'image/png', // Forcing PNG to avoid black backgrounds on transparent logos
+            alwaysKeepResolution: true
+          };
           
-          const { error: uploadError } = await supabase.storage.from('logos').upload(fileName, processedBlob, {
-            contentType: isPng ? 'image/png' : 'image/jpeg',
+          const compressedFile = await imageCompression(file, options);
+          
+          const fileName = `logo_${Date.now()}_${Math.random().toString(36).substring(7)}.png`;
+          
+          const { error: uploadError } = await supabase.storage.from('logos').upload(fileName, compressedFile, {
+            contentType: 'image/png',
             upsert: false
           });
           
@@ -84,7 +49,7 @@ export function LogoUploader({ logo, onLogoChange }: LogoUploaderProps) {
     },
     [onLogoChange]
   );
-  
+
   const handleRemove = () => {
     if (logo && logo.startsWith('blob:')) {
       URL.revokeObjectURL(logo);

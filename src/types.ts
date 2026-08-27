@@ -27,8 +27,6 @@ export interface BrandKit {
   name: string;
   creci: string;
   whatsapp: string;
-  primaryColor: string;
-  secondaryColor: string;
   isSaved: boolean;
 }
 

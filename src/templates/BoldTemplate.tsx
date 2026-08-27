@@ -11,7 +11,7 @@ export function BoldTemplate({ details, image, logo, aspectRatio, brandKit, opti
   const topTags = allTags.slice(0, 5);
   const tagsString = topTags.join(' • ');
 
-  const primaryColor = brandKit?.primaryColor || '#ef4444';
+  const primaryColor = '#ef4444';
   
   // Options
   const imagePositionX = options?.imagePositionX ?? 50;

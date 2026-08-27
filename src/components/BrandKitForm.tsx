@@ -15,8 +15,6 @@ export function BrandKitForm({ brandKit, onChange }: BrandKitFormProps) {
         name: '',
         creci: '',
         whatsapp: '',
-        primaryColor: '#2563eb',
-        secondaryColor: '#1e40af',
         isSaved: true,
         [field]: value
       });

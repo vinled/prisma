@@ -11,7 +11,7 @@ export function MinimalistTemplate({ details, image, logo, aspectRatio, brandKit
   const topTags = allTags.slice(0, 5);
   const tagsString = topTags.join(' • ');
 
-  const primaryColor = brandKit?.primaryColor || '#2563eb';
+  const primaryColor = '#2563eb';
   
   // Options
   const imagePositionX = options?.imagePositionX ?? 50;
