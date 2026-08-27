@@ -55,7 +55,7 @@ export function ElegantTemplate({ details, image, logo, aspectRatio, brandKit, o
       </div>
 
       {/* Main Glass Panel Area - Lower Third Compact */}
-      <div className="absolute left-1/2 -translate-x-1/2 bottom-[32px] flex flex-col items-center z-10 w-[92%]">
+      <div className="absolute left-1/2 -translate-x-1/2 bottom-[32px] flex flex-col items-center z-10 w-[96%] max-w-[1000px]">
         
         {/* Floating Tagline (Original) */}
         {details.title?.trim() && (
@@ -110,7 +110,7 @@ export function ElegantTemplate({ details, image, logo, aspectRatio, brandKit, o
           )}
           
           {/* Features Row - Ícones e Textos Finos em Linha Única */}
-          <div className="flex flex-row flex-wrap justify-center items-center w-full gap-x-[24px] gap-y-[4px] text-white text-[18px] drop-shadow-sm font-medium mt-[4px]">
+          <div className="flex flex-row flex-wrap justify-center items-center w-full gap-x-[48px] gap-y-[8px] text-white text-[18px] drop-shadow-sm font-medium mt-[8px]">
             {details.area?.trim() && (
               <div className="flex items-center">
                 <Maximize className="w-[20px] h-[20px] text-white/90 mr-[8px] stroke-[2]" />
@@ -142,19 +142,22 @@ export function ElegantTemplate({ details, image, logo, aspectRatio, brandKit, o
           
           {/* Differentials - Texto reduzido e truncado */}
           {tagsString && (
-            <div className="w-full flex justify-center mt-[4px] pt-[8px] border-t border-white/10 overflow-hidden">
+            <div className="w-full flex justify-center mt-[8px] pt-[8px] border-t border-white/10 overflow-hidden">
               <span className="text-[14px] text-gray-300 uppercase tracking-widest font-normal text-center drop-shadow-sm truncate w-full">
                 {tagsString}
               </span>
             </div>
           )}
           
-          {/* Property Code */}
-          {details.propertyCode?.trim() && (
-            <div className="w-full text-center mt-[2px]">
-              <span className="text-[12px] text-white/40 tracking-wider">Cód. {details.propertyCode}</span>
-            </div>
-          )}
+          {/* Footer: Property Code and Watermark */}
+          <div className="flex justify-between items-center w-full mt-[12px] pt-[12px] border-t border-white/10">
+            <span className="text-[16px] text-white/80 font-medium tracking-wider">
+              {details.propertyCode?.trim() ? `Cód. ${details.propertyCode}` : ''}
+            </span>
+            <span className="text-[16px] text-white/80 font-medium tracking-wider">
+              Criado com PostNaMão
+            </span>
+          </div>
         </div>
       </div>
     </div>
