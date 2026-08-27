@@ -1,5 +1,5 @@
 import React from 'react';
-import { Smartphone, Tags, Zap, CheckCircle2, XCircle, Sparkles, Check, ShieldCheck, Star, ChevronDown, Home } from 'lucide-react';
+import { Smartphone, Tags, Zap, CheckCircle2, XCircle, Sparkles, Check, ShieldCheck, Star, ChevronDown, Home, Instagram } from 'lucide-react';
 import { PostNaMaoLogo } from './PostNaMaoLogo';
 
 interface LandingPageProps {
@@ -41,7 +41,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
             </div>
           </div>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight mb-6 leading-tight max-w-4xl mx-auto">
-            Suas Captações de Imóveis prontas para o <span className="bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-orange-400">Instagram em 3 Segundos.</span>
+            Suas Captações de Imóveis prontas para o <span className="bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-orange-400">Instagram em segundos</span>
           </h1>
           <p className="text-lg sm:text-xl text-slate-600 mb-10 max-w-2xl mx-auto leading-relaxed">
             A primeira ferramenta de marketing exclusiva para corretores. Aplique selos de Vendido ou Exclusividade, ajuste o formato da fachada e gere textos com IA sem perder horas editando.
@@ -282,7 +282,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
               <ul className="space-y-4 mb-8 flex-grow">
                 <li className="flex items-start gap-3 text-slate-600">
                   <Check className="w-5 h-5 text-orange-500 shrink-0" />
-                  <span>Acesso ao painel</span>
+                  <span>10 imagens por mês</span>
                 </li>
                 <li className="flex items-start gap-3 text-slate-600">
                   <Check className="w-5 h-5 text-orange-500 shrink-0" />
@@ -464,7 +464,11 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
             <PostNaMaoLogo className="h-8 w-auto grayscale opacity-50" />
             <span className="text-slate-500 font-medium text-sm">© 2026 PostNaMão. Todos os direitos reservados.</span>
           </div>
-          <div className="flex flex-wrap justify-center gap-6 text-sm font-medium text-slate-500">
+          <div className="flex flex-wrap justify-center items-center gap-6 text-sm font-medium text-slate-500">
+            <a href="https://instagram.com/postnamaobr" target="_blank" rel="noopener noreferrer" className="hover:text-orange-500 transition-colors flex items-center gap-1">
+              <Instagram className="w-4 h-4" />
+              @postnamaobr
+            </a>
             <a href="/termos" className="hover:text-orange-500 transition-colors">Termos de Uso</a>
             <a href="/privacidade" className="hover:text-orange-500 transition-colors">Política de Privacidade</a>
             <a href="#" className="hover:text-orange-500 transition-colors">Contato</a>
