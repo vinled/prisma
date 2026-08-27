@@ -33,6 +33,7 @@ export interface BrandKit {
 export interface TemplateOptions {
   gradientOpacity?: number; // 0 to 100
   imagePositionX?: number; // 0 to 100
+  logoSize?: number; // 50 to 150
   badge?: string; // e.g. "VENDIDO", "EXCLUSIVIDADE", etc.
 }
 

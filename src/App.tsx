@@ -98,8 +98,9 @@ export default function App() {
   const [aspectRatio, setAspectRatio] = useState<AspectRatioId>('feed');
   const [seloAtivo, setSeloAtivo] = useState("");
   const [templateOptions, setTemplateOptions] = useState<TemplateOptions>({
-    gradientOpacity: 60,
+    gradientOpacity: 45,
     imagePositionX: 50,
+    logoSize: 100,
   });
 
   const [generatedCaption, setGeneratedCaption] = useState('');
@@ -367,7 +368,9 @@ export default function App() {
         width: baseWidth,
         height: baseHeight,
         pixelRatio: scale,
-        backgroundColor: 'rgba(0,0,0,0)'
+        backgroundColor: 'rgba(0,0,0,0)',
+        useCORS: true,
+        allowTaint: true
       };
 
       const dataUrl = await htmlToImage.toPng(postElements[0], options);
@@ -433,7 +436,9 @@ const handleDownload = async () => {
         width: baseWidth,
         height: baseHeight,
         pixelRatio: scale,
-        backgroundColor: 'rgba(0,0,0,0)'
+        backgroundColor: 'rgba(0,0,0,0)',
+        useCORS: true,
+        allowTaint: true
       };
       
       if (postElements.length === 1) {
@@ -952,13 +957,27 @@ const handleDownload = async () => {
                   <div>
                     <div className="flex justify-between text-xs text-gray-500 dark:text-zinc-400 mb-1">
                       <label>Escurecimento (Degradê)</label>
-                      <span>{templateOptions.gradientOpacity}%</span>
+                      <span>{templateOptions.gradientOpacity ?? 45}%</span>
                     </div>
                     <input 
                       type="range" 
                       min="0" max="100" 
-                      value={templateOptions.gradientOpacity} 
+                      value={templateOptions.gradientOpacity ?? 45} 
                       onChange={(e) => setTemplateOptions({...templateOptions, gradientOpacity: Number(e.target.value)})}
+                      className="w-full h-2 bg-gray-200 dark:bg-zinc-700 rounded-lg appearance-none cursor-pointer"
+                    />
+                  </div>
+
+                  <div>
+                    <div className="flex justify-between text-xs text-gray-500 dark:text-zinc-400 mb-1">
+                      <label>Tamanho do Logo</label>
+                      <span>{templateOptions.logoSize ?? 100}%</span>
+                    </div>
+                    <input 
+                      type="range" 
+                      min="50" max="150" 
+                      value={templateOptions.logoSize ?? 100} 
+                      onChange={(e) => setTemplateOptions({...templateOptions, logoSize: Number(e.target.value)})}
                       className="w-full h-2 bg-gray-200 dark:bg-zinc-700 rounded-lg appearance-none cursor-pointer"
                     />
                   </div>

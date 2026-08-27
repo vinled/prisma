@@ -43,7 +43,7 @@ export function ElegantTemplate({ details, image, logo, aspectRatio, brandKit, o
       <div className={`absolute ${aspectRatio === 'story' ? 'top-10 left-[65px] right-[65px]' : 'top-[49px] left-[49px] right-[49px]'} flex justify-between items-start z-10`}>
         {logo ? (
           <div className="bg-white/20 backdrop-blur-md p-[22px] rounded-[43px] max-w-[324px] max-h-[130px] flex justify-center shadow-md border border-white/20">
-            <img src={logo} alt="Logo" className="object-contain max-h-[86px]" />
+            <img src={logo} alt="Logo" className="object-contain max-h-[86px]" style={{ transform: `scale(${(options?.logoSize ?? 100) / 100})`, transformOrigin: 'center' }} />
           </div>
         ) : <div />}
         {whatsapp?.trim() && (

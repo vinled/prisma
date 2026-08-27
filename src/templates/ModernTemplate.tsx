@@ -82,7 +82,7 @@ export function ModernTemplate({ details, image, logo, aspectRatio, brandKit, op
       {/* Top Bar: Logo & WhatsApp */}
       <div className={`absolute top-0 left-0 w-full flex justify-between items-start ${aspectRatio === 'story' ? 'p-[86px]' : 'p-[65px]'} z-10`}>
         {logo ? (
-          <img src={logo} alt="Logo" className={`object-contain ${aspectRatio === 'story' ? 'max-h-[130px]' : 'max-h-[86px]'} drop-shadow-md`} />
+          <img src={logo} alt="Logo" style={{ transform: `scale(${(options?.logoSize ?? 100) / 100})`, transformOrigin: 'left top' }} className={`object-contain ${aspectRatio === 'story' ? 'max-h-[130px]' : 'max-h-[86px]'} drop-shadow-md`} />
         ) : (
           <div /> // Spacer if no logo
         )}

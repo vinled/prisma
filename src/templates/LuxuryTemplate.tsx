@@ -83,7 +83,7 @@ export function LuxuryTemplate({ details, image, logo, aspectRatio, brandKit, op
           {/* Logo & WhatsApp */}
           <div className="flex justify-between items-start mb-10">
             {logo ? (
-              <img src={logo} alt="Logo" className="object-contain max-h-[45px] drop-shadow-md" />
+              <img src={logo} alt="Logo" className="object-contain max-h-[45px] drop-shadow-md" style={{ transform: `scale(${(options?.logoSize ?? 100) / 100})`, transformOrigin: 'left top' }} />
             ) : <div />}
             {whatsapp?.trim() && (
               <div className="flex items-center text-white/90 font-sans text-[22px] font-medium tracking-widest drop-shadow-md">

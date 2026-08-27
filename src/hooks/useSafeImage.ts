@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-export function useSafeImage(url: string | null | undefined): string | null | undefined {
+export function useSafeImage(url: string | null | undefined, preserveAlpha: boolean = false): string | null | undefined {
   const [safeUrl, setSafeUrl] = useState<string | null | undefined>(url);
 
   useEffect(() => {
@@ -27,7 +27,7 @@ export function useSafeImage(url: string | null | undefined): string | null | un
           ctx.imageSmoothingEnabled = true;
           ctx.imageSmoothingQuality = "high";
           ctx.drawImage(img, 0, 0);
-          setSafeUrl(canvas.toDataURL('image/jpeg', 0.95));
+          setSafeUrl(preserveAlpha ? canvas.toDataURL('image/png') : canvas.toDataURL('image/jpeg', 0.95));
         } else {
           setSafeUrl(url);
         }
@@ -54,7 +54,7 @@ export function useSafeImage(url: string | null | undefined): string | null | un
               ctx.imageSmoothingEnabled = true;
               ctx.imageSmoothingQuality = "high";
               ctx.drawImage(proxyImg, 0, 0);
-              setSafeUrl(canvas.toDataURL('image/jpeg', 0.95));
+              setSafeUrl(preserveAlpha ? canvas.toDataURL('image/png') : canvas.toDataURL('image/jpeg', 0.95));
             } else {
               setSafeUrl(url);
             }
@@ -81,7 +81,7 @@ export function useSafeImage(url: string | null | undefined): string | null | un
     return () => {
       isMounted = false;
     };
-  }, [url]);
+  }, [url, preserveAlpha]);
 
   return safeUrl;
 }

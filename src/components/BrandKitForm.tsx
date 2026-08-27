@@ -69,40 +69,6 @@ export function BrandKitForm({ brandKit, onChange }: BrandKitFormProps) {
           />
         </div>
       </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 pt-2">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
-            Cor principal
-          </label>
-          <div className="flex items-center space-x-2">
-            <input
-              type="color"
-              className="h-9 w-9 rounded border border-gray-300 cursor-pointer"
-              value={brandKit?.primaryColor || '#2563eb'}
-              onChange={(e) => handleChange('primaryColor', e.target.value)}
-            />
-            <span className="text-xs text-gray-500 uppercase">{brandKit?.primaryColor || '#2563eb'}</span>
-          </div>
-        </div>
-        
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
-            Cor secundária
-          </label>
-          <div className="flex items-center space-x-2">
-            <input
-              type="color"
-              className="h-9 w-9 rounded border border-gray-300 cursor-pointer"
-              value={brandKit?.secondaryColor || '#1e40af'}
-              onChange={(e) => handleChange('secondaryColor', e.target.value)}
-            />
-            <span className="text-xs text-gray-500 uppercase">{brandKit?.secondaryColor || '#1e40af'}</span>
-          </div>
-        </div>
-      </div>
-      
-
     </div>
   );
 }

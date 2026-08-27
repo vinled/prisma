@@ -37,7 +37,7 @@ export function MinimalistTemplate({ details, image, logo, aspectRatio, brandKit
         <div className="absolute top-[65px] left-[65px] right-[65px] flex justify-between items-start">
           {logo && (
             <div className="bg-white p-[22px] rounded-[32px] max-w-[324px] max-h-[130px] flex justify-center shadow-sm">
-              <img src={logo} alt="Logo" className="object-contain max-h-[86px]" />
+              <img src={logo} alt="Logo" className="object-contain max-h-[86px]" style={{ transform: `scale(${(options?.logoSize ?? 100) / 100})`, transformOrigin: 'center' }} />
             </div>
           )}
           {whatsapp?.trim() && (

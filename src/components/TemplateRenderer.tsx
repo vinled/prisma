@@ -13,7 +13,7 @@ interface TemplateRendererProps extends TemplateProps {
 
 export function TemplateRenderer({ templateId, details, image, logo, aspectRatio = 'feed', brandKit, options, userPlan = 'free' }: TemplateRendererProps) {
   const safeImage = useSafeImage(image);
-  const safeLogo = useSafeImage(logo);
+  const safeLogo = useSafeImage(logo, true);
 
   let TemplateComponent = null;
 

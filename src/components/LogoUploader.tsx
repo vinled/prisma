@@ -1,4 +1,3 @@
-import imageCompression from 'browser-image-compression';
 import React, { useCallback, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { Upload, X } from 'lucide-react';
@@ -18,21 +17,19 @@ export function LogoUploader({ logo, onLogoChange }: LogoUploaderProps) {
         try {
           setIsUploading(true);
           
-          const options = {
-            maxSizeMB: 1,
-            maxWidthOrHeight: 800,
-            useWebWorker: true,
-            fileType: 'image/png', // Forcing PNG to avoid black backgrounds on transparent logos
-            alwaysKeepResolution: true
-          };
+          // UPLOAD NATIVO E DIRETO.
+          // Nenhuma biblioteca de compressão ou conversão será chamada.
+          // A imagem crua e original é enviada para garantir que o Alpha/Transparência não seja perdido.
           
-          const compressedFile = await imageCompression(file, options);
+          const fileExt = file.name.split('.').pop()?.toLowerCase() || 'png';
+          const isPng = fileExt === 'png' || file.type.includes('png');
           
-          const fileName = `logo_${Date.now()}_${Math.random().toString(36).substring(7)}.png`;
+          const fileName = `logo_${Date.now()}_${Math.random().toString(36).substring(7)}.${isPng ? 'png' : fileExt}`;
           
-          const { error: uploadError } = await supabase.storage.from('logos').upload(fileName, compressedFile, {
-            contentType: 'image/png',
-            upsert: false
+          const { error: uploadError } = await supabase.storage.from('logos').upload(fileName, file, {
+            contentType: isPng ? 'image/png' : (file.type || 'image/jpeg'),
+            upsert: false,
+            cacheControl: '3600'
           });
           
           if (uploadError) throw uploadError;
@@ -51,9 +48,6 @@ export function LogoUploader({ logo, onLogoChange }: LogoUploaderProps) {
   );
 
   const handleRemove = () => {
-    if (logo && logo.startsWith('blob:')) {
-      URL.revokeObjectURL(logo);
-    }
     onLogoChange(null);
   };
 
@@ -79,7 +73,7 @@ export function LogoUploader({ logo, onLogoChange }: LogoUploaderProps) {
             </p>
             <p className="text-xs text-gray-400 dark:text-zinc-500">Fundo transparente recomendado (PNG)</p>
           </div>
-          <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
+          <input type="file" className="hidden" accept="image/png, image/jpeg" onChange={handleFileChange} />
         </label>
       )}
     </div>

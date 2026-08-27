@@ -67,7 +67,7 @@ export function BoldTemplate({ details, image, logo, aspectRatio, brandKit, opti
       <div className="absolute top-0 left-0 w-full p-[65px] flex justify-between items-start z-10">
         {logo && (
           <div className="bg-black/60 backdrop-blur-md p-[32px] rounded-[32px] border border-white/10 shadow-2xl max-w-[324px] max-h-[130px] flex items-center justify-center">
-            <img src={logo} alt="Logo" className="object-contain max-h-[86px]" />
+            <img src={logo} alt="Logo" className="object-contain max-h-[86px]" style={{ transform: `scale(${(options?.logoSize ?? 100) / 100})`, transformOrigin: 'center' }} />
           </div>
         )}
         {whatsapp?.trim() && (
