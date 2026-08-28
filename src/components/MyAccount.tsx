@@ -8,14 +8,13 @@ interface MyAccountProps {
   session: Session;
   brandKit?: BrandKit | null;
   userPlan?: "free" | "pro";
+  creditsUsed: number;
 }
 
-export function MyAccount({ session, brandKit, userPlan = "free" }: MyAccountProps) {
-  // Mock data for the Freemium flow
+export function MyAccount({ session, brandKit, userPlan = "free", creditsUsed }: MyAccountProps) {
   const currentPlan = userPlan === 'pro' ? 'Pro' : 'Grátis';
-  const creditsUsed = 3;
   const creditsTotal = 10;
-  const progressPercent = (creditsUsed / creditsTotal) * 100;
+  const progressPercent = Math.min((creditsUsed / creditsTotal) * 100, 100);
   
   // State for user name
   const [userName, setUserName] = useState(
@@ -130,15 +129,19 @@ export function MyAccount({ session, brandKit, userPlan = "free" }: MyAccountPro
                 <div>
                   <h2 className="text-sm font-medium text-gray-500 dark:text-zinc-400 mb-1">Uso no mês</h2>
                   <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                    {creditsUsed} de {creditsTotal} artes gratuitas
+                    {userPlan === 'pro' ? (
+                      `${creditsUsed} artes criadas (Ilimitado)`
+                    ) : (
+                      `${creditsUsed} de ${creditsTotal} artes gratuitas`
+                    )}
                   </p>
                 </div>
-                <span className="text-xs font-medium text-gray-500 dark:text-zinc-400">{progressPercent}%</span>
+                <span className="text-xs font-medium text-gray-500 dark:text-zinc-400">{userPlan === 'pro' ? '100%' : `${progressPercent.toFixed(0)}%`}</span>
               </div>
               <div className="w-full bg-gray-100 dark:bg-zinc-800 rounded-full h-2">
                 <div 
                   className="bg-orange-600 h-2 rounded-full transition-all" 
-                  style={{ width: `${progressPercent}%` }}
+                  style={{ width: userPlan === 'pro' ? '100%' : `${progressPercent}%` }}
                 />
               </div>
             </div>

@@ -797,9 +797,7 @@ const handleDownload = async () => {
                 : 'text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800'
             }`}
           >
-            <svg className="w-5 h-5 md:mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
+            <Palette className="w-5 h-5 md:mr-3" />
             <span className="hidden md:inline">Minha Marca</span>
           </button>
           
@@ -838,7 +836,7 @@ const handleDownload = async () => {
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto w-full">
         {activeTab === 'minha_conta' && session ? (
-          <MyAccount session={session} brandKit={brandKit} userPlan={userPlan} />
+          <MyAccount session={session} brandKit={brandKit} userPlan={userPlan} creditsUsed={savedProperties.length} />
         ) : activeTab === 'minha_marca' ? (
           <div className="max-w-3xl mx-auto p-4 sm:p-6 lg:p-8">
             <header className="mb-8">
