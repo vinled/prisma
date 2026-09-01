@@ -310,11 +310,11 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
               <ul className="space-y-4 mb-8 flex-grow">
                 <li className="flex items-start gap-3 text-slate-600">
                   <Check className="w-5 h-5 text-orange-500 shrink-0" />
-                  <span>10 imagens por mês</span>
+                  <span>Até 5 imóveis salvos</span>
                 </li>
                 <li className="flex items-start gap-3 text-slate-600">
                   <Check className="w-5 h-5 text-orange-500 shrink-0" />
-                  <span>Geração de arte com marca d'água</span>
+                  <span>Geração de artes ilimitadas (com marca d'água)</span>
                 </li>
                 <li className="flex items-start gap-3 text-slate-600">
                   <Check className="w-5 h-5 text-orange-500 shrink-0" />

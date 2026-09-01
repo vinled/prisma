@@ -243,10 +243,17 @@ export default function App() {
 
   
   const executeSave = async (): Promise<boolean> => {
-    if (userPlan !== 'pro' && !idEmEdicao && savedProperties.length >= 10) {
-      alert('Limite do plano Grátis atingido (10 artes). Assine o PostNaMão Pro!');
-      setIsPaywallOpen(true);
-      return false;
+    if (userPlan !== 'pro' && !idEmEdicao && session?.user) {
+      const { count, error } = await supabase
+        .from('properties')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', session.user.id);
+        
+      if (!error && count !== null && count >= 5) {
+        alert('Você atingiu o limite de 5 imóveis do Plano Grátis. Assine o Pro para imóveis ilimitados.');
+        setIsPaywallOpen(true);
+        return false;
+      }
     }
 
     setIsExporting(true);

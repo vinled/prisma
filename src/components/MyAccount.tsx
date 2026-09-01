@@ -13,7 +13,7 @@ interface MyAccountProps {
 
 export function MyAccount({ session, brandKit, userPlan = "free", creditsUsed }: MyAccountProps) {
   const currentPlan = userPlan === 'pro' ? 'Pro' : 'Grátis';
-  const creditsTotal = 10;
+  const creditsTotal = 5;
   const progressPercent = Math.min((creditsUsed / creditsTotal) * 100, 100);
   
   // State for user name
@@ -127,12 +127,12 @@ export function MyAccount({ session, brandKit, userPlan = "free", creditsUsed }:
             <div className="w-full">
               <div className="flex justify-between items-end mb-2">
                 <div>
-                  <h2 className="text-sm font-medium text-gray-500 dark:text-zinc-400 mb-1">Uso no mês</h2>
+                  <h2 className="text-sm font-medium text-gray-500 dark:text-zinc-400 mb-1">Uso de imóveis</h2>
                   <p className="text-sm font-semibold text-gray-900 dark:text-white">
                     {userPlan === 'pro' ? (
-                      `${creditsUsed} artes criadas (Ilimitado)`
+                      `${creditsUsed} imóveis cadastrados (Ilimitado)`
                     ) : (
-                      `${creditsUsed} de ${creditsTotal} artes gratuitas`
+                      `${creditsUsed} de ${creditsTotal} imóveis cadastrados`
                     )}
                   </p>
                 </div>

@@ -21,7 +21,7 @@ export function PaywallModal({ isOpen, onClose, onUpgrade }: PaywallModalProps) 
             Eleve o nível das suas captações
           </h2>
           <p className="text-gray-500 dark:text-zinc-400 mb-8">
-            Assine o PostNaMão Pro para desbloquear a Inteligência Artificial avançada para imóveis de luxo.
+            Assine o PostNaMão Pro para cadastrar imóveis ilimitados e desbloquear a Inteligência Artificial avançada.
           </p>
           
           <ul className="w-full space-y-3 mb-8 text-left">
@@ -31,7 +31,7 @@ export function PaywallModal({ isOpen, onClose, onUpgrade }: PaywallModalProps) 
             </li>
             <li className="flex items-center text-gray-700 dark:text-zinc-300">
               <Check className="w-5 h-5 text-emerald-500 mr-3 shrink-0" />
-              <span className="font-medium">Downloads Ilimitados</span>
+              <span className="font-medium">Imóveis e Artes Ilimitadas</span>
             </li>
             <li className="flex items-center text-gray-700 dark:text-zinc-300">
               <Check className="w-5 h-5 text-emerald-500 mr-3 shrink-0" />
