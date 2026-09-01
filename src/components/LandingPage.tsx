@@ -1,12 +1,52 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Smartphone, Tags, Zap, CheckCircle2, XCircle, Sparkles, Check, ShieldCheck, Star, ChevronDown, Home, Instagram } from 'lucide-react';
 import { PostNaMaoLogo } from './PostNaMaoLogo';
+import { TemplateRenderer } from './TemplateRenderer';
+
+
+
+const mockDetails = {
+  title: "OPORTUNIDADE IMPERDÍVEL",
+  price: "R$ 1.250.000",
+  neighborhood: "Vila Nova Conceição",
+  city: "São Paulo",
+  state: "SP",
+  area: "120",
+  bedrooms: "3",
+  suites: "1",
+  bathrooms: "3",
+  parking: "2",
+  propertyCode: "REF001",
+  propertyType: "Apartamento",
+  propertySubtype: "Padrão",
+  amenities: ["Piscina", "Academia", "Churrasqueira"],
+  differentials: ["Varanda Gourmet", "Andar Alto"],
+  leisureArea: true,
+  whatsapp: "11 99999-9999"
+};
+const mockImageUrlAntes = "/antes.jpg";
+const mockImageUrlDepois = "/depois.jpg";
 
 interface LandingPageProps {
   onLoginClick: () => void;
 }
 
 export function LandingPage({ onLoginClick }: LandingPageProps) {
+  const depoisRef = useRef<HTMLDivElement>(null);
+  const [depoisScale, setDepoisScale] = useState(1);
+
+  useEffect(() => {
+    const updateScale = () => {
+      if (depoisRef.current) {
+        const containerWidth = depoisRef.current.clientWidth;
+        setDepoisScale(containerWidth / 1080);
+      }
+    };
+    updateScale();
+    window.addEventListener('resize', updateScale);
+    return () => window.removeEventListener('resize', updateScale);
+  }, []);
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-orange-500 selection:text-white flex flex-col">
       {/* Header */}
@@ -63,26 +103,14 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
               {/* Dynamic Island / Notch Placeholder */}
               <div className="absolute top-0 w-32 h-7 bg-slate-800 rounded-b-3xl z-20"></div>
               
-              <div className="w-full h-full bg-slate-800 relative flex flex-col items-center justify-center p-6">
-                {/* Mock de imagem de casa */}
-                <div className="absolute inset-0 flex items-center justify-center opacity-30">
-                  <Home className="w-32 h-32 text-slate-600" />
-                </div>
-                
-                {/* Mock do selo */}
-                <div className="absolute top-12 left-6 bg-orange-500 text-white text-sm font-bold px-4 py-1.5 rounded-full transform -rotate-12 shadow-lg z-10 border border-orange-400/50">
-                  EXCLUSIVIDADE
-                </div>
-                
-                {/* Mock de Lower Third Glass Card */}
-                <div className="absolute bottom-12 w-[90%] bg-black/60 backdrop-blur-md rounded-2xl p-4 border border-white/10 z-10 shadow-xl flex flex-col gap-2">
-                  <div className="w-3/4 h-6 bg-white/20 rounded animate-pulse"></div>
-                  <div className="flex gap-2">
-                    <div className="w-12 h-4 bg-white/10 rounded animate-pulse"></div>
-                    <div className="w-12 h-4 bg-white/10 rounded animate-pulse"></div>
-                  </div>
-                  <div className="w-1/2 h-8 bg-white/20 rounded animate-pulse mt-2"></div>
-                </div>
+              <div className="w-full h-full relative">
+                <img 
+                  src="/teladeedicao.jpg" 
+                  alt="Tela de Edição" 
+                  className="w-full h-full object-cover"
+                  width={296}
+                  height={526}
+                />
               </div>
             </div>
           </div>
@@ -156,8 +184,8 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
                 <div className="absolute top-0 right-0 bg-slate-700 text-slate-300 px-4 py-1.5 rounded-bl-2xl font-semibold text-sm">
                   Antes
                 </div>
-                <div className="flex-grow flex items-center justify-center bg-slate-800 rounded-xl mb-6 aspect-video border border-slate-700/50">
-                  <XCircle className="w-16 h-16 text-slate-600" />
+                <div className="flex-grow flex items-center justify-center bg-slate-800 rounded-xl mb-6 aspect-square border border-slate-700/50 overflow-hidden relative">
+                  <img src={mockImageUrlAntes} alt="Antes" className="absolute inset-0 w-full h-full object-cover" />
                 </div>
                 <p className="text-slate-400 font-medium text-lg text-center">
                   Horas no computador tentando ajustar a foto.
@@ -169,8 +197,8 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
                 <div className="absolute top-0 right-0 bg-orange-500 text-white px-4 py-1.5 rounded-bl-2xl font-bold text-sm flex items-center gap-1">
                   <CheckCircle2 className="w-4 h-4" /> Depois
                 </div>
-                <div className="flex-grow flex items-center justify-center bg-slate-800 rounded-xl mb-6 aspect-video border border-orange-500/30">
-                  <PostNaMaoLogo className="h-16 w-auto" />
+                <div className="flex-grow flex items-center justify-center bg-slate-800 rounded-xl mb-6 aspect-square border border-orange-500/30 overflow-hidden relative group">
+                  <img src={mockImageUrlDepois} alt="Depois" className="absolute inset-0 w-full h-full object-cover" />
                 </div>
                 <p className="text-white font-medium text-lg text-center">
                   Imagem perfeita, com selo de Exclusividade e sua marca, direto no celular.
