@@ -19,7 +19,7 @@ export function AspectRatioSelector({ selected, onSelect }: AspectRatioSelectorP
         }`}
       >
         <Square className="w-5 h-5" />
-        <span>Feed (1:1)</span>
+        <span>Feed (3:4)</span>
       </button>
       <button
         onClick={() => onSelect('story')}

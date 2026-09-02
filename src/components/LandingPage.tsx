@@ -150,7 +150,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
                 </div>
                 <h3 className="text-xl font-bold text-white mb-4">Pronto para Todas as Telas</h3>
                 <p className="text-slate-400 leading-relaxed">
-                  Exporte sua arte perfeitamente enquadrada para o Feed (1:1) ou para estourar de visualizações nos Stories (9:16). Um clique, dois formatos.
+                  Exporte sua arte perfeitamente enquadrada para o Feed (3:4) ou para estourar de visualizações nos Stories (9:16). Um clique, dois formatos.
                 </p>
               </div>
 
@@ -184,7 +184,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
                 <div className="absolute top-0 right-0 bg-slate-700 text-slate-300 px-4 py-1.5 rounded-bl-2xl font-semibold text-sm">
                   Antes
                 </div>
-                <div className="flex-grow flex items-center justify-center bg-slate-800 rounded-xl mb-6 aspect-square border border-slate-700/50 overflow-hidden relative">
+                <div className="flex-grow flex items-center justify-center bg-slate-800 rounded-xl mb-6 aspect-[3/4] border border-slate-700/50 overflow-hidden relative">
                   <img src={mockImageUrlAntes} alt="Antes" className="absolute inset-0 w-full h-full object-cover" />
                 </div>
                 <p className="text-slate-400 font-medium text-lg text-center">
@@ -197,7 +197,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
                 <div className="absolute top-0 right-0 bg-orange-500 text-white px-4 py-1.5 rounded-bl-2xl font-bold text-sm flex items-center gap-1">
                   <CheckCircle2 className="w-4 h-4" /> Depois
                 </div>
-                <div className="flex-grow flex items-center justify-center bg-slate-800 rounded-xl mb-6 aspect-square border border-orange-500/30 overflow-hidden relative group">
+                <div className="flex-grow flex items-center justify-center bg-slate-800 rounded-xl mb-6 aspect-[3/4] border border-orange-500/30 overflow-hidden relative group">
                   <img src={mockImageUrlDepois} alt="Depois" className="absolute inset-0 w-full h-full object-cover" />
                 </div>
                 <p className="text-white font-medium text-lg text-center">

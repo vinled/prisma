@@ -212,7 +212,7 @@ export default function App() {
         
         if (isMobile) {
            const maxMobileHeight = window.innerHeight * 0.40;
-           const targetHeight = aspectRatio === 'story' ? 1920 : 1080;
+           const targetHeight = aspectRatio === 'story' ? 1920 : 1440;
            const scaleByHeight = maxMobileHeight / targetHeight;
            scale = Math.min(scaleByWidth, scaleByHeight);
         }
@@ -369,7 +369,7 @@ export default function App() {
       
       const scale = 1; 
       const baseWidth = 1080;
-      const baseHeight = aspectRatio === 'story' ? 1920 : 1080;
+      const baseHeight = aspectRatio === 'story' ? 1920 : 1440;
       
       const options = {
         width: baseWidth,
@@ -437,7 +437,7 @@ const handleDownload = async () => {
       
       const scale = 1; // Export at 1x resolution because base is 1080px
       const baseWidth = 1080;
-      const baseHeight = aspectRatio === 'story' ? 1920 : 1080;
+      const baseHeight = aspectRatio === 'story' ? 1920 : 1440;
       
       const options = {
         width: baseWidth,
@@ -1064,13 +1064,13 @@ const handleDownload = async () => {
               {/* The Preview Area */}
               <div ref={previewContainerRef} className="flex items-center justify-center w-full max-w-md mx-auto flex-shrink-0 bg-gray-100 dark:bg-zinc-950 rounded-xl relative p-4 transition-colors duration-200 max-h-[50vh] md:max-h-none overflow-hidden">
                 {images.length > 0 ? (
-                  <div className="relative mx-auto" style={{ width: 1080 * previewScale, height: (aspectRatio === 'story' ? 1920 : 1080) * previewScale }}>
+                  <div className="relative mx-auto" style={{ width: 1080 * previewScale, height: (aspectRatio === 'story' ? 1920 : 1440) * previewScale }}>
                   <div 
                     ref={previewRef}
-                    className={`absolute top-0 left-0 shadow-xl transition-all duration-300 bg-white ${aspectRatio === 'feed' ? 'aspect-square' : 'aspect-[9/16]'}`}
+                    className={`absolute top-0 left-0 shadow-xl transition-all duration-300 bg-white ${aspectRatio === 'feed' ? 'aspect-[3/4]' : 'aspect-[9/16]'}`}
                     style={{ 
                       width: '1080px', 
-                      height: aspectRatio === 'story' ? '1920px' : '1080px',
+                      height: aspectRatio === 'story' ? '1920px' : '1440px',
                       transform: `scale(${previewScale})`,
                       transformOrigin: 'top left',
                       fontSize: '16px' // force base size
@@ -1095,7 +1095,7 @@ const handleDownload = async () => {
               </div>
               <p className="text-center text-sm text-gray-400 mt-4">
                 {images.length > 0 
-                  ? `O post será gerado no formato ${aspectRatio === 'story' ? 'Story (9:16)' : 'Quadrado (1:1)'}.`
+                  ? `O post será gerado no formato ${aspectRatio === 'story' ? 'Story (9:16)' : 'Retrato (3:4)'}.`
                   : 'Nenhuma foto selecionada.'}
               </p>
             </div>
@@ -1188,7 +1188,7 @@ const handleDownload = async () => {
             className="post-template-export relative"
             style={{ 
               width: '1080px', 
-              height: aspectRatio === 'story' ? '1920px' : '1080px',
+              height: aspectRatio === 'story' ? '1920px' : '1440px',
               fontSize: '16px' // Keep standard base font size
             }}
           >
