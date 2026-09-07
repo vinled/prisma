@@ -1,4 +1,5 @@
 import React from 'react';
+import { PriceDisplay } from './PriceDisplay';
 import { TemplateProps } from '../types';
 import { MapPin, Phone, Maximize, BedDouble, Bath, Car } from 'lucide-react';
 import { formatLocation } from '../utils/formatters';
@@ -66,36 +67,32 @@ export function MinimalistTemplate({ details, image, logo, aspectRatio, brandKit
             </div>
           )}
           
-          {details.price?.trim() && (
-            <div className={`whitespace-nowrap ${aspectRatio === 'story' ? 'text-[86px] mb-[65px]' : 'text-[76px] mb-[54px]'} font-[800] text-[#1A1A1A] tracking-tight`}>
-              {details.price}
-            </div>
-          )}
+          <PriceDisplay details={details} aspectRatio={aspectRatio} baseSizeClassName={`whitespace-nowrap ${aspectRatio === 'story' ? 'text-[86px] mb-[65px]' : 'text-[76px] mb-[54px]'} font-[800] text-[#1A1A1A] tracking-tight`} />
 
           {/* Minimalist Stats - Flexbox inline */}
           <div className={`flex flex-wrap items-center ${aspectRatio === 'story' ? 'gap-[65px] text-[43px] mb-[65px]' : 'gap-[54px] text-[30px] mb-[54px]'} text-[#666] font-medium`}>
             {details.area?.trim() && (
               <div className="flex items-center">
                 <Maximize className={`${aspectRatio === 'story' ? 'w-[43px] h-[43px] mr-[16px]' : 'w-[32px] h-[32px] mr-[9px]'}`} strokeWidth={2} />
-                <span>{details.area} m²</span>
+                <span className="font-bold">{details.area} m²</span>
               </div>
             )}
             {details.bedrooms?.trim() && (
               <div className="flex items-center">
                 <BedDouble className={`${aspectRatio === 'story' ? 'w-[43px] h-[43px] mr-[16px]' : 'w-[32px] h-[32px] mr-[9px]'}`} strokeWidth={2} />
-                <span>{details.bedrooms} {Number(details.bedrooms) !== 1 ? 'Dorms' : 'Dorm'}</span>
+                <span className="font-bold">{details.bedrooms} {Number(details.bedrooms) !== 1 ? 'Dorms' : 'Dorm'}</span>
               </div>
             )}
             {details.suites?.trim() && (
               <div className="flex items-center">
                 <Bath className={`${aspectRatio === 'story' ? 'w-[43px] h-[43px] mr-[16px]' : 'w-[32px] h-[32px] mr-[9px]'}`} strokeWidth={2} />
-                <span>{details.suites} {Number(details.suites) !== 1 ? 'Suítes' : 'Suíte'}</span>
+                <span className="font-bold">{details.suites} {Number(details.suites) !== 1 ? 'Suítes' : 'Suíte'}</span>
               </div>
             )}
             {details.parking?.trim() && (
               <div className="flex items-center">
                 <Car className={`${aspectRatio === 'story' ? 'w-[43px] h-[43px] mr-[16px]' : 'w-[32px] h-[32px] mr-[9px]'}`} strokeWidth={2} />
-                <span>{details.parking} {Number(details.parking) !== 1 ? 'Vagas' : 'Vaga'}</span>
+                <span className="font-bold">{details.parking} {Number(details.parking) !== 1 ? 'Vagas' : 'Vaga'}</span>
               </div>
             )}
           </div>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { PriceDisplay } from './PriceDisplay';
 import { TemplateProps } from '../types';
 import { BedDouble, Bath, Car, Maximize, MapPin } from 'lucide-react';
 import { formatLocation } from '../utils/formatters';
@@ -89,11 +90,7 @@ export function BoldTemplate({ details, image, logo, aspectRatio, brandKit, opti
             </div>
           )}
           
-          {details.price?.trim() && (
-            <div className={`whitespace-nowrap ${aspectRatio === 'story' ? 'text-7xl mb-[32px]' : 'text-[86px] mb-[16px]'} font-[900] text-white text-left tracking-tight drop-shadow-lg`}>
-              {details.price}
-            </div>
-          )}
+          <PriceDisplay details={details} aspectRatio={aspectRatio} baseSizeClassName={`whitespace-nowrap ${aspectRatio === 'story' ? 'text-7xl mb-[32px]' : 'text-[86px] mb-[16px]'} font-[900] text-white text-left tracking-tight drop-shadow-lg`} />
 
           {locationString && (
             <div className={`flex items-center text-gray-200 ${aspectRatio === 'story' ? 'mb-[32px]' : 'mb-[16px]'} drop-shadow-md`}>

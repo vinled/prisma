@@ -1,86 +1,15 @@
-import React, { useState } from 'react';
-import { PropertyDetails, BrandKit } from '../types';
-import { AmenitiesSelector } from './AmenitiesSelector';
-import { Check } from 'lucide-react';
+import re
 
-interface PropertyFormProps {
-  details: PropertyDetails;
-  brandKit: BrandKit | null;
-  onChange: (details: PropertyDetails) => void;
-}
+with open('src/components/PropertyForm.tsx', 'r') as f:
+    content = f.read()
 
-const PROPERTY_TYPES = ['Apartamento', 'Casa', 'Comercial', 'Terreno', 'Rural'];
-const APARTMENT_SUBTYPES = ['Padrão', 'Cobertura', 'Duplex', 'Triplex', 'Garden', 'Loft', 'Studio', 'Kitnet', 'Flat'];
+def extract_between(text, start, end):
+    return text.split(start)[1].split(end)[0]
 
-const LEISURE_AMENITIES = [
-  'Piscina', 'Academia', 'Playground', 'Salão de festas', 'Espaço gourmet',
-  'Churrasqueira', 'Quadra', 'Sauna', 'Briquedoteca', 'Salão de jogos'
-];
+top = content.split('<div className="space-y-6">')[0]
+bottom = '<div className="pt-4 border-t border-gray-200">' + content.split('<div className="pt-4 border-t border-gray-200">', 1)[1]
 
-const CONDO_AMENITIES = [
-  'Portaria 24h', 'Elevador', 'Coworking', 'Pet Place', 'Mini mercado', 'Bicicletário',
-  'Lavanderia', 'SPA', 'Espaço beleza'
-];
-
-const SERVICE_AMENITIES = [
-  'Ar-condicionado', 'Gerador', 'Portão eletrônico', 'Aquecimento solar', 'Gás encanado'
-];
-
-const DIFFERENTIALS = [
-  'Vista para o mar', 'Vista livre', 'Mobiliado', 'Planejados', 'Reformado',
-  'Varanda gourmet', 'Aceita pet', 'Andar alto', 'Sol da manhã', 'Frente mar',
-  'Pé na areia', 'Próximo ao metrô', 'Decorado'
-];
-
-export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps) {
-  const [showCustomContact, setShowCustomContact] = useState(false);
-  const useBrandKitWhatsapp = brandKit?.whatsapp && !showCustomContact;
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    onChange({ ...details, [name]: value });
-  };
-
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, checked } = e.target;
-    onChange({ ...details, [name]: checked });
-  };
-
-  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.replace(/\D/g, '');
-    if (!value) {
-      onChange({ ...details, price: '' });
-      return;
-    }
-    const numericValue = parseInt(value, 10);
-    const formattedValue = new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(numericValue);
-    onChange({ ...details, price: formattedValue });
-  };
-
-  const handleNumberFormatChange = (e: React.ChangeEvent<HTMLInputElement>, suffix: string) => {
-    let value = e.target.value.replace(/\D/g, '');
-    if (!value) {
-      onChange({ ...details, [e.target.name]: '' });
-      return;
-    }
-    onChange({ ...details, [e.target.name]: value });
-  };
-
-  const handleAmenitiesChange = (categorySelected: string[]) => {
-    onChange({ ...details, amenities: categorySelected });
-  };
-
-  const handleDifferentialsChange = (selected: string[]) => {
-    onChange({ ...details, differentials: selected });
-  };
-
-  return (
-    <div className="space-y-6">
+middle = """<div className="space-y-6">
       <div className="flex bg-gray-100 dark:bg-zinc-800 p-1 rounded-lg w-fit mb-4">
         <button
           type="button"
@@ -381,129 +310,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
         />
       </div>
 
-<div className="pt-4 border-t border-gray-200">
-        <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-3">Área de lazer</label>
-        <div className="flex space-x-4 mb-4">
-          <label className="flex items-center">
-            <input
-              type="radio"
-              name="leisureArea"
-              checked={details.leisureArea === false || details.leisureArea === null}
-              onChange={() => onChange({ ...details, leisureArea: false })}
-              className="mr-2 text-blue-600 focus:ring-blue-500"
-            />
-            <span className="text-sm text-gray-700 dark:text-zinc-300">Não informado</span>
-          </label>
-          <label className="flex items-center">
-            <input
-              type="radio"
-              name="leisureArea"
-              checked={details.leisureArea === true}
-              onChange={() => onChange({ ...details, leisureArea: true })}
-              className="mr-2 text-blue-600 focus:ring-blue-500"
-            />
-            <span className="text-sm text-gray-700 dark:text-zinc-300">Possui área de lazer</span>
-          </label>
-        </div>
-        
-        {details.leisureArea && (
-          <div className="bg-blue-50 p-4 rounded-lg space-y-4">
-            <AmenitiesSelector
-              label="Opções de Lazer"
-              options={LEISURE_AMENITIES}
-              selected={details.amenities.filter(a => LEISURE_AMENITIES.includes(a))}
-              onChange={(newSelection) => {
-                const others = details.amenities.filter(a => !LEISURE_AMENITIES.includes(a));
-                handleAmenitiesChange([...others, ...newSelection]);
-              }}
-            />
-          </div>
-        )}
-      </div>
+"""
 
-      <div className="pt-4 border-t border-gray-200">
-        <div className="mb-4">
-          <h3 className="text-sm font-semibold text-gray-800 dark:text-zinc-300">Destaques do Imóvel</h3>
-          <p className="text-xs text-gray-500 mt-1">
-            Selecione comodidades e diferenciais. Para não poluir o design, <strong>apenas até 5 opções no total</strong> serão exibidas na arte final.
-          </p>
-        </div>
-        
-        <AmenitiesSelector
-          label="Comodidades do Condomínio / Serviços"
-          options={[...CONDO_AMENITIES, ...SERVICE_AMENITIES]}
-          selected={details.amenities.filter(a => [...CONDO_AMENITIES, ...SERVICE_AMENITIES].includes(a))}
-          onChange={(newSelection) => {
-            const others = details.amenities.filter(a => !([...CONDO_AMENITIES, ...SERVICE_AMENITIES].includes(a)));
-            handleAmenitiesChange([...others, ...newSelection]);
-          }}
-        />
-      </div>
-
-      <div className="pt-4 border-t border-gray-200">
-        <AmenitiesSelector
-          label="Diferenciais"
-          options={DIFFERENTIALS}
-          selected={details.differentials}
-          onChange={handleDifferentialsChange}
-        />
-      </div>
-
-      <div className="pt-4 border-t border-gray-200">
-        <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-2">Contato</label>
-        
-        {brandKit?.whatsapp ? (
-          <div>
-            {!showCustomContact ? (
-              <div className="flex flex-col space-y-2">
-                <div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
-                  <div className="flex items-center text-green-800">
-                    <Check className="w-4 h-4 mr-2" />
-                    <span className="text-sm font-medium">Usar WhatsApp do Brand Kit</span>
-                  </div>
-                  <span className="text-sm text-green-700">{brandKit.whatsapp}</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setShowCustomContact(true)}
-                  className="text-xs text-blue-600 hover:text-blue-800 text-left"
-                >
-                  Alterar contato para este post
-                </button>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                <input
-                  type="tel"
-                  name="whatsapp"
-                  inputMode="numeric"
-                  value={details.whatsapp}
-                  onChange={handleChange}
-                  placeholder="Ex.: (11) 99999-9999"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowCustomContact(false)}
-                  className="text-xs text-blue-600 hover:text-blue-800 text-left"
-                >
-                  Voltar a usar o contato do Brand Kit
-                </button>
-              </div>
-            )}
-          </div>
-        ) : (
-          <input
-            type="tel"
-            name="whatsapp"
-            inputMode="numeric"
-            value={details.whatsapp}
-            onChange={handleChange}
-            placeholder="Ex.: (11) 99999-9999"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          />
-        )}
-      </div>
-    </div>
-  );
-}
+with open('src/components/PropertyForm.tsx', 'w') as f:
+    f.write(top + middle + bottom)

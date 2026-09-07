@@ -1,4 +1,5 @@
 import React from 'react';
+import { PriceDisplay } from './PriceDisplay';
 import { TemplateProps } from '../types';
 import { BedDouble, Bath, Car, Maximize, MapPin, Phone } from 'lucide-react';
 import { formatLocation } from '../utils/formatters';
@@ -136,11 +137,7 @@ export function LuxuryTemplate({ details, image, logo, aspectRatio, brandKit, op
 
         {/* BOTTOM SECTION: Price & Code */}
         <div className="flex flex-col w-full mt-auto">
-          {details.price?.trim() && (
-            <h3 className={`font-serif ${aspectRatio === 'story' ? 'text-[86px]' : 'text-[76px]'} text-white font-normal drop-shadow-lg tracking-tight mb-[22px]`}>
-              {details.price}
-            </h3>
-          )}
+          <PriceDisplay details={details} aspectRatio={aspectRatio} baseSizeClassName={`font-serif ${aspectRatio === 'story' ? 'text-[86px]' : 'text-[76px]'} text-white font-normal drop-shadow-lg tracking-tight mb-[22px]`} />
           
           <div className="w-full h-[1px] bg-gradient-to-r from-white/40 via-white/10 to-transparent" />
           

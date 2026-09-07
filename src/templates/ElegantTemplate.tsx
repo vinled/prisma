@@ -1,4 +1,5 @@
 import React from 'react';
+import { PriceDisplay } from './PriceDisplay';
 import { TemplateProps } from '../types';
 import { BedDouble, Bath, Car, Maximize, MapPin, Phone } from 'lucide-react';
 import { formatLocation } from '../utils/formatters';
@@ -101,13 +102,7 @@ export function ElegantTemplate({ details, image, logo, aspectRatio, brandKit, o
           )}
           
           {/* Price - Destacado mas Compacto */}
-          {details.price?.trim() && (
-            <div className="text-center font-extrabold text-white drop-shadow-lg">
-              <span className={`${aspectRatio === 'story' ? 'text-[64px]' : 'text-[54px]'} tracking-tight leading-none`}>
-                {details.price}
-              </span>
-            </div>
-          )}
+          <PriceDisplay details={details} aspectRatio={aspectRatio} baseSizeClassName={`text-center font-extrabold text-white drop-shadow-lg ${aspectRatio === 'story' ? 'text-[64px]' : 'text-[54px]'} tracking-tight leading-none`} />
           
           {/* Features Row - Ícones e Textos Finos em Linha Única */}
           <div className="flex flex-row flex-wrap justify-center items-center w-full gap-x-[48px] gap-y-[8px] text-white text-[18px] drop-shadow-sm font-medium mt-[8px]">

@@ -1,4 +1,5 @@
 import React from 'react';
+import { PriceDisplay } from './PriceDisplay';
 import { TemplateProps } from '../types';
 import { BedDouble, Bath, Car, Maximize, MapPin, MessageCircle } from 'lucide-react';
 import { formatLocation } from '../utils/formatters';
@@ -118,11 +119,7 @@ export function ModernTemplate({ details, image, logo, aspectRatio, brandKit, op
               <span className="text-white font-bold tracking-wide truncate">{locationString}</span>
             </div>
           )}
-          {details.price?.trim() && (
-            <div className={`whitespace-nowrap ${aspectRatio === 'story' ? 'text-[108px] mb-[11px]' : 'text-[86px]'} font-black text-white tracking-tighter drop-shadow-md`}>
-              {details.price}
-            </div>
-          )}
+          <PriceDisplay details={details} aspectRatio={aspectRatio} baseSizeClassName={`whitespace-nowrap ${aspectRatio === 'story' ? 'text-[108px] mb-[11px]' : 'text-[86px]'} font-black text-white tracking-tighter drop-shadow-md`} />
         </div>
 
         {/* Features Row */}

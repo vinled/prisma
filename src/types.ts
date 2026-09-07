@@ -1,4 +1,9 @@
 export interface PropertyDetails {
+  purpose?: 'venda' | 'locacao'; // Finalidade
+  rent_price?: string;
+  condo_price?: string;
+  iptu_price?: string;
+  is_package?: boolean;
   title: string; // chamadas (opcional)
   price: string;
   neighborhood: string;
