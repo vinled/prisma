@@ -5,8 +5,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import * as htmlToImage from 'html-to-image';
-import JSZip from 'jszip';
-import { saveAs } from 'file-saver';
 import { Download, Layout, Moon, Sun, Copy, Check, LogOut, User, Menu, X, PlusSquare, Palette, Share2 } from 'lucide-react';
 import { supabase } from './lib/supabase';
 import { Auth } from './components/Auth';
@@ -182,6 +180,7 @@ export default function App() {
     });
   };
   const [isExporting, setIsExporting] = useState(false);
+  const [exportProgressText, setExportProgressText] = useState<string | null>(null);
   const [previewIndex, setPreviewIndex] = useState(0);
 
   const [savedProperties, setSavedProperties] = useState<SavedProperty[]>([]);
@@ -445,9 +444,11 @@ const handleDownload = async () => {
 
     try {
       setIsExporting(true);
+      setExportProgressText('Salvando...');
       const success = await executeSave();
       if (!success) {
         setIsExporting(false);
+        setExportProgressText(null);
         return;
       }
       
@@ -464,24 +465,19 @@ const handleDownload = async () => {
         allowTaint: true
       };
       
-      if (postElements.length === 1) {
-        const dataUrl = await htmlToImage.toPng(postElements[0] as HTMLElement, options);
+      for (let i = 0; i < postElements.length; i++) {
+        setExportProgressText(`Baixando (${i + 1}/${postElements.length})...`);
+        const el = postElements[i] as HTMLElement;
+        const dataUrl = await htmlToImage.toPng(el, options);
         const link = document.createElement('a');
         link.href = dataUrl;
-        link.download = `post-imovel-1.png`;
+        link.download = `post-imovel-${i + 1}.png`;
         link.click();
-      } else {
-        const zip = new JSZip();
         
-        for (let i = 0; i < postElements.length; i++) {
-          const el = postElements[i] as HTMLElement;
-          const dataUrl = await htmlToImage.toPng(el, options);
-          const base64Data = dataUrl.replace(/^data:image\/png;base64,/, '');
-          zip.file(`post-imovel-${i + 1}.png`, base64Data, { base64: true });
+        // Intervalo de segurança (Bypass de Bloqueio de Navegador para downloads múltiplos)
+        if (i < postElements.length - 1) {
+            await new Promise(resolve => setTimeout(resolve, 600));
         }
-        
-        const content = await zip.generateAsync({ type: 'blob' });
-        saveAs(content, `posts-imoveis.zip`);
       }
       
       // If we were creating a new one, we could set idEmEdicao to the new ID, 
@@ -491,6 +487,7 @@ const handleDownload = async () => {
       alert('Erro ao gerar a imagem. Verifique se há imagens e tente novamente.');
     } finally {
       setIsExporting(false);
+      setExportProgressText(null);
     }
   };
 
@@ -1024,7 +1021,7 @@ const handleDownload = async () => {
                   >
                     <Download className="w-4 h-4 mr-2" />
                     <span>
-                      {isExporting ? 'Gerando...' : (images.length > 1 ? `Baixar Zip (${images.length})` : 'Baixar imagem')}
+                      {isExporting ? (exportProgressText || 'Gerando...') : (images.length > 1 ? `Baixar Todas (${images.length})` : 'Baixar Imagem')}
                     </span>
                   </button>
 
@@ -1094,7 +1091,7 @@ const handleDownload = async () => {
                 disabled={isExporting || images.length === 0}
                 className="flex-1 py-3 rounded-xl shadow-sm bg-white dark:bg-zinc-800 text-emerald-600 border border-slate-200 dark:border-zinc-700 hover:bg-slate-50 flex items-center justify-center transition-all duration-300 font-semibold active:scale-95 disabled:opacity-50"
               >
-                <Download className="w-5 h-5 mr-2" /> Baixar Imagem
+                <Download className="w-5 h-5 mr-2" /> {isExporting ? (exportProgressText || "Gerando...") : (images.length > 1 ? `Baixar Todas (${images.length})` : "Baixar Imagem")}
               </button>
               <button
                 onClick={handleShare}
