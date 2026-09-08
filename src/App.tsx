@@ -31,7 +31,8 @@ import { PoliticaPrivacidade } from './components/PoliticaPrivacidade';
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [showAuth, setShowAuth] = useState(false);
-  const [activeTab, setActiveTab] = useState<'criacao' | 'meus_imoveis' | 'minha_marca' | 'minha_conta'>('criacao');
+    const [activeTab, setActiveTab] = useState<'criacao' | 'meus_imoveis' | 'minha_marca' | 'minha_conta'>('criacao');
+  const [mobileViewTab, setMobileViewTab] = useState<'form' | 'preview'>('form');
   const [idEmEdicao, setIdEmEdicao] = useState<string | null>(null);
   const [details, setDetails] = useState<PropertyDetails>({
     purpose: 'venda', rent_price: '', condo_price: '', iptu_price: '', is_package: false, title: '',
@@ -224,6 +225,11 @@ export default function App() {
            const maxMobileHeight = window.innerHeight * 0.40;
            const targetHeight = aspectRatio === 'story' ? 1920 : 1440;
            const scaleByHeight = maxMobileHeight / targetHeight;
+           scale = Math.min(scaleByWidth, scaleByHeight);
+        } else {
+           const maxDesktopHeight = window.innerHeight - 240;
+           const targetHeight = aspectRatio === 'story' ? 1920 : 1440;
+           const scaleByHeight = maxDesktopHeight / targetHeight;
            scale = Math.min(scaleByWidth, scaleByHeight);
         }
         
@@ -877,17 +883,35 @@ const handleDownload = async () => {
           <MyProperties properties={savedProperties} onEdit={handleEdit} onDelete={handleDelete} />
         ) : (
           <div className="max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8">
-            <header className="flex justify-between items-center mb-8">
-              <div>
+            <header className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-8 gap-4">
+              <div className="hidden md:block">
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Criação Rápida</h1>
                 <p className="text-gray-500 dark:text-zinc-400">Posts profissionais para imóveis em segundos</p>
+              </div>
+              
+              {/* Segmented Control for Mobile - Sticky Wrapper */}
+              <div className="sticky top-0 z-[60] w-full bg-gray-50 dark:bg-zinc-950 py-3 border-b border-gray-200 dark:border-white/10 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:static lg:bg-transparent lg:shadow-none lg:p-0 lg:border-none flex lg:hidden mt-0">
+                <div className="flex bg-gray-100 dark:bg-zinc-800 p-1 rounded-xl w-full">
+                  <button
+                    onClick={() => setMobileViewTab('form')}
+                    className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-colors ${mobileViewTab === 'form' ? 'bg-orange-500 text-white shadow-sm' : 'text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white'}`}
+                  >
+                    📝 Editar Dados
+                  </button>
+                  <button
+                    onClick={() => setMobileViewTab('preview')}
+                    className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-colors ${mobileViewTab === 'preview' ? 'bg-orange-500 text-white shadow-sm' : 'text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white'}`}
+                  >
+                    📱 Ver Arte
+                  </button>
+                </div>
               </div>
             </header>
 
         <div className="flex flex-col lg:grid lg:grid-cols-[1fr_1.5fr] gap-8 lg:gap-12 w-full max-w-full">
           
           {/* Controls Side */}
-          <div className="space-y-8 order-2 lg:order-1 min-w-0 w-full max-w-full">
+          <div className={`space-y-8 order-2 lg:order-1 min-w-0 w-full max-w-full ${mobileViewTab === 'form' ? 'block' : 'hidden lg:block'}`}>
             <section className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 transition-colors duration-200 flex items-center justify-between">
               <div>
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Aplicar Assinatura Visual</h2>
@@ -943,7 +967,144 @@ const handleDownload = async () => {
               <PropertyForm details={details} brandKit={applyBrandKit ? brandKit : null} onChange={setDetails} />
             </section>
 
-            <section className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 transition-colors duration-200">
+            
+
+            {/* Mobile Form Actions */}
+            <div className="flex lg:hidden gap-4 mt-8 pb-8">
+              <button
+                onClick={() => {
+                  setActiveTab('meus_imoveis');
+                  setIdEmEdicao(null);
+                }}
+                className="flex-1 py-3 text-gray-600 border border-gray-300 hover:bg-gray-100 dark:text-gray-300 dark:border-zinc-700 dark:hover:bg-zinc-800 font-medium rounded-xl transition-colors"
+              >
+                Voltar
+              </button>
+              {idEmEdicao && (
+                <button
+                  onClick={handleSaveOnly}
+                  disabled={isExporting}
+                  className="flex-1 py-3 bg-emerald-600 text-white hover:bg-emerald-700 font-medium rounded-xl transition-colors disabled:opacity-50"
+                >
+                  Salvar
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Preview Side */}
+          <div className={`${mobileViewTab === 'preview' ? 'block' : 'hidden'} lg:block lg:order-2 lg:sticky lg:top-6 lg:h-[calc(100vh-3rem)] lg:overflow-y-auto w-full max-w-full lg:space-y-6 min-w-0 pb-10`}>
+            <div className="bg-white dark:bg-[#0f111a] -mx-4 px-4 sm:-mx-6 sm:px-6 -mt-4 pt-4 sm:-mt-6 sm:pt-6 pb-4 md:m-0 md:p-0 lg:bg-white lg:dark:bg-zinc-900 lg:p-6 lg:rounded-2xl lg:shadow-sm lg:border border-gray-100 dark:border-zinc-800 flex flex-col transition-colors duration-200 relative">
+              <div className="flex flex-wrap w-full gap-2 items-start md:items-center justify-between mb-6">
+                <h2 className="hidden md:block text-lg font-semibold text-gray-900 dark:text-white truncate max-w-full">Pré-visualização do Post</h2>
+                <div className="flex flex-wrap items-center gap-2 space-x-0">
+                  <button
+                    onClick={() => {
+                      setActiveTab('meus_imoveis');
+                      setIdEmEdicao(null);
+                    }}
+                    className="px-4 py-2 text-gray-600 border border-gray-300 hover:bg-gray-100 dark:text-gray-300 dark:border-zinc-700 dark:hover:bg-zinc-800 font-medium rounded-lg transition-colors"
+                  >
+                    Voltar
+                  </button>
+                  {idEmEdicao && (
+                    <button
+                      onClick={handleSaveOnly}
+                      disabled={isExporting}
+                      className="px-4 py-2 bg-transparent border border-emerald-600 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 font-medium rounded-lg transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100"
+                    >
+                      Salvar
+                    </button>
+                  )}
+                  {/* Desktop Download Button (hidden on mobile) */}
+                  <button
+                    onClick={handleDownload}
+                    disabled={isExporting || images.length === 0}
+                    className="hidden md:flex items-center justify-center p-2 px-4 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    <span>
+                      {isExporting ? 'Gerando...' : (images.length > 1 ? `Baixar Zip (${images.length})` : 'Baixar imagem')}
+                    </span>
+                  </button>
+
+
+                </div>
+              </div>
+
+              {images.length > 1 && (
+                <div className="flex space-x-2 mb-4 overflow-x-auto pb-2">
+                  {images.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setPreviewIndex(idx)}
+                      className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${previewIndex === idx ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 hover:bg-gray-300 dark:hover:bg-zinc-700'}`}
+                    >
+                      {idx + 1}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* The Preview Area */}
+            <div className="sticky top-0 z-[50] bg-gray-50 dark:bg-zinc-950 lg:bg-transparent pb-4 pt-2 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:static lg:p-0 lg:mx-0">
+                <div ref={previewContainerRef} className="flex items-center justify-center w-full max-w-md mx-auto flex-shrink-0 bg-gray-100 dark:bg-zinc-950 rounded-xl relative p-4 transition-colors duration-200 max-h-[50vh] md:max-h-none overflow-hidden">
+                {images.length > 0 ? (
+                  <div className="relative mx-auto" style={{ width: 1080 * previewScale, height: (aspectRatio === 'story' ? 1920 : 1440) * previewScale }}>
+                  <div 
+                    ref={previewRef}
+                    className={`absolute top-0 left-0 shadow-xl transition-all duration-300 bg-white ${aspectRatio === 'feed' ? 'aspect-[3/4]' : 'aspect-[9/16]'}`}
+                    style={{ 
+                      width: '1080px', 
+                      height: aspectRatio === 'story' ? '1920px' : '1440px',
+                      transform: `scale(${previewScale})`,
+                      transformOrigin: 'top left',
+                      fontSize: '16px' // force base size
+                    }}
+                  >
+                    <TemplateRenderer 
+                      templateId={selectedTemplate} 
+                      details={details} 
+                      image={images[previewIndex] || null} 
+                      logo={applyBrandKit ? (brandKit?.logo || null) : null}
+                      aspectRatio={aspectRatio}
+                      brandKit={applyBrandKit ? brandKit : undefined}
+                      options={{...templateOptions, badge: seloAtivo}}
+                      userPlan={userPlan}
+                    />
+                  </div></div>
+                ) : (
+                  <div className="text-gray-400 text-center">
+                    <p>Adicione fotos para visualizar</p>
+                  </div>
+                )}
+              </div>
+              <p className="text-center text-sm text-gray-400 mt-4">
+                {images.length > 0 
+                  ? `O post será gerado no formato ${aspectRatio === 'story' ? 'Story (9:16)' : 'Retrato (3:4)'}.`
+                  : 'Nenhuma foto selecionada.'}
+              </p>
+            </div>
+            {/* removed extra closing div */}
+                        {/* Mobile Action Group (hidden on desktop) */}
+            <div className="flex md:hidden items-center justify-center gap-4 mt-6">
+              <button
+                onClick={handleDownload}
+                disabled={isExporting || images.length === 0}
+                className="flex-1 py-3 rounded-xl shadow-sm bg-white dark:bg-zinc-800 text-emerald-600 border border-slate-200 dark:border-zinc-700 hover:bg-slate-50 flex items-center justify-center transition-all duration-300 font-semibold active:scale-95 disabled:opacity-50"
+              >
+                <Download className="w-5 h-5 mr-2" /> Baixar Imagem
+              </button>
+              <button
+                onClick={handleShare}
+                disabled={isExporting || images.length === 0}
+                className="flex-1 py-3 rounded-xl shadow-sm bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center transition-all duration-300 font-semibold active:scale-95 disabled:opacity-50"
+              >
+                <Share2 className="w-5 h-5 mr-2" /> Compartilhar
+              </button>
+            </div>
+            <section className="mt-6 bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 transition-colors duration-200">
               <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Estilo</h2>
               <TemplateSelector selected={selectedTemplate} onSelect={setSelectedTemplate} />
               <div className="mt-6">
@@ -999,116 +1160,7 @@ const handleDownload = async () => {
                 </div>
               )}
             </section>
-          </div>
 
-          {/* Preview Side */}
-          <div className="contents lg:block lg:order-2 lg:sticky lg:top-6 lg:self-start w-full max-w-full lg:space-y-6 min-w-0">
-            <div className="order-1 lg:order-none sticky top-0 z-40 bg-white dark:bg-[#0f111a] -mx-4 px-4 sm:-mx-6 sm:px-6 -mt-4 pt-4 sm:-mt-6 sm:pt-6 pb-4 shadow-md md:m-0 md:p-0 md:static md:shadow-none lg:bg-white lg:dark:bg-zinc-900 lg:p-6 lg:rounded-2xl lg:shadow-sm lg:border border-gray-100 dark:border-zinc-800 flex flex-col transition-colors duration-200 relative">
-              <div className="flex flex-wrap w-full gap-2 items-start md:items-center justify-between mb-6">
-                <h2 className="hidden md:block text-lg font-semibold text-gray-900 dark:text-white truncate max-w-full">Pré-visualização do Post</h2>
-                <div className="flex flex-wrap items-center gap-2 space-x-0">
-                  <button
-                    onClick={() => {
-                      setActiveTab('meus_imoveis');
-                      setIdEmEdicao(null);
-                    }}
-                    className="px-4 py-2 text-gray-600 border border-gray-300 hover:bg-gray-100 dark:text-gray-300 dark:border-zinc-700 dark:hover:bg-zinc-800 font-medium rounded-lg transition-colors"
-                  >
-                    Voltar
-                  </button>
-                  {idEmEdicao && (
-                    <button
-                      onClick={handleSaveOnly}
-                      disabled={isExporting}
-                      className="px-4 py-2 bg-transparent border border-emerald-600 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 font-medium rounded-lg transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100"
-                    >
-                      Salvar
-                    </button>
-                  )}
-                  {/* Desktop Download Button (hidden on mobile) */}
-                  <button
-                    onClick={handleDownload}
-                    disabled={isExporting || images.length === 0}
-                    className="hidden md:flex items-center justify-center p-2 px-4 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <Download className="w-4 h-4 mr-2" />
-                    <span>
-                      {isExporting ? 'Gerando...' : (images.length > 1 ? `Baixar Zip (${images.length})` : 'Baixar imagem')}
-                    </span>
-                  </button>
-
-                  {/* Mobile Action Group (hidden on desktop) */}
-                  <div className="absolute bottom-4 right-4 z-10 flex items-center justify-center gap-3 md:hidden">
-                    <button
-                      onClick={handleDownload}
-                      disabled={isExporting || images.length === 0}
-                      className="w-12 h-12 rounded-full shadow-lg bg-white text-emerald-600 border border-slate-100 hover:bg-slate-50 flex items-center justify-center transition-all duration-300 ease-in-out active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <Download className="w-6 h-6" />
-                    </button>
-                    <button
-                      onClick={handleShare}
-                      disabled={isExporting || images.length === 0}
-                      className="w-12 h-12 rounded-full shadow-xl bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center transition-all duration-300 ease-in-out active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <Share2 className="w-6 h-6" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {images.length > 1 && (
-                <div className="flex space-x-2 mb-4 overflow-x-auto pb-2">
-                  {images.map((_, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setPreviewIndex(idx)}
-                      className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${previewIndex === idx ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 hover:bg-gray-300 dark:hover:bg-zinc-700'}`}
-                    >
-                      {idx + 1}
-                    </button>
-                  ))}
-                </div>
-              )}
-
-              {/* The Preview Area */}
-              <div ref={previewContainerRef} className="flex items-center justify-center w-full max-w-md mx-auto flex-shrink-0 bg-gray-100 dark:bg-zinc-950 rounded-xl relative p-4 transition-colors duration-200 max-h-[50vh] md:max-h-none overflow-hidden">
-                {images.length > 0 ? (
-                  <div className="relative mx-auto" style={{ width: 1080 * previewScale, height: (aspectRatio === 'story' ? 1920 : 1440) * previewScale }}>
-                  <div 
-                    ref={previewRef}
-                    className={`absolute top-0 left-0 shadow-xl transition-all duration-300 bg-white ${aspectRatio === 'feed' ? 'aspect-[3/4]' : 'aspect-[9/16]'}`}
-                    style={{ 
-                      width: '1080px', 
-                      height: aspectRatio === 'story' ? '1920px' : '1440px',
-                      transform: `scale(${previewScale})`,
-                      transformOrigin: 'top left',
-                      fontSize: '16px' // force base size
-                    }}
-                  >
-                    <TemplateRenderer 
-                      templateId={selectedTemplate} 
-                      details={details} 
-                      image={images[previewIndex] || null} 
-                      logo={applyBrandKit ? (brandKit?.logo || null) : null}
-                      aspectRatio={aspectRatio}
-                      brandKit={applyBrandKit ? brandKit : undefined}
-                      options={{...templateOptions, badge: seloAtivo}}
-                      userPlan={userPlan}
-                    />
-                  </div></div>
-                ) : (
-                  <div className="text-gray-400 text-center">
-                    <p>Adicione fotos para visualizar</p>
-                  </div>
-                )}
-              </div>
-              <p className="text-center text-sm text-gray-400 mt-4">
-                {images.length > 0 
-                  ? `O post será gerado no formato ${aspectRatio === 'story' ? 'Story (9:16)' : 'Retrato (3:4)'}.`
-                  : 'Nenhuma foto selecionada.'}
-              </p>
-            </div>
             {/* Smart Caption Module */}
             <div className="order-3 lg:order-none mt-6 lg:mt-0 bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 transition-colors duration-200">
                 <div className="flex flex-col mb-4 gap-3">

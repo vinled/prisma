@@ -38,10 +38,17 @@ export function ImageUploader({ images, onImagesChange }: ImageUploaderProps) {
               const conversionResult = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.8 });
               const singleBlob = Array.isArray(conversionResult) ? conversionResult[0] : conversionResult;
               currentFile = new File([singleBlob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", { type: "image/jpeg" });
-            } catch (error) {
+            } catch (error: any) {
               console.error("Erro no heic2any:", error);
-              alert("O formato desta foto da Apple não é suportado no navegador. Por favor, converta para JPG ou envie pelo celular.");
-              return null; 
+              
+              // Se o heic2any falhar, pode ser que o navegador já tenha auto-convertido a imagem para JPEG/PNG (comum no iOS Safari),
+              // mas manteve a extensão .heic. Vamos tentar seguir o fluxo normal em vez de abortar.
+              if (error?.code === 2 || file.type === 'image/jpeg' || file.type === 'image/png') {
+                 console.log("Tentando fallback para compressão normal...");
+              } else {
+                 alert("O formato desta foto da Apple não é suportado no navegador. Por favor, converta para JPG ou envie pelo celular.");
+                 return null; 
+              }
             }
           }
           
