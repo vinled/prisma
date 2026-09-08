@@ -24,7 +24,7 @@ export function ElegantTemplate({ details, image, logo, aspectRatio, brandKit, o
         <div 
           className="absolute inset-0 w-full h-full" 
           style={{ 
-            backgroundImage: `url(${image})`, 
+            backgroundImage: `url("${image?.replace(/\"/g, '')}")`, 
             backgroundSize: 'cover', 
             backgroundPosition: `${imagePositionX}% center` 
           }}
@@ -144,13 +144,10 @@ export function ElegantTemplate({ details, image, logo, aspectRatio, brandKit, o
             </div>
           )}
           
-          {/* Footer: Property Code and Watermark */}
-          <div className="flex justify-between items-center w-full mt-[12px] pt-[12px] border-t border-white/10">
+          {/* Footer: Property Code */}
+          <div className="flex justify-start items-center w-full mt-[12px] pt-[12px] border-t border-white/10">
             <span className="text-[16px] text-white/80 font-medium tracking-wider">
               {details.propertyCode?.trim() ? `Cód. ${details.propertyCode}` : ''}
-            </span>
-            <span className="text-[16px] text-white/80 font-medium tracking-wider">
-              Criado com PostNaMão
             </span>
           </div>
         </div>

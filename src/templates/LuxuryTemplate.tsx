@@ -30,7 +30,7 @@ export function LuxuryTemplate({ details, image, logo, aspectRatio, brandKit, op
         <div 
           className="absolute inset-0 w-full h-full" 
           style={{ 
-            backgroundImage: `url(${image})`, 
+            backgroundImage: `url("${image?.replace(/\"/g, '')}")`, 
             backgroundSize: 'cover', 
             backgroundPosition: `${imagePositionX}% center` 
           }}

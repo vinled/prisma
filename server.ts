@@ -3,16 +3,31 @@ import path from "path";
 import { createServer as createViteServer } from "vite";
 import { createClient } from "@supabase/supabase-js";
 import { GoogleGenAI } from "@google/genai";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
+import crypto from "crypto";
 
 async function startServer() {
   const app = express();
   const PORT = 3000;
 
+  app.use(helmet({
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: false,
+    crossOriginOpenerPolicy: false,
+    frameguard: false
+  }));
   app.use(express.json());
 
   // API route for generating caption
+  const generateCaptionLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 10,
+    message: { error: "Muitas requisições. Tente novamente em um minuto." }
+  });
   
-  app.post("/api/generate-caption", async (req, res) => {
+  app.post("/api/generate-caption", generateCaptionLimiter, async (req, res) => {
     try {
       const authHeader = req.headers.authorization;
       if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -77,8 +92,13 @@ async function startServer() {
 
   app.post("/api/webhook/asaas", async (req, res) => {
     try {
-      const token = req.headers["asaas-access-token"];
-      if (token !== process.env.ASAAS_WEBHOOK_TOKEN) {
+      const token = (req.headers["asaas-access-token"] as string) || "";
+      const expectedToken = process.env.ASAAS_WEBHOOK_TOKEN || "";
+      
+      const tokenBuffer = Buffer.from(token);
+      const expectedBuffer = Buffer.from(expectedToken);
+      
+      if (tokenBuffer.length !== expectedBuffer.length || !crypto.timingSafeEqual(tokenBuffer, expectedBuffer)) {
         return res.status(401).json({ error: "Não Autorizado" });
       }
 

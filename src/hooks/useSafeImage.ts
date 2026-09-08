@@ -37,38 +37,7 @@ export function useSafeImage(url: string | null | undefined, preserveAlpha: bool
     };
 
     img.onerror = () => {
-      // If direct CORS fails, attempt to proxy without logging the error string that triggers the platform
-      if (!isMounted) return;
-      if (url.startsWith('http')) {
-        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-        const proxyImg = new window.Image();
-        proxyImg.crossOrigin = 'anonymous';
-        proxyImg.onload = () => {
-          if (!isMounted) return;
-          try {
-            const canvas = document.createElement('canvas');
-            canvas.width = proxyImg.naturalWidth;
-            canvas.height = proxyImg.naturalHeight;
-            const ctx = canvas.getContext('2d');
-            if (ctx) {
-              ctx.imageSmoothingEnabled = true;
-              ctx.imageSmoothingQuality = "high";
-              ctx.drawImage(proxyImg, 0, 0);
-              setSafeUrl(preserveAlpha ? canvas.toDataURL('image/png') : canvas.toDataURL('image/jpeg', 0.95));
-            } else {
-              setSafeUrl(url);
-            }
-          } catch(e) {
-            setSafeUrl(url);
-          }
-        };
-        proxyImg.onerror = () => {
-          if (isMounted) setSafeUrl(url);
-        };
-        proxyImg.src = proxyUrl;
-      } else {
-        setSafeUrl(url);
-      }
+      if (isMounted) setSafeUrl(url);
     };
 
     if (url.startsWith('http')) {
