@@ -49,23 +49,37 @@ export function ModernTemplate({ details, image, logo, aspectRatio, brandKit, op
       {/* Badge de Oportunidade/Vendido */}
       {options?.badge && (
         <div 
-          className="absolute left-0 z-[15] flex items-center justify-center font-black tracking-widest text-white drop-shadow-[0_4px_10px_rgba(0,0,0,0.4)]"
+          className="absolute left-0 z-[15] flex items-center justify-center"
           style={{ 
-            top: aspectRatio === 'story' ? '280px' : '200px',
-            backgroundColor: (
-              options.badge === 'VENDIDO' ? '#dc2626' : 
-              options.badge === 'EXCLUSIVIDADE' ? '#d97706' : 
-              options.badge === 'BAIXOU O VALOR' ? '#16a34a' : 
-              options.badge === 'OPORTUNIDADE' ? '#2563eb' : '#2563eb'
-            ),
-            borderRadius: '0 12px 12px 0',
-            fontFamily: '"Montserrat", sans-serif',
-            fontSize: aspectRatio === 'story' ? '38px' : '28px',
-            padding: aspectRatio === 'story' ? '16px 24px' : '12px 18px',
-            textTransform: 'uppercase'
+             top: aspectRatio === 'story' ? '280px' : '200px'
           }}
         >
-          {options.badge}
+          <div className="relative inline-flex items-center justify-center shadow-[0_4px_10px_rgba(0,0,0,0.4)]">
+              <svg xmlns="http://www.w3.org/2000/svg" className="absolute inset-0 w-full h-full" preserveAspectRatio="none">
+                <rect 
+                  width="100%" 
+                  height="100%" 
+                  rx="0"
+                  fill={
+                    options.badge === 'VENDIDO' ? '#dc2626' : 
+                    options.badge === 'EXCLUSIVIDADE' ? '#d97706' : 
+                    options.badge === 'BAIXOU O VALOR' ? '#16a34a' : 
+                    options.badge === 'OPORTUNIDADE' ? '#2563eb' : '#2563eb'
+                  }
+                />
+              </svg>
+              <span 
+                className="relative z-10 font-black tracking-widest text-white whitespace-nowrap"
+                style={{
+                  fontFamily: '"Montserrat", sans-serif',
+                  fontSize: aspectRatio === 'story' ? '38px' : '28px',
+                  padding: aspectRatio === 'story' ? '16px 24px' : '12px 18px',
+                  textTransform: 'uppercase'
+                }}
+              >
+                {options.badge}
+              </span>
+          </div>
         </div>
       )}
 

@@ -1,4 +1,9 @@
-import React from 'react';
+import re
+
+with open('src/templates/LuxuryTemplate.tsx', 'r') as f:
+    content = f.read()
+
+new_content = """import React from 'react';
 import { PriceDisplay } from './PriceDisplay';
 import { TemplateProps } from '../types';
 import { BedDouble, Bath, Car, Maximize, MapPin, Phone } from 'lucide-react';
@@ -42,7 +47,7 @@ export function LuxuryTemplate({ details, image, logo, aspectRatio, brandKit, op
         <div 
           className="absolute inset-0 w-full h-full" 
           style={{ 
-            backgroundImage: `url("${image?.replace(/\"/g, '')}")`, 
+            backgroundImage: `url("${image?.replace(/\\"/g, '')}")`, 
             backgroundSize: 'cover', 
             backgroundPosition: `${imagePositionX}% center` 
           }}
@@ -82,24 +87,19 @@ export function LuxuryTemplate({ details, image, logo, aspectRatio, brandKit, op
         <div className="flex flex-wrap items-center gap-[16px]">
           {/* Renderização condicional do selo */}
           {options?.badge && (
-            <div className="relative inline-flex items-center justify-center shadow-lg">
-              <svg xmlns="http://www.w3.org/2000/svg" className="absolute inset-0 w-full h-full" preserveAspectRatio="none">
-                <rect 
-                  width="100%" 
-                  height="100%" 
-                  rx="4" 
-                  fill={
-                    options.badge === 'VENDIDO' ? '#dc2626' : 
-                    options.badge === 'EXCLUSIVIDADE' ? '#d97706' : 
-                    options.badge === 'BAIXOU O VALOR' ? '#16a34a' : 
-                    options.badge === 'OPORTUNIDADE' ? '#2563eb' : '#ea580c'
-                  }
-                />
-              </svg>
-              <span className={`relative z-10 ${seloPadding} ${seloText} font-bold text-white uppercase tracking-wider font-sans whitespace-nowrap`}>
-                {options.badge}
-              </span>
-            </div>
+            <span 
+              className={`bg-orange-600 ${seloPadding} ${seloText} font-bold text-white uppercase tracking-wider shadow-lg font-sans rounded`}
+              style={{
+                backgroundColor: (
+                  options.badge === 'VENDIDO' ? '#dc2626' : 
+                  options.badge === 'EXCLUSIVIDADE' ? '#d97706' : 
+                  options.badge === 'BAIXOU O VALOR' ? '#16a34a' : 
+                  options.badge === 'OPORTUNIDADE' ? '#2563eb' : '#ea580c'
+                )
+              }}
+            >
+              {options.badge}
+            </span>
           )}
           <h2 className={`font-serif ${tituloText} text-white tracking-widest uppercase drop-shadow-md m-0 leading-none`}>
             {details.title || 'ALTO PADRÃO'}
@@ -152,3 +152,7 @@ export function LuxuryTemplate({ details, image, logo, aspectRatio, brandKit, op
     </div>
   );
 }
+"""
+
+with open('src/templates/LuxuryTemplate.tsx', 'w') as f:
+    f.write(new_content)

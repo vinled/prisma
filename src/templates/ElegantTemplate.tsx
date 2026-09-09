@@ -4,7 +4,7 @@ import { TemplateProps } from '../types';
 import { BedDouble, Bath, Car, Maximize, MapPin, Phone } from 'lucide-react';
 import { formatLocation } from '../utils/formatters';
 
-export function ElegantTemplate({ details, image, logo, aspectRatio, brandKit, options }: TemplateProps) {
+export function ElegantTemplate({ details, image, logo, aspectRatio, brandKit, options, userPlan }: TemplateProps) {
   const locationString = formatLocation(details.neighborhood, details.city, details.state);
   const whatsapp = details.whatsapp || brandKit?.whatsapp;
   
@@ -34,122 +34,118 @@ export function ElegantTemplate({ details, image, logo, aspectRatio, brandKit, o
           Sem imagem
         </div>
       )}
-      {/* Gentle Gradient for Contrast (controlled by the slider) */}
-      <div 
-        className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" 
-        style={{ opacity: opacityRatio }}
-      />
+
+      {/* Top and Bottom Gradients */}
+      <div className="absolute top-0 inset-x-0 h-32 bg-gradient-to-b from-black/60 to-transparent pointer-events-none" style={{ opacity: opacityRatio }} />
+      <div className="absolute bottom-0 inset-x-0 h-2/3 bg-gradient-to-t from-black/90 via-black/40 to-transparent pointer-events-none" style={{ opacity: opacityRatio }} />
 
       {/* Top Bar (Logo and WhatsApp) */}
       <div className={`absolute ${aspectRatio === 'story' ? 'top-10 left-[65px] right-[65px]' : 'top-[49px] left-[49px] right-[49px]'} flex justify-between items-start z-10`}>
         {logo ? (
-          <div className="bg-white/20 backdrop-blur-md p-[22px] rounded-[43px] max-w-[324px] max-h-[130px] flex justify-center shadow-md border border-white/20">
-            <img src={logo} alt="Logo" className="object-contain max-h-[86px]" style={{ transform: `scale(${(options?.logoSize ?? 100) / 100})`, transformOrigin: 'center' }} />
+          <div className="max-w-[324px] max-h-[130px] flex justify-start items-start">
+            <img src={logo} alt="Logo" className="object-contain max-h-[86px] drop-shadow-md" style={{ transform: `scale(${(options?.logoSize ?? 100) / 100})`, transformOrigin: 'left top' }} />
           </div>
         ) : <div />}
+        
         {whatsapp?.trim() && (
-          <div className="flex items-center text-white drop-shadow-md bg-black/20 backdrop-blur-md px-[22px] py-[16px] rounded-full border border-white/10 shadow-lg">
-            <Phone className="w-[27px] h-[27px] mr-[9px] opacity-90" />
-            <span className="whitespace-nowrap text-[27px] font-semibold tracking-wide">{whatsapp}</span>
+          <div className="flex items-center text-white drop-shadow-md">
+            <Phone className="w-[27px] h-[27px] mr-[9px] opacity-90 drop-shadow-md" />
+            <span className="whitespace-nowrap text-[27px] font-semibold tracking-wide drop-shadow-md">{whatsapp}</span>
           </div>
         )}
       </div>
 
-      {/* Main Glass Panel Area - Lower Third Compact */}
-      <div className="absolute left-1/2 -translate-x-1/2 bottom-[32px] flex flex-col items-center z-10 w-[96%] max-w-[1000px]">
-        
-        {/* Floating Tagline (Original) */}
-        {details.title?.trim() && (
-          <div className="mb-[16px] bg-gradient-to-r from-black/60 to-black/40 text-white px-[32px] py-[8px] rounded-full text-[18px] font-bold tracking-widest uppercase border border-white/10 shadow-lg drop-shadow-md relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 transform translate-x-[-100%] skew-x-[-15deg] group-hover:translate-x-[100%] transition-transform duration-1000" />
-            {details.title}
-          </div>
-        )}
-
-        {/* Badge "Encostado no topo do card" */}
-        {options?.badge && (
-          <div 
-            className="self-start mb-[8px] flex items-center justify-center font-black tracking-widest text-white drop-shadow-md"
-            style={{ 
-              backgroundColor: (
-                options.badge === 'VENDIDO' ? '#dc2626' : 
-                options.badge === 'EXCLUSIVIDADE' ? '#d97706' : 
-                options.badge === 'BAIXOU O VALOR' ? '#16a34a' : 
-                options.badge === 'OPORTUNIDADE' ? '#2563eb' : '#2563eb'
-              ),
-              borderRadius: '8px',
-              fontFamily: '"Montserrat", sans-serif',
-              fontSize: aspectRatio === 'story' ? '20px' : '18px',
-              padding: '6px 16px',
-              textTransform: 'uppercase'
-            }}
-          >
-            {options.badge}
-          </div>
-        )}
-
-        {/* The Glass Panel (Lower Third Compact) */}
-        <div className={`w-full bg-black/65 backdrop-blur-md border border-white/10 rounded-[24px] ${aspectRatio === 'story' ? 'py-[24px] px-[40px]' : 'py-[16px] px-[32px]'} shadow-[0_8px_30px_rgba(0,0,0,0.6)] flex flex-col relative gap-[8px]`}>
-          {/* inner highlight reflection */}
-          <div className="absolute inset-0 rounded-[24px] ring-1 ring-inset ring-white/10 pointer-events-none" />
+      {/* Main Glass Panel Area - Left Aligned */}
+      <div className="absolute left-1/2 -translate-x-1/2 bottom-[40px] flex flex-col items-center z-10 w-[96%] max-w-[1000px]">
+        {/* The Glass Container */}
+        <div className="bg-black/40 backdrop-blur-md border border-white/20 p-[32px] rounded-[32px] w-full max-w-[940px] mx-auto flex flex-col items-start text-left relative shadow-2xl">
           
-          {/* Location */}
+          {/* Badge Ancorado no Topo do Card Vidro (Left Aligned) */}
+          {options?.badge && (
+            <div className="absolute -top-[18px] left-[32px] inline-flex items-center justify-center shadow-md">
+              <svg xmlns="http://www.w3.org/2000/svg" className="absolute inset-0 w-full h-full" preserveAspectRatio="none">
+                <rect 
+                  width="100%" 
+                  height="100%" 
+                  rx="999" 
+                  fill={
+                    options.badge === 'VENDIDO' ? '#dc2626' : 
+                    options.badge === 'EXCLUSIVIDADE' ? '#d97706' : 
+                    options.badge === 'BAIXOU O VALOR' ? '#16a34a' : 
+                    options.badge === 'OPORTUNIDADE' ? '#2563eb' : '#000000'
+                  }
+                  stroke="rgba(255,255,255,0.2)"
+                  strokeWidth="2"
+                />
+              </svg>
+              <span className="relative z-10 px-[24px] py-[6px] text-[16px] font-bold tracking-widest uppercase text-white whitespace-nowrap">
+                {options.badge}
+              </span>
+            </div>
+          )}
+
+          {/* Linha 1: Endereço */}
           {locationString && (
-            <div className="flex items-center justify-center text-white/90 drop-shadow-sm">
-              <MapPin className="w-[18px] h-[18px] mr-[8px] opacity-80" />
-              <span className="text-[18px] font-medium uppercase tracking-widest">{locationString}</span>
+            <div className="flex items-center gap-[8px] text-[20px] font-bold tracking-wider text-white/80 uppercase mt-[8px]">
+              <MapPin className="w-[24px] h-[24px] opacity-80" />
+              <span>{locationString}</span>
             </div>
           )}
           
-          {/* Price - Destacado mas Compacto */}
-          <PriceDisplay details={details} aspectRatio={aspectRatio} baseSizeClassName={`text-center font-extrabold text-white drop-shadow-lg ${aspectRatio === 'story' ? 'text-[64px]' : 'text-[54px]'} tracking-tight leading-none`} />
+          {/* Linha 2: Price */}
+          <PriceDisplay details={details} aspectRatio={aspectRatio} baseSizeClassName="text-left font-black text-white text-[72px] tracking-tighter drop-shadow-lg leading-none mt-[8px] mb-[32px]" />
           
-          {/* Features Row - Ícones e Textos Finos em Linha Única */}
-          <div className="flex flex-row flex-wrap justify-center items-center w-full gap-x-[48px] gap-y-[8px] text-white text-[18px] drop-shadow-sm font-medium mt-[8px]">
+          {/* Linha 3: Características (O Grid) */}
+          <div className="flex flex-wrap items-center gap-x-[40px] gap-y-[16px]">
             {details.area?.trim() && (
-              <div className="flex items-center">
-                <Maximize className="w-[20px] h-[20px] text-white/90 mr-[8px] stroke-[2]" />
-                <span className="whitespace-nowrap">{details.area} m²</span>
+              <div className="flex items-center gap-[12px] text-[28px] font-bold text-white">
+                <Maximize className="w-[32px] h-[32px] text-white/90 stroke-[2]" />
+                <span>{details.area} m²</span>
               </div>
             )}
             
             {details.bedrooms?.trim() && (
-              <div className="flex items-center">
-                <BedDouble className="w-[20px] h-[20px] text-white/90 mr-[8px] stroke-[2]" />
-                <span className="whitespace-nowrap">{details.bedrooms} {Number(details.bedrooms) !== 1 ? 'Dorms' : 'Dorm'}</span>
+              <div className="flex items-center gap-[12px] text-[28px] font-bold text-white">
+                <BedDouble className="w-[32px] h-[32px] text-white/90 stroke-[2]" />
+                <span>{details.bedrooms} {Number(details.bedrooms) !== 1 ? 'Dorms' : 'Dorm'}</span>
               </div>
             )}
             
             {(details.suites?.trim() || details.bathrooms?.trim()) && (
-              <div className="flex items-center">
-                <Bath className="w-[20px] h-[20px] text-white/90 mr-[8px] stroke-[2]" />
-                <span className="whitespace-nowrap">{details.suites?.trim() ? details.suites : details.bathrooms} {details.suites?.trim() ? (Number(details.suites) !== 1 ? 'Suítes' : 'Suíte') : (Number(details.bathrooms) !== 1 ? 'Banhs' : 'Banh')}</span>
+              <div className="flex items-center gap-[12px] text-[28px] font-bold text-white">
+                <Bath className="w-[32px] h-[32px] text-white/90 stroke-[2]" />
+                <span>{details.suites?.trim() ? details.suites : details.bathrooms} {details.suites?.trim() ? (Number(details.suites) !== 1 ? 'Suítes' : 'Suíte') : (Number(details.bathrooms) !== 1 ? 'Banhs' : 'Banh')}</span>
               </div>
             )}
             
             {details.parking?.trim() && (
-              <div className="flex items-center">
-                <Car className="w-[20px] h-[20px] text-white/90 mr-[8px] stroke-[2]" />
-                <span className="whitespace-nowrap">{details.parking} {Number(details.parking) !== 1 ? 'Vagas' : 'Vaga'}</span>
+              <div className="flex items-center gap-[12px] text-[28px] font-bold text-white">
+                <Car className="w-[32px] h-[32px] text-white/90 stroke-[2]" />
+                <span>{details.parking} {Number(details.parking) !== 1 ? 'Vagas' : 'Vaga'}</span>
               </div>
             )}
           </div>
           
-          {/* Differentials - Texto reduzido e truncado */}
-          {tagsString && (
-            <div className="w-full flex justify-center mt-[8px] pt-[8px] border-t border-white/10 overflow-hidden">
-              <span className="text-[14px] text-gray-300 uppercase tracking-widest font-normal text-center drop-shadow-sm truncate w-full">
-                {tagsString}
+          {/* Linha 4: Comodidades e Rodapé (Separador) */}
+          <div className="w-full mt-[32px] pt-[24px] border-t border-white/20 flex flex-col gap-[12px]">
+            {allTags.length > 0 && (
+              <p className="text-[18px] font-semibold text-white/80 uppercase tracking-widest leading-relaxed">
+                {allTags.join(' • ')}
+              </p>
+            )}
+            
+            <div className="flex justify-between items-center w-full mt-[8px]">
+              <span className="text-[16px] text-white/60 font-semibold uppercase tracking-wider">
+                {details.propertyCode?.trim() ? `Cód: ${details.propertyCode}` : ''}
               </span>
+              {userPlan !== 'pro' && (
+                <span className="text-[16px] text-white/40 font-semibold uppercase tracking-wider">
+                  Criado com PostNaMão
+                </span>
+              )}
             </div>
-          )}
-          
-          {/* Footer: Property Code */}
-          <div className="flex justify-start items-center w-full mt-[12px] pt-[12px] border-t border-white/10">
-            <span className="text-[16px] text-white/80 font-medium tracking-wider">
-              {details.propertyCode?.trim() ? `Cód. ${details.propertyCode}` : ''}
-            </span>
           </div>
+
         </div>
       </div>
     </div>
