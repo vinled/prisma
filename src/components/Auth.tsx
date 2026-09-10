@@ -236,7 +236,7 @@ export function Auth({ onBack }: AuthProps) {
           </div>
         </form>
 
-        {!isRecovery && (
+        {/* !isRecovery && (
           <div className="mt-6">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
@@ -264,7 +264,7 @@ export function Auth({ onBack }: AuthProps) {
               </button>
             </div>
           </div>
-        )}
+        ) */}
       </div>
     </div>
   );
