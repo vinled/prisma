@@ -112,12 +112,8 @@ export default function App() {
   const [destinoCopy, setDestinoCopy] = useState('instagram');
 
   const handleGenerateCopy = async () => {
-    if (userPlan !== 'pro') {
-      alert('Recurso exclusivo do Plano Pro. Faça o upgrade para usar a IA!');
-      setIsPaywallOpen(true);
-      return;
-    }
-    if (userPlan === 'free' && targetAudience.includes('(Pro)')) {
+    if (userPlan !== 'pro' && targetAudience.includes('(Pro)')) {
+      alert('Este tom/estilo é exclusivo do Plano Pro. Faça o upgrade para usá-lo!');
       setIsPaywallOpen(true);
       return;
     }
