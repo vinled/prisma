@@ -1,3 +1,4 @@
+import { useLocation } from 'react-router-dom';
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -27,6 +28,7 @@ import { TermosDeUso } from './components/TermosDeUso';
 import { PoliticaPrivacidade } from './components/PoliticaPrivacidade';
 
 export default function App() {
+  const location = useLocation();
   const [session, setSession] = useState<Session | null>(null);
   const [showAuth, setShowAuth] = useState(false);
     const [activeTab, setActiveTab] = useState<'criacao' | 'meus_imoveis' | 'minha_marca' | 'minha_conta'>('criacao');
@@ -520,7 +522,7 @@ const handleDownload = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setSession(session);
       
-      const path = window.location.pathname;
+      const path = location.pathname;
       if (!session && path !== '/' && path !== '/reset-password' && path !== '/termos' && path !== '/privacidade') {
         window.history.replaceState({}, '', '/');
         setShowAuth(true);
@@ -570,7 +572,7 @@ const handleDownload = async () => {
     } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setSession(session);
       
-      const path = window.location.pathname;
+      const path = location.pathname;
       if (!session && path !== '/' && path !== '/reset-password' && path !== '/termos' && path !== '/privacidade') {
         window.history.replaceState({}, '', '/');
         setShowAuth(true);
@@ -617,15 +619,15 @@ const handleDownload = async () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  if (window.location.pathname === '/reset-password') {
+  if (location.pathname === '/reset-password') {
     return <ResetPassword />;
   }
 
-  if (window.location.pathname === '/termos') {
+  if (location.pathname === '/termos') {
     return <TermosDeUso />;
   }
 
-  if (window.location.pathname === '/privacidade') {
+  if (location.pathname === '/privacidade') {
     return <PoliticaPrivacidade />;
   }
 

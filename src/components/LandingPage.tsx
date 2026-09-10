@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import React, { useState, useEffect, useRef } from 'react';
 import { Smartphone, Tags, Zap, CheckCircle2, XCircle, Sparkles, Check, ShieldCheck, Star, ChevronDown, Home, Instagram } from 'lucide-react';
 import { PostNaMaoLogo } from './PostNaMaoLogo';
@@ -497,8 +498,8 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
               <Instagram className="w-4 h-4" />
               @postnamaobr
             </a>
-            <a href="/termos" className="hover:text-orange-500 transition-colors">Termos de Uso</a>
-            <a href="/privacidade" className="hover:text-orange-500 transition-colors">Política de Privacidade</a>
+            <Link to="/termos" className="hover:text-orange-500 transition-colors">Termos de Uso</Link>
+            <Link to="/privacidade" className="hover:text-orange-500 transition-colors">Política de Privacidade</Link>
             <a href="#" className="hover:text-orange-500 transition-colors">Contato</a>
           </div>
         </div>
