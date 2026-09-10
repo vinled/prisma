@@ -153,19 +153,20 @@ export default function App() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ promptText })
+        body: JSON.stringify({ promptText, targetAudience })
       });
 
       if (!response.ok) {
-        const err = await response.json();
-        throw new Error(err.error || 'Erro na API');
+        const errorText = await response.text();
+        console.error("Erro na API:", errorText);
+        throw new Error("Erro na comunicação com o servidor. Tente novamente.");
       }
 
       const result = await response.json();
       setGeneratedCaption(result.caption);
     } catch (error: any) {
       console.error('ERRO DETALHADO DA API:', error);
-      alert('Erro ao gerar copy: ' + (error.message || JSON.stringify(error)));
+      setGeneratedCaption('Falha na comunicação com o servidor. Por favor, tente gerar o texto novamente.');
     } finally {
       setIsGeneratingCopy(false);
     }
@@ -423,9 +424,9 @@ export default function App() {
       link.href = dataUrl;
       link.download = `post-imovel-1.png`;
       link.click();
-    } catch (error) {
-      console.error('Erro na exportação:', error);
-      alert('Ocorreu um erro ao gerar a imagem.');
+    } catch (error: any) {
+      console.error(error);
+      alert(error.message || 'Erro ao gerar a legenda. Tente novamente.');
     } finally {
       setIsExporting(false);
     }
@@ -480,9 +481,9 @@ const handleDownload = async () => {
       
       // If we were creating a new one, we could set idEmEdicao to the new ID, 
       // but it's fine to leave it to clear on next '+ Criação'.
-    } catch (error) {
-      console.error('Failed to export image:', error);
-      alert('Erro ao gerar a imagem. Verifique se há imagens e tente novamente.');
+    } catch (error: any) {
+      console.error(error);
+      alert(error.message || 'Erro ao gerar a legenda. Tente novamente.');
     } finally {
       setIsExporting(false);
       setExportProgressText(null);

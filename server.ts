@@ -51,6 +51,8 @@ async function startServer() {
         return res.status(401).json({ error: "Unauthorized: Invalid token" });
       }
 
+      const { promptText, targetAudience } = req.body;
+
       // Check user privileges (Pro Plan)
       const { data: profile } = await supabase
         .from("profiles")
@@ -58,16 +60,16 @@ async function startServer() {
         .eq("id", user.id)
         .single();
 
-      if (!profile || profile.plan !== "pro") {
-        return res.status(403).json({ error: "Forbidden: Recurso exclusivo do Plano Pro." });
+      if (targetAudience && targetAudience.includes('(Pro)')) {
+        if (!profile || profile.plan !== "pro") {
+          return res.status(403).json({ error: "Forbidden: Recurso exclusivo do Plano Pro." });
+        }
       }
 
       const apiKey = process.env.GEMINI_API_KEY;
       if (!apiKey) {
         return res.status(500).json({ error: "A chave GEMINI_API_KEY não foi configurada nas variáveis de ambiente do servidor." });
       }
-
-      const { promptText } = req.body;
       
       const ai = new GoogleGenAI({
         apiKey: apiKey,
