@@ -1,4 +1,8 @@
-import React, { useState } from 'react';
+import re
+
+# Rewrite Auth.tsx completely as requested.
+
+new_auth_content = """import React, { useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { PostNaMaoLogo } from './PostNaMaoLogo';
 import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
@@ -269,3 +273,7 @@ export function Auth({ onBack }: AuthProps) {
     </div>
   );
 }
+"""
+
+with open('src/components/Auth.tsx', 'w') as f:
+    f.write(new_auth_content)
