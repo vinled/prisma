@@ -123,7 +123,7 @@ export default function App() {
       
       let regrasDeFormato = '';
       if (destinoCopy === 'instagram') {
-        regrasDeFormato = "Formate como um post de Instagram. Use parágrafos curtos, emojis espaçados para leitura fluida, inclua hashtags relevantes no final e crie uma chamada para ação (CTA) convidando para comentar ou enviar direct.";
+        regrasDeFormato = "Formate como um post de Instagram. Use parágrafos curtos e emojis espaçados para leitura fluida. REGRAS ESTRITAS: 1. ZERO formatação Markdown (NÃO use ** ou * para negrito/itálico, gere apenas texto plano). 2. PROIBIDO inserir links, URLs ou placeholders como '[Insira o link]' (links não são clicáveis no Instagram). 3. Para chamadas de ação (CTA), use APENAS instruções nativas como 'Link na bio', 'Envie uma mensagem no Direct' ou 'Comente EU QUERO'. 4. Inclua hashtags relevantes no final.";
       } else if (destinoCopy === 'whatsapp') {
         regrasDeFormato = "Formate como uma mensagem privada de WhatsApp enviada de um corretor para um cliente vip. Seja extremamente direto, persuasivo e curto. NÃO use hashtags. Use formatação nativa do WhatsApp (ex: *negrito* para o preço e destaques). Termine com uma pergunta fechada de engajamento, como 'Podemos agendar uma visita amanhã?' ou 'Faz sentido para você?'";
       }
