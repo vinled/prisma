@@ -164,6 +164,7 @@ export default function App() {
 
       const result = await response.json();
       setGeneratedCaption(result.caption);
+      setDetails(prev => ({ ...prev, generated_copy: result.caption }));
     } catch (error: any) {
       console.error('ERRO DETALHADO DA API:', error);
       setGeneratedCaption('Falha na comunicação com o servidor. Por favor, tente gerar o texto novamente.');
@@ -498,6 +499,7 @@ const handleDownload = async () => {
     setSelectedTemplate(prop.selectedTemplate);
     setAspectRatio(prop.aspectRatio);
     setTemplateOptions(prop.templateOptions);
+    setGeneratedCaption(prop.details.generated_copy || '');
     setActiveTab('criacao');
   };
 
@@ -693,6 +695,7 @@ const handleDownload = async () => {
                 amenities: [], differentials: [], leisureArea: null, whatsapp: ''
               });
                   setImages([]);
+              setGeneratedCaption('');
                   setPreviewScale(1);
                   setIsMobileMenuOpen(false);
                 }}
@@ -796,6 +799,7 @@ const handleDownload = async () => {
                 amenities: [], differentials: [], leisureArea: null, whatsapp: ''
               });
               setImages([]);
+              setGeneratedCaption('');
             }}
             className={`w-full flex justify-center md:justify-start items-center text-center md:text-left text-sm p-2 md:px-4 md:py-3 overflow-hidden truncate rounded-xl transition-colors ${
               activeTab === 'criacao' 
@@ -1066,7 +1070,7 @@ const handleDownload = async () => {
                       logo={applyBrandKit ? (brandKit?.logo || null) : null}
                       aspectRatio={aspectRatio}
                       brandKit={applyBrandKit ? brandKit : undefined}
-                      options={{...templateOptions, badge: seloAtivo}}
+                      options={{...templateOptions, badge: seloAtivo, imagePositionX: templateOptions.imagePositions?.[previewIndex] ?? templateOptions.imagePositionX ?? 50}}
                       userPlan={userPlan}
                     />
                   </div></div>
@@ -1115,13 +1119,13 @@ const handleDownload = async () => {
                   <div>
                     <div className="flex justify-between text-xs text-gray-500 dark:text-zinc-400 mb-1">
                       <label>Posição da Foto (Esquerda - Direita)</label>
-                      <span>{templateOptions.imagePositionX}%</span>
+                      <span>{templateOptions.imagePositions?.[previewIndex] ?? templateOptions.imagePositionX ?? 50}%</span>
                     </div>
                     <input 
                       type="range" 
                       min="0" max="100" 
-                      value={templateOptions.imagePositionX} 
-                      onChange={(e) => setTemplateOptions({...templateOptions, imagePositionX: Number(e.target.value)})}
+                      value={templateOptions.imagePositions?.[previewIndex] ?? templateOptions.imagePositionX ?? 50} 
+                      onChange={(e) => setTemplateOptions({...templateOptions, imagePositions: {...templateOptions.imagePositions, [previewIndex]: Number(e.target.value)}})}
                       className="w-full h-2 bg-gray-200 dark:bg-zinc-700 rounded-lg appearance-none cursor-pointer"
                     />
                   </div>
@@ -1257,7 +1261,7 @@ const handleDownload = async () => {
               logo={applyBrandKit ? (brandKit?.logo || null) : null}
               aspectRatio={aspectRatio}
               brandKit={applyBrandKit ? brandKit : undefined}
-              options={{...templateOptions, badge: seloAtivo}}
+              options={{...templateOptions, badge: seloAtivo, imagePositionX: templateOptions.imagePositions?.[idx] ?? templateOptions.imagePositionX ?? 50}}
               userPlan={userPlan}
             />
           </div>

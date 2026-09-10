@@ -45,10 +45,13 @@ export function MyProperties({ properties, onEdit, onDelete }: Props) {
   });
 
   const handleCopyCaption = (prop: SavedProperty) => {
-    const type = prop.details.propertyType || 'Imóvel';
-    const location = [prop.details.neighborhood, prop.details.city].filter(Boolean).join(', ');
-    const price = prop.details.price ? ` - ${prop.details.price}` : '';
-    const caption = `Confira: ${type}${location ? ` em ${location}` : ''}${price}.\n\nPara mais informações, entre em contato!`;
+    let caption = prop.details.generated_copy;
+    if (!caption) {
+      const type = prop.details.propertyType || 'Imóvel';
+      const location = [prop.details.neighborhood, prop.details.city].filter(Boolean).join(', ');
+      const price = prop.details.price ? ` - ${prop.details.price}` : '';
+      caption = `Confira: ${type}${location ? ` em ${location}` : ''}${price}.\n\nPara mais informações, entre em contato!`;
+    }
     
     navigator.clipboard.writeText(caption)
       .then(() => alert('Legenda copiada para a área de transferência!'))

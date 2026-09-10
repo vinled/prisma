@@ -22,6 +22,7 @@ export interface PropertyDetails {
   leisureArea: boolean | null;
   whatsapp: string;
   images?: string[];
+  generated_copy?: string;
 }
 
 export type TemplateId = 'modern' | 'luxury' | 'bold' | 'elegant' | 'minimalist';
@@ -38,6 +39,7 @@ export interface BrandKit {
 export interface TemplateOptions {
   gradientOpacity?: number; // 0 to 100
   imagePositionX?: number; // 0 to 100
+  imagePositions?: Record<number, number>; // per-image index positions
   logoSize?: number; // 50 to 150
   badge?: string; // e.g. "VENDIDO", "EXCLUSIVIDADE", etc.
 }
