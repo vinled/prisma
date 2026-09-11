@@ -249,6 +249,7 @@ export default function App() {
     
     window.addEventListener('resize', updateScale);
     
+    
     return () => {
       observer.disconnect();
       window.removeEventListener('resize', updateScale);
@@ -615,8 +616,34 @@ const handleDownload = async () => {
 
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
+
+  // Separate useEffect for realtime profile updates
+  useEffect(() => {
+    if (!session?.user?.id) return;
+    
+    const channelName = `profile-updates-${session.user.id}-${Date.now()}`;
+    const profileSubscription = supabase
+      .channel(channelName)
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'profiles', filter: `id=eq.${session.user.id}` },
+        (payload) => {
+          if (payload.new && payload.new.plan) {
+            setUserPlan(payload.new.plan);
+            alert("Pagamento confirmado! Seu plano PRO foi ativado com sucesso. Aproveite!");
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(profileSubscription);
+    };
+  }, [session?.user?.id]);
 
   if (location.pathname === '/reset-password') {
     return <ResetPassword />;
