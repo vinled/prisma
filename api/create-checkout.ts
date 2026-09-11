@@ -88,8 +88,8 @@ export default async function handler(req: any, res: any) {
       },
       body: JSON.stringify({
         customer: customerId,
-        billingType: "UNDEFINED", // Permite cartão, pix, boleto
-        value: 29.90, // Valor do plano pro
+        billingType: "PIX", // Permite cartão, pix, boleto
+        value: 49.90, // Valor do plano pro
         dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // +3 dias
         description: "Assinatura Plano PRO - PostNaMão",
         externalReference: user.id, // O WEBHOOK VAI LER ISSO!
@@ -99,7 +99,7 @@ export default async function handler(req: any, res: any) {
     if (!paymentResponse.ok) {
       const err = await paymentResponse.text();
       console.error("Erro Asaas:", err);
-      throw new Error("Falha ao gerar cobrança.");
+      return res.status(400).json({ error: `Asaas: ${err}` });
     }
 
     const paymentData = await paymentResponse.json();

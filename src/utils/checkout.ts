@@ -19,7 +19,7 @@ export async function handleCheckout(onLoading: (isLoading: boolean) => void) {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.error || "Falha ao gerar cobrança");
+      throw new Error(`Asaas: ${errorData.error}` || "Falha ao gerar cobrança");
     }
 
     const data = await response.json();

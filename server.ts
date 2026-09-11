@@ -210,8 +210,8 @@ async function startServer() {
         },
         body: JSON.stringify({
           customer: customerId,
-          billingType: "UNDEFINED",
-          value: 29.90,
+          billingType: "PIX",
+          value: 49.90,
           dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
           description: "Assinatura Plano PRO - PostNaMão",
           externalReference: user.id,
@@ -219,7 +219,7 @@ async function startServer() {
       });
 
       if (!paymentResponse.ok) {
-        throw new Error("Falha ao gerar cobrança.");
+        return res.status(400).json({ error: `Asaas: ${err}` });
       }
 
       const paymentData = await paymentResponse.json();
