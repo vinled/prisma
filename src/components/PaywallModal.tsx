@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { CheckoutModal } from './CheckoutModal';
 import { handleCheckout } from '../utils/checkout';
 import { Crown, Check , Loader2 } from 'lucide-react';
 
@@ -10,6 +11,7 @@ interface PaywallModalProps {
 
 export function PaywallModal({ isOpen, onClose, onUpgrade }: PaywallModalProps) {
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
+  const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
   if (!isOpen) return null;
 
   return (
@@ -46,7 +48,7 @@ export function PaywallModal({ isOpen, onClose, onUpgrade }: PaywallModalProps) 
           </ul>
 
           <button
-            onClick={() => handleCheckout(setIsCheckoutLoading)}
+            onClick={() => setIsCheckoutModalOpen(true)}
             disabled={isCheckoutLoading}
             className="w-full flex items-center justify-center bg-orange-600 hover:bg-orange-700 text-white py-4 px-4 rounded-xl font-bold text-lg transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 hover:shadow-xl shadow-orange-600/25 mb-4"
           >
@@ -68,6 +70,13 @@ export function PaywallModal({ isOpen, onClose, onUpgrade }: PaywallModalProps) 
           </button>
         </div>
       </div>
-    </div>
+    
+      <CheckoutModal 
+        isOpen={isCheckoutModalOpen}
+        onClose={() => setIsCheckoutModalOpen(false)}
+        isLoading={isCheckoutLoading}
+        onConfirm={(cpf) => handleCheckout(cpf, setIsCheckoutLoading)}
+      />
+</div>
   );
 }

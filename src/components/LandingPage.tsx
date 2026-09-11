@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { CheckoutModal } from './CheckoutModal';
 import { handleCheckout } from '../utils/checkout';
 import React, { useState, useEffect, useRef } from 'react';
 import { Smartphone, Tags, Zap, CheckCircle2, XCircle, Sparkles, Check, ShieldCheck, Star, ChevronDown, Home, Instagram , Loader2 } from 'lucide-react';
@@ -35,6 +36,7 @@ interface LandingPageProps {
 
 export function LandingPage({ onLoginClick }: LandingPageProps) {
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
+  const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
   const depoisRef = useRef<HTMLDivElement>(null);
   const [depoisScale, setDepoisScale] = useState(1);
 
@@ -368,7 +370,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
                 </li>
               </ul>
               <button 
-                onClick={() => handleCheckout(setIsCheckoutLoading)}
+                onClick={() => setIsCheckoutModalOpen(true)}
             disabled={isCheckoutLoading}
                 className="w-full py-4 rounded-xl font-bold text-white bg-orange-500 hover:bg-orange-600 transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 text-center block"
               >
@@ -505,6 +507,13 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
           </div>
         </div>
       </footer>
-    </div>
+    
+      <CheckoutModal 
+        isOpen={isCheckoutModalOpen}
+        onClose={() => setIsCheckoutModalOpen(false)}
+        isLoading={isCheckoutLoading}
+        onConfirm={(cpf) => handleCheckout(cpf, setIsCheckoutLoading)}
+      />
+</div>
   );
 }

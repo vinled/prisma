@@ -34,6 +34,7 @@ async function startServer() {
         return res.status(401).json({ error: "Unauthorized: Missing or invalid token" });
       }
       const token = authHeader.split(" ")[1];
+      const { cpf } = req.body || {};
 
       const supabaseUrl = process.env.VITE_SUPABASE_URL;
       const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY;
@@ -153,6 +154,7 @@ async function startServer() {
       }
 
       const token = authHeader.split(" ")[1];
+      const { cpf } = req.body || {};
       const supabaseUrl = process.env.VITE_SUPABASE_URL;
       const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY;
 
@@ -182,6 +184,7 @@ async function startServer() {
         body: JSON.stringify({
           name: user.email?.split('@')[0] || "Usuário PostNaMão",
           email: user.email,
+          cpfCnpj: cpf,
           externalReference: user.id
         })
       });
@@ -210,7 +213,7 @@ async function startServer() {
         },
         body: JSON.stringify({
           customer: customerId,
-          billingType: "PIX",
+          billingType: "UNDEFINED",
           value: 49.90,
           dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
           description: "Assinatura Plano PRO - PostNaMão",

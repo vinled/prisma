@@ -1,3 +1,4 @@
+import { CheckoutModal } from '../components/CheckoutModal';
 import { handleCheckout } from '../utils/checkout';
 import React, { useState } from 'react';
 import { Session } from '@supabase/supabase-js';
@@ -14,6 +15,7 @@ interface MyAccountProps {
 
 export function MyAccount({ session, brandKit, userPlan = "free", creditsUsed }: MyAccountProps) {
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
+  const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
   const currentPlan = userPlan === 'pro' ? 'Pro' : 'Grátis';
   const creditsTotal = 5;
   const progressPercent = Math.min((creditsUsed / creditsTotal) * 100, 100);
@@ -219,7 +221,7 @@ export function MyAccount({ session, brandKit, userPlan = "free", creditsUsed }:
           </ul>
           
           <button 
-            onClick={() => handleCheckout(setIsCheckoutLoading)}
+            onClick={() => setIsCheckoutModalOpen(true)}
             disabled={isCheckoutLoading}
             className="w-full py-3 px-4 rounded-xl font-medium bg-orange-600 hover:bg-orange-700 text-white text-center transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 shadow-lg shadow-orange-600/20 hover:shadow-orange-600/40"
           >
@@ -252,6 +254,13 @@ export function MyAccount({ session, brandKit, userPlan = "free", creditsUsed }:
         </a>
       </section>
 
-    </div>
+    
+      <CheckoutModal 
+        isOpen={isCheckoutModalOpen}
+        onClose={() => setIsCheckoutModalOpen(false)}
+        isLoading={isCheckoutLoading}
+        onConfirm={(cpf) => handleCheckout(cpf, setIsCheckoutLoading)}
+      />
+</div>
   );
 }

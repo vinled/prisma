@@ -22,6 +22,7 @@ export default async function handler(req: any, res: any) {
     }
 
     const token = authHeader.split(" ")[1];
+    const { cpf } = req.body || {};
     const supabaseUrl = process.env.VITE_SUPABASE_URL;
     const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY;
 
@@ -58,6 +59,7 @@ export default async function handler(req: any, res: any) {
       body: JSON.stringify({
         name: user.email?.split('@')[0] || "Usuário PostNaMão",
         email: user.email,
+        cpfCnpj: cpf,
         externalReference: user.id
       })
     });
@@ -88,7 +90,7 @@ export default async function handler(req: any, res: any) {
       },
       body: JSON.stringify({
         customer: customerId,
-        billingType: "PIX", // Permite cartão, pix, boleto
+        billingType: "UNDEFINED", // Permite cartão, pix, boleto
         value: 49.90, // Valor do plano pro
         dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // +3 dias
         description: "Assinatura Plano PRO - PostNaMão",

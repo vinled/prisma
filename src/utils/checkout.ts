@@ -1,6 +1,6 @@
 import { supabase } from '../lib/supabase';
 
-export async function handleCheckout(onLoading: (isLoading: boolean) => void) {
+export async function handleCheckout(cpf: string, onLoading: (isLoading: boolean) => void) {
   try {
     onLoading(true);
     const { data: { session } } = await supabase.auth.getSession();
@@ -12,8 +12,10 @@ export async function handleCheckout(onLoading: (isLoading: boolean) => void) {
 
     const response = await fetch('/api/create-checkout', {
       method: 'POST',
+      body: JSON.stringify({ cpf }),
       headers: {
-        'Authorization': `Bearer ${session.access_token}`
+        'Authorization': `Bearer ${session.access_token}`,
+        'Content-Type': 'application/json'
       }
     });
 
