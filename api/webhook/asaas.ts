@@ -34,31 +34,27 @@ export default async function handler(req: any, res: any) {
 
     const { event, payment } = req.body || {};
 
-    if (event === "PAYMENT_RECEIVED" || event === "PAYMENT_CONFIRMED") {
-      const userId = payment?.externalReference;
+    const userId = payment?.externalReference;
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId || '');
+    
+    if (userId && isUuid) {
+      const supabaseUrl = process.env.VITE_SUPABASE_URL;
+      const supabaseServiceRole = process.env.SUPABASE_SERVICE_ROLE_KEY;
       
-      // Valida se userId é um UUID (Supabase ID) antes de tentar o update,
-      // para evitar Erro 500 caso seja um customer ID (cus_xxxx)
-      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId || '');
+      if (!supabaseUrl || !supabaseServiceRole) {
+        return res.status(500).json({ error: "Supabase config missing" });
+      }
       
-      if (userId && isUuid) {
-        const supabaseUrl = process.env.VITE_SUPABASE_URL;
-        const supabaseServiceRole = process.env.SUPABASE_SERVICE_ROLE_KEY;
-        
-        if (!supabaseUrl || !supabaseServiceRole) {
-          return res.status(500).json({ error: "Supabase config missing" });
-        }
-        
-        const supabase = createClient(supabaseUrl, supabaseServiceRole);
-        
-        const { error } = await supabase
-          .from("profiles")
-          .update({ plan: "pro" })
-          .eq("id", userId);
-          
-        if (error) {
-          throw error;
-        }
+      const supabase = createClient(supabaseUrl, supabaseServiceRole);
+
+      if (event === "PAYMENT_RECEIVED" || event === "PAYMENT_CONFIRMED") {
+        const { error } = await supabase.from("profiles").update({ plan: "pro" }).eq("id", userId);
+        if (error) throw error;
+      } 
+      else if (event === "PAYMENT_OVERDUE" || event === "PAYMENT_DELETED" || event === "PAYMENT_REFUNDED" || event === "PAYMENT_CHARGEBACK_REQUESTED") {
+        // Se não pagou, cancelou ou pediu reembolso, volta para grátis
+        const { error } = await supabase.from("profiles").update({ plan: "free" }).eq("id", userId);
+        if (error) throw error;
       }
     }
     

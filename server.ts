@@ -93,6 +93,64 @@ async function startServer() {
     }
   });
 
+
+  app.post("/api/cancel-subscription", async (req, res) => {
+    try {
+      const authHeader = req.headers.authorization;
+      if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+      const token = authHeader.split(" ")[1];
+      
+      const supabaseUrl = process.env.VITE_SUPABASE_URL;
+      const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY;
+      if (!supabaseUrl || !supabaseAnonKey) {
+        return res.status(500).json({ error: "Supabase config missing" });
+      }
+      const supabase = createClient(supabaseUrl, supabaseAnonKey);
+      
+      const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+      
+      if (authError || !user) {
+        return res.status(401).json({ error: "Unauthorized: Invalid token" });
+      }
+
+      const asaasApiKey = process.env.ASAAS_API_KEY;
+      if (!asaasApiKey) {
+        return res.status(500).json({ error: "ASAAS_API_KEY não configurada no servidor." });
+      }
+
+      const subscriptionsResponse = await fetch(`https://api.asaas.com/v3/subscriptions?externalReference=${user.id}&status=ACTIVE`, {
+        headers: { 'access_token': asaasApiKey }
+      });
+      
+      const subscriptionsData = await subscriptionsResponse.json();
+      
+      if (!subscriptionsData.data || subscriptionsData.data.length === 0) {
+         return res.status(404).json({ error: "Nenhuma assinatura ativa encontrada." });
+      }
+      
+      let cancelled = 0;
+      for (const sub of subscriptionsData.data) {
+        const cancelResponse = await fetch(`https://api.asaas.com/v3/subscriptions/${sub.id}`, {
+          method: 'DELETE',
+          headers: { 'access_token': asaasApiKey }
+        });
+        if (cancelResponse.ok) cancelled++;
+      }
+      
+      const supabaseServiceRole = process.env.SUPABASE_SERVICE_ROLE_KEY;
+      const adminSupabase = createClient(supabaseUrl, supabaseServiceRole!);
+      await adminSupabase.from("profiles").update({ plan: "free" }).eq("id", user.id);
+
+      return res.status(200).json({ success: true, message: `Assinatura cancelada com sucesso.` });
+      
+    } catch (error: any) {
+      console.error("Cancel Error:", error);
+      return res.status(500).json({ error: error.message || "Erro interno" });
+    }
+  });
+
   app.post("/api/webhook/asaas", async (req, res) => {
     try {
       const token = ((req.headers["asaas-access-token"] as string) || "").trim();
@@ -108,33 +166,29 @@ async function startServer() {
 
       const { event, payment } = req.body;
 
-      if (event === "PAYMENT_RECEIVED" || event === "PAYMENT_CONFIRMED") {
-        const userId = payment?.externalReference;
+      const userId = payment?.externalReference;
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId || '');
+      
+      if (userId && isUuid) {
+        const supabaseUrl = process.env.VITE_SUPABASE_URL;
+        const supabaseServiceRole = process.env.SUPABASE_SERVICE_ROLE_KEY;
         
-        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId || '');
+        if (!supabaseUrl || !supabaseServiceRole) {
+          console.error("Supabase credentials missing for webhook");
+          return res.status(500).json({ error: "Supabase config missing" });
+        }
         
-        if (userId && isUuid) {
-          const supabaseUrl = process.env.VITE_SUPABASE_URL;
-          const supabaseServiceRole = process.env.SUPABASE_SERVICE_ROLE_KEY;
-          
-          if (!supabaseUrl || !supabaseServiceRole) {
-            console.error("Supabase credentials missing for webhook");
-            return res.status(500).json({ error: "Supabase config missing" });
-          }
-          
-          const supabase = createClient(supabaseUrl, supabaseServiceRole);
-          
-          // Assuming 'profiles' table stores the plan
-          const { error } = await supabase
-            .from("profiles")
-            .update({ plan: "pro" })
-            .eq("id", userId);
-            
-          if (error) {
-            console.error("Failed to update user plan:", error);
-            throw error;
-          }
+        const supabase = createClient(supabaseUrl, supabaseServiceRole);
+        
+        if (event === "PAYMENT_RECEIVED" || event === "PAYMENT_CONFIRMED") {
+          const { error } = await supabase.from("profiles").update({ plan: "pro" }).eq("id", userId);
+          if (error) throw error;
           console.log(`User ${userId} upgraded to pro successfully.`);
+        } 
+        else if (event === "PAYMENT_OVERDUE" || event === "PAYMENT_DELETED" || event === "PAYMENT_REFUNDED" || event === "PAYMENT_CHARGEBACK_REQUESTED") {
+          const { error } = await supabase.from("profiles").update({ plan: "free" }).eq("id", userId);
+          if (error) throw error;
+          console.log(`User ${userId} downgraded to free due to event ${event}.`);
         }
       }
 
@@ -205,7 +259,7 @@ async function startServer() {
         }
       }
 
-      const paymentResponse = await fetch("https://api.asaas.com/v3/payments", {
+            const subscriptionResponse = await fetch("https://api.asaas.com/v3/subscriptions", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -215,24 +269,48 @@ async function startServer() {
           customer: customerId,
           billingType: "UNDEFINED",
           value: 49.90,
-          dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          nextDueDate: new Date().toISOString().split('T')[0],
+          cycle: "MONTHLY",
           description: "Assinatura Plano PRO - PostNaMão",
           externalReference: user.id,
         })
       });
 
-      if (!paymentResponse.ok) {
-        return res.status(400).json({ error: `Asaas: ${err}` });
+      if (!subscriptionResponse.ok) {
+        const err = await subscriptionResponse.text();
+        console.error("Erro Asaas Sub:", err);
+        return res.status(400).json({ error: `Asaas Sub: ${err}` });
       }
 
-      const paymentData = await paymentResponse.json();
+      const subData = await subscriptionResponse.json();
+      const subId = subData.id;
+
+      let invoiceUrl = null;
+      let retries = 0;
+      
+      while (!invoiceUrl && retries < 3) {
+        const paymentsResponse = await fetch(`https://api.asaas.com/v3/subscriptions/${subId}/payments?status=PENDING`, {
+          headers: { 'access_token': asaasApiKey }
+        });
+        const paymentsData = await paymentsResponse.json();
+        
+        if (paymentsData.data && paymentsData.data.length > 0) {
+          invoiceUrl = paymentsData.data[0].invoiceUrl;
+        } else {
+          await new Promise(r => setTimeout(r, 1000));
+          retries++;
+        }
+      }
+
+      if (!invoiceUrl) {
+         return res.status(500).json({ error: "Assinatura criada, mas falha ao recuperar link de pagamento. Tente novamente." });
+      }
       
       return res.status(200).json({ 
-        url: paymentData.invoiceUrl,
+        url: invoiceUrl, 
         isStatic: false
       });
-      
-    } catch (error: any) {
+      } catch (error: any) {
       console.error("Checkout Error:", error);
       return res.status(500).json({ error: error.message || "Erro interno" });
     }
