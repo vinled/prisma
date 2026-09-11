@@ -1126,7 +1126,7 @@ const handleDownload = async () => {
           </div>
 
           {/* Preview Side */}
-          <div className={`${mobileViewTab === 'preview' ? 'block' : 'hidden'} lg:flex lg:flex-col lg:order-2 lg:sticky lg:top-6 lg:h-[calc(100vh-3rem)] self-start w-full max-w-full min-w-0`}>
+          <div className={`${mobileViewTab === 'preview' ? 'flex flex-col h-[calc(100dvh-12rem)] min-h-[400px]' : 'hidden'} lg:flex lg:flex-col lg:order-2 lg:sticky lg:top-6 lg:h-[calc(100vh-3rem)] self-start w-full max-w-full min-w-0`}>
             <div className="shrink-0 bg-white dark:bg-[#0f111a] -mx-4 px-4 sm:-mx-6 sm:px-6 -mt-4 pt-4 sm:-mt-6 sm:pt-6 pb-4 md:m-0 md:p-0 lg:bg-white lg:dark:bg-zinc-900 lg:p-6 lg:rounded-t-2xl lg:shadow-sm lg:border lg:border-b-0 border-gray-100 dark:border-zinc-800 flex flex-col transition-colors duration-200 relative z-20">
               <div className="flex flex-wrap w-full gap-2 items-start md:items-center justify-between mb-6">
                 <h2 className="hidden md:block text-lg font-semibold text-gray-900 dark:text-white truncate max-w-full">Pré-visualização do Post</h2>
@@ -1136,7 +1136,7 @@ const handleDownload = async () => {
                       setActiveTab('meus_imoveis');
                       setIdEmEdicao(null);
                     }}
-                    className="px-4 py-2 text-gray-600 border border-gray-300 hover:bg-gray-100 dark:text-gray-300 dark:border-zinc-700 dark:hover:bg-zinc-800 font-medium rounded-lg transition-colors"
+                    className="hidden lg:block px-4 py-2 text-gray-600 border border-gray-300 hover:bg-gray-100 dark:text-gray-300 dark:border-zinc-700 dark:hover:bg-zinc-800 font-medium rounded-lg transition-colors"
                   >
                     Voltar
                   </button>

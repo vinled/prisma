@@ -135,9 +135,9 @@ export function ImageUploader({ images, onImagesChange }: ImageUploaderProps) {
               </div>
               <button
                 onClick={() => removeImage(index)}
-                className="absolute top-1 right-1 p-1 bg-white/90 rounded-full shadow-md hover:bg-red-50 hover:text-red-500 transition-colors"
+                className="absolute -top-1 -right-1 p-3 md:top-1 md:right-1 md:p-1.5 bg-white/90 rounded-full shadow-md hover:bg-red-50 hover:text-red-500 transition-colors"
               >
-                <X className="w-3 h-3" />
+                <X className="w-4 h-4 md:w-3 md:h-3" />
               </button>
             </div>
           ))}
