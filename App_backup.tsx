@@ -994,7 +994,9 @@ const handleDownload = async () => {
               <PropertyForm details={details} brandKit={applyBrandKit ? brandKit : null} onChange={setDetails} />
             </section>
 
-            <section className="mt-6 bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 transition-colors duration-200">
+            
+
+<section className="mt-6 bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 transition-colors duration-200">
               <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Estilo</h2>
               <TemplateSelector selected={selectedTemplate} onSelect={setSelectedTemplate} />
               <div className="mt-6">
@@ -1048,6 +1050,143 @@ const handleDownload = async () => {
                     />
                   </div>
                 </div>
+
+            {/* Mobile Form Actions */}
+            <div className="flex lg:hidden gap-4 mt-8 pb-8">
+              <button
+                onClick={() => {
+                  setActiveTab('meus_imoveis');
+                  setIdEmEdicao(null);
+                }}
+                className="flex-1 py-3 text-gray-600 border border-gray-300 hover:bg-gray-100 dark:text-gray-300 dark:border-zinc-700 dark:hover:bg-zinc-800 font-medium rounded-xl transition-colors"
+              >
+                Voltar
+              </button>
+              {idEmEdicao && (
+                <button
+                  onClick={handleSaveOnly}
+                  disabled={isExporting}
+                  className="flex-1 py-3 bg-emerald-600 text-white hover:bg-emerald-700 font-medium rounded-xl transition-colors disabled:opacity-50"
+                >
+                  Salvar
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Preview Side */}
+          <div className={`${mobileViewTab === 'preview' ? 'block' : 'hidden'} lg:flex lg:flex-col lg:order-2 lg:sticky lg:top-6 lg:h-[calc(100vh-3rem)] self-start w-full max-w-full min-w-0`}>
+            <div className="shrink-0 bg-white dark:bg-[#0f111a] -mx-4 px-4 sm:-mx-6 sm:px-6 -mt-4 pt-4 sm:-mt-6 sm:pt-6 pb-4 md:m-0 md:p-0 lg:bg-white lg:dark:bg-zinc-900 lg:p-6 lg:rounded-t-2xl lg:shadow-sm lg:border lg:border-b-0 border-gray-100 dark:border-zinc-800 flex flex-col transition-colors duration-200 relative z-20">
+              <div className="flex flex-wrap w-full gap-2 items-start md:items-center justify-between mb-6">
+                <h2 className="hidden md:block text-lg font-semibold text-gray-900 dark:text-white truncate max-w-full">Pré-visualização do Post</h2>
+                <div className="flex flex-wrap items-center gap-2 space-x-0">
+                  <button
+                    onClick={() => {
+                      setActiveTab('meus_imoveis');
+                      setIdEmEdicao(null);
+                    }}
+                    className="px-4 py-2 text-gray-600 border border-gray-300 hover:bg-gray-100 dark:text-gray-300 dark:border-zinc-700 dark:hover:bg-zinc-800 font-medium rounded-lg transition-colors"
+                  >
+                    Voltar
+                  </button>
+                  {idEmEdicao && (
+                    <button
+                      onClick={handleSaveOnly}
+                      disabled={isExporting}
+                      className="px-4 py-2 bg-transparent border border-emerald-600 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 font-medium rounded-lg transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100"
+                    >
+                      Salvar
+                    </button>
+                  )}
+                  {/* Desktop Download Button (hidden on mobile) */}
+                  <button
+                    onClick={handleDownload}
+                    disabled={isExporting || images.length === 0}
+                    className="hidden md:flex items-center justify-center p-2 px-4 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    <span>
+                      {isExporting ? (exportProgressText || 'Gerando...') : (images.length > 1 ? `Baixar Todas (${images.length})` : 'Baixar Imagem')}
+                    </span>
+                  </button>
+
+
+                </div>
+              </div>
+
+              {images.length > 1 && (
+                <div className="flex space-x-2 mb-4 overflow-x-auto pb-2">
+                  {images.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setPreviewIndex(idx)}
+                      className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${previewIndex === idx ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 hover:bg-gray-300 dark:hover:bg-zinc-700'}`}
+                    >
+                      {idx + 1}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* The Preview Area */}
+            <div className="flex-1 overflow-y-auto sticky top-0 z-[10] bg-gray-50 dark:bg-zinc-950 lg:bg-white lg:dark:bg-zinc-900 pb-10 pt-2 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:static lg:p-6 lg:mx-0 lg:border lg:border-t-0 border-gray-100 dark:border-zinc-800 lg:rounded-b-2xl">
+                <div ref={previewContainerRef} className="flex items-center justify-center w-full max-w-md mx-auto flex-shrink-0 bg-gray-100 dark:bg-zinc-950 rounded-xl relative p-4 transition-colors duration-200 max-h-[50vh] md:max-h-none overflow-hidden">
+                {images.length > 0 ? (
+                  <div className="relative mx-auto" style={{ width: 1080 * previewScale, height: (aspectRatio === 'story' ? 1920 : 1440) * previewScale }}>
+                  <div 
+                    ref={previewRef}
+                    className={`absolute top-0 left-0 shadow-xl transition-all duration-300 bg-white ${aspectRatio === 'feed' ? 'aspect-[3/4]' : 'aspect-[9/16]'}`}
+                    style={{ 
+                      width: '1080px', 
+                      height: aspectRatio === 'story' ? '1920px' : '1440px',
+                      transform: `scale(${previewScale})`,
+                      transformOrigin: 'top left',
+                      fontSize: '16px' // force base size
+                    }}
+                  >
+                    <TemplateRenderer 
+                      templateId={selectedTemplate} 
+                      details={details} 
+                      image={images[previewIndex] || null} 
+                      logo={applyBrandKit ? (brandKit?.logo || null) : null}
+                      aspectRatio={aspectRatio}
+                      brandKit={applyBrandKit ? brandKit : undefined}
+                      options={{...templateOptions, badge: seloAtivo, imagePositionX: templateOptions.imagePositions?.[previewIndex] ?? templateOptions.imagePositionX ?? 50}}
+                      userPlan={userPlan}
+                    />
+                  </div></div>
+                ) : (
+                  <div className="text-gray-400 text-center">
+                    <p>Adicione fotos para visualizar</p>
+                  </div>
+                )}
+              </div>
+              <p className="text-center text-sm text-gray-400 mt-4">
+                {images.length > 0 
+                  ? `O post será gerado no formato ${aspectRatio === 'story' ? 'Story (9:16)' : 'Retrato (3:4)'}.`
+                  : 'Nenhuma foto selecionada.'}
+              </p>
+            </div>
+            {/* removed extra closing div */}
+                        {/* Mobile Action Group (hidden on desktop) */}
+            <div className="flex md:hidden items-center justify-center gap-4 mt-6">
+              <button
+                onClick={handleDownload}
+                disabled={isExporting || images.length === 0}
+                className="flex-1 py-3 rounded-xl shadow-sm bg-white dark:bg-zinc-800 text-emerald-600 border border-slate-200 dark:border-zinc-700 hover:bg-slate-50 flex items-center justify-center transition-all duration-300 font-semibold active:scale-95 disabled:opacity-50"
+              >
+                <Download className="w-5 h-5 mr-2" /> {isExporting ? (exportProgressText || "Gerando...") : (images.length > 1 ? `Baixar Todas (${images.length})` : "Baixar Imagem")}
+              </button>
+              <button
+                onClick={handleShare}
+                disabled={isExporting || images.length === 0}
+                className="flex-1 py-3 rounded-xl shadow-sm bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center transition-all duration-300 font-semibold active:scale-95 disabled:opacity-50"
+              >
+                <Share2 className="w-5 h-5 mr-2" /> Compartilhar
+              </button>
+            </div>
+            
               )}
             </section>
 
@@ -1121,127 +1260,11 @@ const handleDownload = async () => {
                    </button>
                 </div>
             </div>
-
-            
           </div>
 
-          {/* Preview Side */}
-          <div className={`${mobileViewTab === 'preview' ? 'block' : 'hidden'} lg:flex lg:flex-col lg:order-2 lg:sticky lg:top-6 lg:h-[calc(100vh-3rem)] self-start w-full max-w-full min-w-0`}>
-            <div className="shrink-0 bg-white dark:bg-[#0f111a] -mx-4 px-4 sm:-mx-6 sm:px-6 -mt-4 pt-4 sm:-mt-6 sm:pt-6 pb-4 md:m-0 md:p-0 lg:bg-white lg:dark:bg-zinc-900 lg:p-6 lg:rounded-t-2xl lg:shadow-sm lg:border lg:border-b-0 border-gray-100 dark:border-zinc-800 flex flex-col transition-colors duration-200 relative z-20">
-              <div className="flex flex-wrap w-full gap-2 items-start md:items-center justify-between mb-6">
-                <h2 className="hidden md:block text-lg font-semibold text-gray-900 dark:text-white truncate max-w-full">Pré-visualização do Post</h2>
-                <div className="flex flex-wrap items-center gap-2 space-x-0">
-                  <button
-                    onClick={() => {
-                      setActiveTab('meus_imoveis');
-                      setIdEmEdicao(null);
-                    }}
-                    className="px-4 py-2 text-gray-600 border border-gray-300 hover:bg-gray-100 dark:text-gray-300 dark:border-zinc-700 dark:hover:bg-zinc-800 font-medium rounded-lg transition-colors"
-                  >
-                    Voltar
-                  </button>
-                  {idEmEdicao && (
-                    <button
-                      onClick={handleSaveOnly}
-                      disabled={isExporting}
-                      className="px-4 py-2 bg-transparent border border-emerald-600 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 font-medium rounded-lg transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100"
-                    >
-                      Salvar
-                    </button>
-                  )}
-                  {/* Desktop Download Button (hidden on mobile) */}
-                  <button
-                    onClick={handleDownload}
-                    disabled={isExporting || images.length === 0}
-                    className="hidden md:flex items-center justify-center p-2 px-4 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <Download className="w-4 h-4 mr-2" />
-                    <span>
-                      {isExporting ? (exportProgressText || 'Gerando...') : (images.length > 1 ? `Baixar Todas (${images.length})` : 'Baixar Imagem')}
-                    </span>
-                  </button>
-
-
-                </div>
-              </div>
-
-              {images.length > 1 && (
-                <div className="flex space-x-2 mb-4 overflow-x-auto pb-2">
-                  {images.map((_, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setPreviewIndex(idx)}
-                      className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${previewIndex === idx ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 hover:bg-gray-300 dark:hover:bg-zinc-700'}`}
-                    >
-                      {idx + 1}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            
-            {/* The Preview Area */}
-            <div className="flex flex-1 overflow-y-auto z-[10] bg-gray-50 dark:bg-zinc-950 lg:bg-white lg:dark:bg-zinc-900 pb-10 pt-2 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:p-6 lg:mx-0 lg:border lg:border-t-0 border-gray-100 dark:border-zinc-800 lg:rounded-b-2xl items-center justify-center">
-                <div ref={previewContainerRef} className="flex flex-1 h-full items-center justify-center w-full max-w-md mx-auto bg-gray-100 dark:bg-zinc-950 rounded-xl relative p-4 transition-colors duration-200 overflow-hidden">
-                {images.length > 0 ? (
-                  <div className="relative mx-auto flex-shrink-0 flex items-center justify-center w-full h-full">
-                  <div 
-                    ref={previewRef}
-                    className={`relative shadow-xl transition-all duration-300 bg-white ${aspectRatio === 'feed' ? 'aspect-[3/4]' : 'aspect-[9/16]'}`}
-                    style={{ 
-                      width: '1080px', 
-                      height: aspectRatio === 'story' ? '1920px' : '1440px',
-                      transform: `scale(${previewScale})`,
-                      transformOrigin: 'center center',
-                      fontSize: '16px',
-                      position: 'absolute',
-                      margin: 'auto'
-                    }}
-                  >
-                    <TemplateRenderer 
-                      templateId={selectedTemplate} 
-                      details={details} 
-                      image={images[previewIndex] || null} 
-                      logo={applyBrandKit ? (brandKit?.logo || null) : null}
-                      aspectRatio={aspectRatio}
-                      brandKit={applyBrandKit ? brandKit : undefined}
-                      options={{...templateOptions, badge: seloAtivo, imagePositionX: templateOptions.imagePositions?.[previewIndex] ?? templateOptions.imagePositionX ?? 50}}
-                      userPlan={userPlan}
-                    />
-                  </div></div>
-                ) : (
-                  <div className="text-gray-400 text-center">
-                    <p>Adicione fotos para visualizar</p>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Mobile Action Group (hidden on desktop) */}
-            <div className="flex md:hidden items-center justify-center gap-4 mt-6">
-              <button
-                onClick={handleDownload}
-                disabled={isExporting || images.length === 0}
-                className="flex-1 py-3 rounded-xl shadow-sm bg-white dark:bg-zinc-800 text-emerald-600 border border-slate-200 dark:border-zinc-700 hover:bg-slate-50 flex items-center justify-center transition-all duration-300 font-semibold active:scale-95 disabled:opacity-50"
-              >
-                <Download className="w-5 h-5 mr-2" /> {isExporting ? (exportProgressText || "Gerando...") : (images.length > 1 ? `Baixar Todas (${images.length})` : "Baixar Imagem")}
-              </button>
-              <button
-                onClick={handleShare}
-                disabled={isExporting || images.length === 0}
-                className="flex-1 py-3 rounded-xl shadow-sm bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center transition-all duration-300 font-semibold active:scale-95 disabled:opacity-50"
-              >
-                <Share2 className="w-5 h-5 mr-2" /> Compartilhar
-              </button>
-            </div>
-
-          </div>
         </div>
         </div>
-      )}
-
-<footer className="text-center py-6 text-sm text-gray-500 dark:text-zinc-400 mt-auto border-t border-gray-100 dark:border-zinc-800">
+      )}  <footer className="text-center py-6 text-sm text-gray-500 dark:text-zinc-400 mt-auto border-t border-gray-100 dark:border-zinc-800">
         © 2026 PostNaMão. Todos os direitos reservados.
       </footer>
 </main>
