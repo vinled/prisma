@@ -29,15 +29,19 @@ export default async function handler(req: any, res: any) {
     const expectedBuffer = Buffer.from(expectedToken);
     
     if (tokenBuffer.length !== expectedBuffer.length || !crypto.timingSafeEqual(tokenBuffer, expectedBuffer)) {
-      return res.status(401).json({ error: "Não Autorizado" });
+      return res.status(401).json({ error: "Não Autorizado. O Token da Vercel é diferente do Token do Asaas. Verifique se copiou a chave certa (Token do Webhook) e sem espaços." });
     }
 
     const { event, payment } = req.body || {};
 
     if (event === "PAYMENT_RECEIVED" || event === "PAYMENT_CONFIRMED") {
-      const userId = payment?.externalReference || payment?.customer;
+      const userId = payment?.externalReference;
       
-      if (userId) {
+      // Valida se userId é um UUID (Supabase ID) antes de tentar o update,
+      // para evitar Erro 500 caso seja um customer ID (cus_xxxx)
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId || '');
+      
+      if (userId && isUuid) {
         const supabaseUrl = process.env.VITE_SUPABASE_URL;
         const supabaseServiceRole = process.env.SUPABASE_SERVICE_ROLE_KEY;
         

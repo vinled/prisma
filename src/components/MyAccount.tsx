@@ -1,6 +1,7 @@
+import { handleCheckout } from '../utils/checkout';
 import React, { useState } from 'react';
 import { Session } from '@supabase/supabase-js';
-import { Check, Star, Zap, MessageCircle } from 'lucide-react';
+import { Check, Star, Zap, MessageCircle , Loader2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { BrandKit } from '../types';
 
@@ -12,6 +13,7 @@ interface MyAccountProps {
 }
 
 export function MyAccount({ session, brandKit, userPlan = "free", creditsUsed }: MyAccountProps) {
+  const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
   const currentPlan = userPlan === 'pro' ? 'Pro' : 'Grátis';
   const creditsTotal = 5;
   const progressPercent = Math.min((creditsUsed / creditsTotal) * 100, 100);
@@ -216,14 +218,20 @@ export function MyAccount({ session, brandKit, userPlan = "free", creditsUsed }:
             </li>
           </ul>
           
-          <a 
-            href="https://www.asaas.com/c/j299iil4aqkray3j" 
-            target="_blank" 
-            rel="noopener noreferrer"
+          <button 
+            onClick={() => handleCheckout(setIsCheckoutLoading)}
+            disabled={isCheckoutLoading}
             className="w-full py-3 px-4 rounded-xl font-medium bg-orange-600 hover:bg-orange-700 text-white text-center transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 shadow-lg shadow-orange-600/20 hover:shadow-orange-600/40"
           >
-            Assinar Plano Pro
-          </a>
+            {isCheckoutLoading ? (
+              <>
+                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                Processando...
+              </>
+            ) : (
+              "Assinar Plano Pro"
+            )}
+          </button>
         </div>
       </div>
 

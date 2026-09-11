@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
+import { handleCheckout } from '../utils/checkout';
 import React, { useState, useEffect, useRef } from 'react';
-import { Smartphone, Tags, Zap, CheckCircle2, XCircle, Sparkles, Check, ShieldCheck, Star, ChevronDown, Home, Instagram } from 'lucide-react';
+import { Smartphone, Tags, Zap, CheckCircle2, XCircle, Sparkles, Check, ShieldCheck, Star, ChevronDown, Home, Instagram , Loader2 } from 'lucide-react';
 import { PostNaMaoLogo } from './PostNaMaoLogo';
 import { TemplateRenderer } from './TemplateRenderer';
 
@@ -33,6 +34,7 @@ interface LandingPageProps {
 }
 
 export function LandingPage({ onLoginClick }: LandingPageProps) {
+  const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
   const depoisRef = useRef<HTMLDivElement>(null);
   const [depoisScale, setDepoisScale] = useState(1);
 
@@ -365,14 +367,13 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
                   <span>Suporte prioritário</span>
                 </li>
               </ul>
-              <a 
-                href="https://www.asaas.com/c/j299iil4aqkray3j"
-                target="_blank"
-                rel="noopener noreferrer"
+              <button 
+                onClick={() => handleCheckout(setIsCheckoutLoading)}
+            disabled={isCheckoutLoading}
                 className="w-full py-4 rounded-xl font-bold text-white bg-orange-500 hover:bg-orange-600 transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 text-center block"
               >
                 Assinar o PostNaMão Pro
-              </a>
+              </button>
             </div>
           </div>
 
