@@ -98,19 +98,21 @@ export function TemplateSelector({ selected, onSelect }: TemplateSelectorProps) 
   return (
     <div className="space-y-2">
       <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300">Selecione o Modelo</label>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+      <div className="flex overflow-x-auto md:grid md:grid-cols-3 lg:grid-cols-6 gap-3 pb-2 scrollbar-hide snap-x">
         {templates.map((tpl) => (
           <button
             key={tpl.id}
             onClick={() => onSelect(tpl.id)}
-            className={`p-2 rounded-xl text-xs font-medium transition-all flex flex-col items-center ${
+            className={`shrink-0 snap-center px-4 py-2 md:p-2 rounded-full md:rounded-xl text-sm md:text-xs font-medium transition-all flex flex-col items-center justify-center ${
               selected === tpl.id
                 ? 'bg-blue-50 dark:bg-blue-900/30 ring-2 ring-blue-600 text-blue-800 dark:text-blue-300 shadow-sm'
                 : 'bg-white dark:bg-zinc-800 text-gray-600 dark:text-zinc-400 border border-gray-200 dark:border-zinc-700 hover:bg-gray-50 dark:hover:bg-zinc-700'
             }`}
           >
-            {tpl.preview}
-            {tpl.name}
+            <div className="hidden md:block w-full">
+              {tpl.preview}
+            </div>
+            <span>{tpl.name}</span>
           </button>
         ))}
       </div>

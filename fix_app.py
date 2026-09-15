@@ -1,51 +1,39 @@
 import re
 
-with open('src/App.tsx', 'r') as f:
-    content = f.read()
+with open('src/App_backup.tsx', 'r') as f:
+    lines = f.readlines()
 
-old_effect = """  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
+# First, let's remove ALL `const renderStyleControls = () => (` definitions and their bodies up to `  );`
+# The definition looks like:
+#   const renderStyleControls = () => (
+#     <>
+#       <section ...>
+#       ...
+#     </>
+#   );
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
+new_lines = []
+skip = False
 
-    return () => subscription.unsubscribe();
-  }, []);"""
+for line in lines:
+    if line.strip() == "const renderStyleControls = () => (":
+        skip = True
+        continue
+    
+    if skip and line.strip() == ");":
+        # Check if the previous line was </>, if so this is the end of the component
+        if len(new_lines) > 0 and new_lines[-1].strip() == "</>":
+            pass # Wait, if I'm skipping I don't append to new_lines
+        
+        # We need to know when the component ends. It ends at `  );`
+        skip = False
+        continue
+        
+    if skip:
+        continue
+        
+    new_lines.append(line)
 
-new_effect = """  useEffect(() => {
-    const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setSession(session);
-      
-      const path = window.location.pathname;
-      if (!session && path !== '/' && path !== '/reset-password') {
-        window.history.replaceState({}, '', '/');
-        setShowAuth(true);
-      }
-    };
-    checkSession();
+with open('src/App_cleaned.tsx', 'w') as f:
+    f.writelines(new_lines)
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      
-      const path = window.location.pathname;
-      if (!session && path !== '/' && path !== '/reset-password') {
-        window.history.replaceState({}, '', '/');
-        setShowAuth(true);
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);"""
-
-content = content.replace(old_effect, new_effect)
-
-with open('src/App.tsx', 'w') as f:
-    f.write(content)

@@ -4,9 +4,9 @@ import { useLocation } from 'react-router-dom';
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import * as htmlToImage from 'html-to-image';
-import { Download, Layout, Moon, Sun, Copy, Check, LogOut, User, Menu, X, PlusSquare, Palette, Share2, LayoutTemplate, Crop, Tag, SlidersHorizontal } from 'lucide-react';
+import { Download, Layout, Moon, Sun, Copy, Check, LogOut, User, Menu, X, PlusSquare, Palette, Share2 } from 'lucide-react';
 import { supabase } from './lib/supabase';
 import { Auth } from './components/Auth';
 import { ResetPassword } from './components/ResetPassword';
@@ -33,7 +33,6 @@ export default function App() {
   const [showAuth, setShowAuth] = useState(false);
     const [activeTab, setActiveTab] = useState<'criacao' | 'meus_imoveis' | 'minha_marca' | 'minha_conta'>('criacao');
   const [mobileViewTab, setMobileViewTab] = useState<'form' | 'preview'>('form');
-  const [activeMobileTool, setActiveMobileTool] = useState<'template' | 'format' | 'badge' | 'adjust' | 'export' | null>('template');
   const [idEmEdicao, setIdEmEdicao] = useState<string | null>(null);
   const [details, setDetails] = useState<PropertyDetails>({
     purpose: 'venda', rent_price: '', condo_price: '', iptu_price: '', is_package: false, title: '', previousPrice: '', porteiraFechada: false,
@@ -209,42 +208,36 @@ export default function App() {
   const [previewScale, setPreviewScale] = useState(1);
   const hiddenRenderersRef = useRef<HTMLDivElement>(null);
 
-  const updateScale = useCallback(() => {
-    if (previewContainerRef.current) {
-      let containerWidth = previewContainerRef.current.getBoundingClientRect().width;
-      
-      // If container width is 0 (e.g. display: none on mobile tab switch), fallback to window width
-      if (containerWidth === 0) {
-         containerWidth = window.innerWidth - 32;
-      }
-
-      const contentWidth = containerWidth - 32;
-      let scaleByWidth = contentWidth / 1080;
-      
-      let scale = scaleByWidth;
-      let containerHeight = previewContainerRef.current.getBoundingClientRect().height;
-      if (containerHeight === 0) {
-        containerHeight = window.innerHeight * 0.5; // fallback
-      }
-      
-      const targetHeight = aspectRatio === 'story' ? 1920 : 1440;
-      // padding top and bottom (32px)
-      const scaleByHeight = (containerHeight - 32) / targetHeight;
-      scale = Math.min(scaleByWidth, scaleByHeight);
-      
-      if (scale <= 0 || isNaN(scale)) scale = 0.3;
-      
-      setPreviewScale(scale);
-    }
-  }, [aspectRatio]);
-
   useEffect(() => {
-    const timeoutId = setTimeout(() => updateScale(), 50);
-    return () => clearTimeout(timeoutId);
-  }, [mobileViewTab, activeTab, updateScale]);
-
-  useEffect(() => {
-    updateScale();
+    const updateScale = () => {
+      if (previewContainerRef.current) {
+        const containerWidth = previewContainerRef.current.getBoundingClientRect().width;
+        // The container has p-4 (16px padding on each side), so subtract 32px for the actual content area
+        const contentWidth = containerWidth - 32;
+        let scaleByWidth = contentWidth / 1080;
+        
+        // Mobile vertical height constraint (max 35% of vh to leave space for form)
+        const isMobile = window.innerWidth < 1024; // lg breakpoint is 1024px
+        let scale = scaleByWidth;
+        
+        if (isMobile) {
+           const maxMobileHeight = window.innerHeight * 0.40;
+           const targetHeight = aspectRatio === 'story' ? 1920 : 1440;
+           const scaleByHeight = maxMobileHeight / targetHeight;
+           scale = Math.min(scaleByWidth, scaleByHeight);
+        } else {
+           const maxDesktopHeight = window.innerHeight - 240;
+           const targetHeight = aspectRatio === 'story' ? 1920 : 1440;
+           const scaleByHeight = maxDesktopHeight / targetHeight;
+           scale = Math.min(scaleByWidth, scaleByHeight);
+        }
+        
+        if (scale <= 0) scale = 0.1;
+        setPreviewScale(scale);
+      }
+    };
+    
+    updateScale(); // Initial call
     
     const observer = new ResizeObserver(() => {
       updateScale();
@@ -256,11 +249,12 @@ export default function App() {
     
     window.addEventListener('resize', updateScale);
     
+    
     return () => {
       observer.disconnect();
       window.removeEventListener('resize', updateScale);
     };
-  }, [images.length, updateScale]); // Re-run if images change
+  }, [images.length, aspectRatio]); // Re-run if images or aspectRatio change
 
 
   
@@ -651,21 +645,6 @@ const handleDownload = async () => {
     };
   }, [session?.user?.id]);
 
-  useEffect(() => {
-    if (window.innerWidth < 1024 && mobileViewTab === 'preview') {
-      document.body.style.overflow = 'hidden';
-      document.body.style.height = '100dvh';
-    } else {
-      document.body.style.overflow = 'unset';
-      document.body.style.height = 'unset';
-    }
-    
-    return () => {
-      document.body.style.overflow = 'unset';
-      document.body.style.height = 'unset';
-    };
-  }, [mobileViewTab]);
-
   if (location.pathname === '/reset-password') {
     return <ResetPassword />;
   }
@@ -686,233 +665,6 @@ const handleDownload = async () => {
     }
     return <LandingPage onLoginClick={() => setShowAuth(true)} />;
   }
-
-  const renderMobileEditor = () => {
-    return (
-      <div className="flex flex-col w-full bg-white dark:bg-zinc-900 border-t border-gray-200 dark:border-zinc-800 block lg:hidden shrink-0 mt-auto shadow-[0_-10px_20px_rgba(0,0,0,0.05)] relative z-20">
-        
-        {/* Active Panel */}
-        <div className={`transition-all duration-300 ease-in-out overflow-hidden bg-gray-50 dark:bg-zinc-950 ${activeMobileTool ? 'border-b border-gray-200 dark:border-zinc-800 max-h-[40vh]' : 'max-h-0'}`}>
-          <div className="p-5 overflow-y-auto max-h-[40vh]">
-            <div className="flex justify-between items-center mb-4 pb-2 border-b border-gray-200 dark:border-zinc-800">
-              <h3 className="font-semibold text-gray-900 dark:text-white">
-                {activeMobileTool === 'template' && 'Selecionar Estilo'}
-                {activeMobileTool === 'format' && 'Formato da Arte'}
-                {activeMobileTool === 'badge' && 'Selo Destaque'}
-                {activeMobileTool === 'adjust' && 'Ajustes Finos'}
-                {activeMobileTool === 'export' && 'Exportar Arte'}
-              </h3>
-              <button onClick={() => setActiveMobileTool(null)} className="p-1.5 rounded-full bg-gray-200 dark:bg-zinc-800 text-gray-600 dark:text-zinc-300 hover:bg-gray-300">
-                <X size={16} />
-              </button>
-            </div>
-
-            {activeMobileTool === 'template' && (
-              <TemplateSelector selected={selectedTemplate} onSelect={setSelectedTemplate} />
-            )}
-            {activeMobileTool === 'format' && (
-              <AspectRatioSelector selected={aspectRatio} onSelect={setAspectRatio} />
-            )}
-            {activeMobileTool === 'badge' && (
-              <div className="flex flex-nowrap overflow-x-auto gap-2 pb-2 scrollbar-hide snap-x">
-                {['Nenhum', 'VENDIDO', 'EXCLUSIVIDADE', 'BAIXOU O VALOR', 'OPORTUNIDADE'].map(selo => {
-                  const isNenhum = selo === 'Nenhum';
-                  const isActive = isNenhum ? seloAtivo === '' : seloAtivo === selo;
-                  return (
-                    <button
-                      key={selo}
-                      onClick={() => setSeloAtivo(isNenhum ? '' : selo)}
-                      className={`shrink-0 snap-center px-4 py-1.5 rounded-full text-sm font-medium transition-colors border ${
-                        isActive 
-                          ? 'bg-emerald-600 text-white border-emerald-600 shadow-md' 
-                          : 'bg-white text-gray-700 border-gray-300 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-600'
-                      }`}
-                    >
-                      {selo}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-            {activeMobileTool === 'adjust' && (
-              <div className="space-y-3">
-                {['modern', 'elegant', 'luxury', 'bold', 'minimalist', 'myway'].includes(selectedTemplate) ? (
-                  <>
-                    <div>
-                      <div className="flex justify-between text-[11px] text-gray-500 dark:text-zinc-400 mb-1 font-medium">
-                        <label>Posição da Foto (Horizontal)</label>
-                        <span>{templateOptions.imagePositions?.[previewIndex] ?? templateOptions.imagePositionX ?? 50}%</span>
-                      </div>
-                      <input 
-                        type="range" min="0" max="100" 
-                        value={templateOptions.imagePositions?.[previewIndex] ?? templateOptions.imagePositionX ?? 50} 
-                        onChange={(e) => setTemplateOptions({...templateOptions, imagePositions: {...templateOptions.imagePositions, [previewIndex]: Number(e.target.value)}})}
-                        className="w-full h-1.5 bg-gray-200 dark:bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-emerald-600"
-                      />
-                    </div>
-                    <div>
-                      <div className="flex justify-between text-[11px] text-gray-500 dark:text-zinc-400 mb-1 font-medium">
-                        <label>Escurecimento (Degradê)</label>
-                        <span>{templateOptions.gradientOpacity ?? 45}%</span>
-                      </div>
-                      <input 
-                        type="range" min="0" max="100" 
-                        value={templateOptions.gradientOpacity ?? 45} 
-                        onChange={(e) => setTemplateOptions({...templateOptions, gradientOpacity: Number(e.target.value)})}
-                        className="w-full h-1.5 bg-gray-200 dark:bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-emerald-600"
-                      />
-                    </div>
-                    <div>
-                      <div className="flex justify-between text-[11px] text-gray-500 dark:text-zinc-400 mb-1 font-medium">
-                        <label>Tamanho do Logo</label>
-                        <span>{templateOptions.logoSize ?? 100}%</span>
-                      </div>
-                      <input 
-                        type="range" min="50" max="150" 
-                        value={templateOptions.logoSize ?? 100} 
-                        onChange={(e) => setTemplateOptions({...templateOptions, logoSize: Number(e.target.value)})}
-                        className="w-full h-1.5 bg-gray-200 dark:bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-emerald-600"
-                      />
-                    </div>
-                  </>
-                ) : (
-                  <p className="text-sm text-gray-500 dark:text-zinc-400 text-center py-4">Este template não possui ajustes avançados.</p>
-                )}
-              </div>
-            )}
-            {activeMobileTool === 'export' && (
-              <div className="flex flex-row gap-3">
-                <button
-                  onClick={handleDownload}
-                  disabled={isExporting || images.length === 0}
-                  className="flex-1 py-2.5 rounded-xl shadow-sm bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center transition-all duration-300 font-semibold active:scale-95 disabled:opacity-50 text-sm"
-                >
-                  <Download className="w-4 h-4 mr-2" /> {isExporting ? (exportProgressText || "Gerando...") : (images.length > 1 ? `Baixar Todas` : "Baixar")}
-                </button>
-                <button
-                  onClick={handleShare}
-                  disabled={isExporting || images.length === 0}
-                  className="flex-1 py-2.5 rounded-xl shadow-sm bg-white dark:bg-zinc-800 text-emerald-600 border border-emerald-200 dark:border-zinc-700 hover:bg-slate-50 flex items-center justify-center transition-all duration-300 font-semibold active:scale-95 disabled:opacity-50 text-sm"
-                >
-                  <Share2 className="w-4 h-4 mr-2" /> Compartilhar
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Toolbar Nav */}
-        <div className="flex items-center justify-between px-2 pt-2 pb-4 sm:pb-6 bg-white dark:bg-zinc-900">
-          {[
-            { id: 'template', icon: LayoutTemplate, label: 'Modelo' },
-            { id: 'format', icon: Crop, label: 'Formato' },
-            { id: 'badge', icon: Tag, label: 'Selo' },
-            { id: 'adjust', icon: SlidersHorizontal, label: 'Ajustes' },
-            { id: 'export', icon: Download, label: 'Exportar' }
-          ].map(tool => {
-            const Icon = tool.icon;
-            const isActive = activeMobileTool === tool.id;
-            return (
-              <button
-                key={tool.id}
-                onClick={() => setActiveMobileTool(isActive ? null : tool.id as any)}
-                className={`flex-1 flex flex-col items-center justify-center py-2 transition-all duration-200 ${isActive ? 'text-emerald-600' : 'text-gray-500 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-zinc-200'}`}
-              >
-                <div className={`p-1.5 rounded-full mb-1 transition-colors ${isActive ? 'bg-emerald-50 dark:bg-emerald-900/30' : ''}`}>
-                  <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />
-                </div>
-                <span className="text-[10px] font-medium tracking-wide">{tool.label}</span>
-              </button>
-            )
-          })}
-        </div>
-      </div>
-    );
-  };
-
-  const renderStyleControls = () => (
-    <>
-      <section className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 transition-colors duration-200 mt-6 lg:mt-0">
-        <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Selo (Opcional)</h2>
-        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-          {['Nenhum', 'VENDIDO', 'EXCLUSIVIDADE', 'BAIXOU O VALOR', 'OPORTUNIDADE'].map(selo => {
-            const isNenhum = selo === 'Nenhum';
-            const isActive = isNenhum ? seloAtivo === '' : seloAtivo === selo;
-            return (
-              <button
-                key={selo}
-                onClick={() => setSeloAtivo(isNenhum ? '' : selo)}
-                className={`shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors border ${
-                  isActive 
-                    ? 'bg-slate-900 dark:bg-slate-700 text-white border-slate-900 dark:border-slate-700 shadow-md' 
-                    : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700 dark:hover:bg-zinc-700'
-                }`}
-              >
-                {selo}
-              </button>
-            );
-          })}
-        </div>
-      </section>
-
-      <section className="mt-6 bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 transition-colors duration-200">
-        <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Estilo</h2>
-        <TemplateSelector selected={selectedTemplate} onSelect={setSelectedTemplate} />
-        <div className="mt-6">
-          <h3 className="text-sm font-medium text-gray-700 dark:text-zinc-300 mb-3">Formato</h3>
-          <AspectRatioSelector selected={aspectRatio} onSelect={setAspectRatio} />
-        </div>
-        
-        {['modern', 'elegant', 'luxury', 'bold', 'minimalist', 'myway'].includes(selectedTemplate) && (
-          <div className="mt-6 space-y-4 pt-6 border-t border-gray-100 dark:border-zinc-800">
-            <h3 className="text-sm font-medium text-gray-700 dark:text-zinc-300">Ajustes da Imagem</h3>
-            
-            <div>
-              <div className="flex justify-between text-xs text-gray-500 dark:text-zinc-400 mb-1">
-                <label>Posição da Foto (Esquerda - Direita)</label>
-                <span>{templateOptions.imagePositions?.[previewIndex] ?? templateOptions.imagePositionX ?? 50}%</span>
-              </div>
-              <input 
-                type="range" 
-                min="0" max="100" 
-                value={templateOptions.imagePositions?.[previewIndex] ?? templateOptions.imagePositionX ?? 50} 
-                onChange={(e) => setTemplateOptions({...templateOptions, imagePositions: {...templateOptions.imagePositions, [previewIndex]: Number(e.target.value)}})}
-                className="w-full h-1.5 bg-gray-200 dark:bg-zinc-700 rounded-lg appearance-none cursor-pointer"
-              />
-            </div>
-
-            <div>
-              <div className="flex justify-between text-xs text-gray-500 dark:text-zinc-400 mb-1">
-                <label>Escurecimento (Degradê)</label>
-                <span>{templateOptions.gradientOpacity ?? 45}%</span>
-              </div>
-              <input 
-                type="range" 
-                min="0" max="100" 
-                value={templateOptions.gradientOpacity ?? 45} 
-                onChange={(e) => setTemplateOptions({...templateOptions, gradientOpacity: Number(e.target.value)})}
-                className="w-full h-1.5 bg-gray-200 dark:bg-zinc-700 rounded-lg appearance-none cursor-pointer"
-              />
-            </div>
-
-            <div>
-              <div className="flex justify-between text-xs text-gray-500 dark:text-zinc-400 mb-1">
-                <label>Tamanho do Logo</label>
-                <span>{templateOptions.logoSize ?? 100}%</span>
-              </div>
-              <input 
-                type="range" 
-                min="50" max="150" 
-                value={templateOptions.logoSize ?? 100} 
-                onChange={(e) => setTemplateOptions({...templateOptions, logoSize: Number(e.target.value)})}
-                className="w-full h-1.5 bg-gray-200 dark:bg-zinc-700 rounded-lg appearance-none cursor-pointer"
-              />
-            </div>
-          </div>
-        )}
-      </section>
-    </>
-  );
 
   return (
     <>
@@ -1213,13 +965,90 @@ const handleDownload = async () => {
               />
             </section>
 
-            <div className="hidden lg:block">
-              {renderStyleControls()}
-            </div>
+            <section className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 transition-colors duration-200 mt-6">
+              <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Selo (Opcional)</h2>
+              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                {['Nenhum', 'VENDIDO', 'EXCLUSIVIDADE', 'BAIXOU O VALOR', 'OPORTUNIDADE'].map(selo => {
+                  const isNenhum = selo === 'Nenhum';
+                  const isActive = isNenhum ? seloAtivo === '' : seloAtivo === selo;
+                  return (
+                    <button
+                      key={selo}
+                      onClick={() => setSeloAtivo(isNenhum ? '' : selo)}
+                      className={`shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors border ${
+                        isActive 
+                          ? 'bg-slate-900 dark:bg-slate-700 text-white border-slate-900 dark:border-slate-700 shadow-md' 
+                          : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700 dark:hover:bg-zinc-700'
+                      }`}
+                    >
+                      {selo}
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
 
-            <section className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 transition-colors duration-200 mt-6 lg:mt-0">
+
+            <section className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 transition-colors duration-200">
               <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">2. Informações</h2>
               <PropertyForm details={details} brandKit={applyBrandKit ? brandKit : null} onChange={setDetails} />
+            </section>
+
+            <section className="mt-6 bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 transition-colors duration-200">
+              <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Estilo</h2>
+              <TemplateSelector selected={selectedTemplate} onSelect={setSelectedTemplate} />
+              <div className="mt-6">
+                <h3 className="text-sm font-medium text-gray-700 dark:text-zinc-300 mb-3">Formato</h3>
+                <AspectRatioSelector selected={aspectRatio} onSelect={setAspectRatio} />
+              </div>
+              
+              {['modern', 'elegant', 'luxury', 'bold', 'minimalist', 'myway'].includes(selectedTemplate) && (
+                <div className="mt-6 space-y-4 pt-6 border-t border-gray-100 dark:border-zinc-800">
+                  <h3 className="text-sm font-medium text-gray-700 dark:text-zinc-300">Ajustes da Imagem</h3>
+                  
+                  <div>
+                    <div className="flex justify-between text-xs text-gray-500 dark:text-zinc-400 mb-1">
+                      <label>Posição da Foto (Esquerda - Direita)</label>
+                      <span>{templateOptions.imagePositions?.[previewIndex] ?? templateOptions.imagePositionX ?? 50}%</span>
+                    </div>
+                    <input 
+                      type="range" 
+                      min="0" max="100" 
+                      value={templateOptions.imagePositions?.[previewIndex] ?? templateOptions.imagePositionX ?? 50} 
+                      onChange={(e) => setTemplateOptions({...templateOptions, imagePositions: {...templateOptions.imagePositions, [previewIndex]: Number(e.target.value)}})}
+                      className="w-full h-2 bg-gray-200 dark:bg-zinc-700 rounded-lg appearance-none cursor-pointer"
+                    />
+                  </div>
+
+                  <div>
+                    <div className="flex justify-between text-xs text-gray-500 dark:text-zinc-400 mb-1">
+                      <label>Escurecimento (Degradê)</label>
+                      <span>{templateOptions.gradientOpacity ?? 45}%</span>
+                    </div>
+                    <input 
+                      type="range" 
+                      min="0" max="100" 
+                      value={templateOptions.gradientOpacity ?? 45} 
+                      onChange={(e) => setTemplateOptions({...templateOptions, gradientOpacity: Number(e.target.value)})}
+                      className="w-full h-2 bg-gray-200 dark:bg-zinc-700 rounded-lg appearance-none cursor-pointer"
+                    />
+                  </div>
+
+                  <div>
+                    <div className="flex justify-between text-xs text-gray-500 dark:text-zinc-400 mb-1">
+                      <label>Tamanho do Logo</label>
+                      <span>{templateOptions.logoSize ?? 100}%</span>
+                    </div>
+                    <input 
+                      type="range" 
+                      min="50" max="150" 
+                      value={templateOptions.logoSize ?? 100} 
+                      onChange={(e) => setTemplateOptions({...templateOptions, logoSize: Number(e.target.value)})}
+                      className="w-full h-2 bg-gray-200 dark:bg-zinc-700 rounded-lg appearance-none cursor-pointer"
+                    />
+                  </div>
+                </div>
+              )}
             </section>
 
             {/* Smart Caption Module */}
@@ -1297,8 +1126,8 @@ const handleDownload = async () => {
           </div>
 
           {/* Preview Side */}
-          <div className={`${mobileViewTab === 'preview' ? 'flex flex-col h-[calc(100dvh-120px)] sm:h-[calc(100dvh-140px)] -mx-4 sm:-mx-6' : 'hidden'} lg:mx-0 lg:flex lg:flex-col lg:order-2 lg:sticky lg:top-6 lg:h-[calc(100vh-3rem)] self-start w-full max-w-full min-w-0`}>
-            <div className="shrink-0 bg-white dark:bg-[#0f111a] px-4 sm:px-6 pb-2 pt-4 md:m-0 md:p-0 lg:bg-white lg:dark:bg-zinc-900 lg:p-6 lg:rounded-t-2xl lg:shadow-sm lg:border lg:border-b-0 border-gray-100 dark:border-zinc-800 flex flex-col transition-colors duration-200 relative z-20">
+          <div className={`${mobileViewTab === 'preview' ? 'flex flex-col h-[calc(100dvh-12rem)] min-h-[400px]' : 'hidden'} lg:flex lg:flex-col lg:order-2 lg:sticky lg:top-6 lg:h-[calc(100vh-3rem)] self-start w-full max-w-full min-w-0`}>
+            <div className="shrink-0 bg-white dark:bg-[#0f111a] -mx-4 px-4 sm:-mx-6 sm:px-6 -mt-4 pt-4 sm:-mt-6 sm:pt-6 pb-4 md:m-0 md:p-0 lg:bg-white lg:dark:bg-zinc-900 lg:p-6 lg:rounded-t-2xl lg:shadow-sm lg:border lg:border-b-0 border-gray-100 dark:border-zinc-800 flex flex-col transition-colors duration-200 relative z-20">
               <div className="flex flex-wrap w-full gap-2 items-start md:items-center justify-between mb-6">
                 <h2 className="hidden md:block text-lg font-semibold text-gray-900 dark:text-white truncate max-w-full">Pré-visualização do Post</h2>
                 <div className="flex flex-wrap items-center gap-2 space-x-0">
@@ -1353,10 +1182,10 @@ const handleDownload = async () => {
 
             
             {/* The Preview Area */}
-            <div className="flex flex-1 min-h-0 overflow-hidden z-[10] bg-gray-50 dark:bg-zinc-950 lg:bg-white lg:dark:bg-zinc-900 lg:p-6 lg:mx-0 lg:border lg:border-t-0 border-gray-100 dark:border-zinc-800 lg:rounded-b-2xl items-center justify-center relative">
-                <div ref={previewContainerRef} className="flex flex-1 h-full min-h-0 items-center justify-center w-full max-w-full lg:max-w-md mx-auto bg-gray-100 dark:bg-zinc-950 lg:rounded-xl relative p-0 lg:p-4 transition-colors duration-200 overflow-hidden">
+            <div className="flex flex-1 overflow-y-auto z-[10] bg-gray-50 dark:bg-zinc-950 lg:bg-white lg:dark:bg-zinc-900 pb-10 pt-2 -mx-4 px-0 sm:-mx-6 sm:px-0 lg:p-6 lg:mx-0 lg:border lg:border-t-0 border-gray-100 dark:border-zinc-800 lg:rounded-b-2xl items-center justify-center">
+                <div ref={previewContainerRef} className="flex flex-1 h-full items-center justify-center w-full max-w-full lg:max-w-md mx-auto bg-gray-100 dark:bg-zinc-950 lg:rounded-xl relative p-0 lg:p-4 transition-colors duration-200 overflow-hidden">
                 {images.length > 0 ? (
-                  <div className="relative mx-auto flex-shrink-0 flex items-center justify-center w-full h-full min-h-0">
+                  <div className="relative mx-auto flex-shrink-0 flex items-center justify-center w-full h-full">
                   <div 
                     ref={previewRef}
                     className={`relative shadow-xl transition-all duration-300 bg-white ${aspectRatio === 'feed' ? 'aspect-[3/4]' : 'aspect-[9/16]'}`}
@@ -1389,14 +1218,30 @@ const handleDownload = async () => {
               </div>
             </div>
 
-            {renderMobileEditor()}
+            {/* Mobile Action Group (hidden on desktop) */}
+            <div className="flex md:hidden items-center justify-center gap-4 mt-6">
+              <button
+                onClick={handleDownload}
+                disabled={isExporting || images.length === 0}
+                className="flex-1 py-3 rounded-xl shadow-sm bg-white dark:bg-zinc-800 text-emerald-600 border border-slate-200 dark:border-zinc-700 hover:bg-slate-50 flex items-center justify-center transition-all duration-300 font-semibold active:scale-95 disabled:opacity-50"
+              >
+                <Download className="w-5 h-5 mr-2" /> {isExporting ? (exportProgressText || "Gerando...") : (images.length > 1 ? `Baixar Todas (${images.length})` : "Baixar Imagem")}
+              </button>
+              <button
+                onClick={handleShare}
+                disabled={isExporting || images.length === 0}
+                className="flex-1 py-3 rounded-xl shadow-sm bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center transition-all duration-300 font-semibold active:scale-95 disabled:opacity-50"
+              >
+                <Share2 className="w-5 h-5 mr-2" /> Compartilhar
+              </button>
+            </div>
 
           </div>
         </div>
         </div>
       )}
 
-<footer className={`text-center py-6 text-sm text-gray-500 dark:text-zinc-400 mt-auto border-t border-gray-100 dark:border-zinc-800 ${mobileViewTab === "preview" ? "hidden lg:block" : ""}`}>
+<footer className="text-center py-6 text-sm text-gray-500 dark:text-zinc-400 mt-auto border-t border-gray-100 dark:border-zinc-800">
         © 2026 PostNaMão. Todos os direitos reservados.
       </footer>
 </main>
