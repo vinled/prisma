@@ -35,7 +35,7 @@ export default function App() {
   const [mobileViewTab, setMobileViewTab] = useState<'form' | 'preview'>('form');
   const [idEmEdicao, setIdEmEdicao] = useState<string | null>(null);
   const [details, setDetails] = useState<PropertyDetails>({
-    purpose: 'venda', rent_price: '', condo_price: '', iptu_price: '', is_package: false, title: '',
+    purpose: 'venda', rent_price: '', condo_price: '', iptu_price: '', is_package: false, title: '', previousPrice: '', porteiraFechada: false,
     price: '',
     neighborhood: '',
     city: '',
@@ -716,7 +716,7 @@ const handleDownload = async () => {
                   setActiveTab('criacao');
                   setIdEmEdicao(null);
                   setDetails({
-                purpose: 'venda', rent_price: '', condo_price: '', iptu_price: '', is_package: false, title: '', price: '', neighborhood: '', city: '', state: '',
+                purpose: 'venda', rent_price: '', condo_price: '', iptu_price: '', is_package: false, title: '', previousPrice: '', porteiraFechada: false, price: '', neighborhood: '', city: '', state: '',
                 area: '', bedrooms: '', suites: '', bathrooms: '', parking: '',
                 propertyCode: '', propertyType: '', propertySubtype: '',
                 amenities: [], differentials: [], leisureArea: null, whatsapp: ''
@@ -820,7 +820,7 @@ const handleDownload = async () => {
               setActiveTab('criacao');
               setIdEmEdicao(null);
               setDetails({
-                purpose: 'venda', rent_price: '', condo_price: '', iptu_price: '', is_package: false, title: '', price: '', neighborhood: '', city: '', state: '',
+                purpose: 'venda', rent_price: '', condo_price: '', iptu_price: '', is_package: false, title: '', previousPrice: '', porteiraFechada: false, price: '', neighborhood: '', city: '', state: '',
                 area: '', bedrooms: '', suites: '', bathrooms: '', parking: '',
                 propertyCode: '', propertyType: '', propertySubtype: '',
                 amenities: [], differentials: [], leisureArea: null, whatsapp: ''
@@ -1002,7 +1002,7 @@ const handleDownload = async () => {
                 <AspectRatioSelector selected={aspectRatio} onSelect={setAspectRatio} />
               </div>
               
-              {['modern', 'elegant', 'luxury', 'bold', 'minimalist'].includes(selectedTemplate) && (
+              {['modern', 'elegant', 'luxury', 'bold', 'minimalist', 'myway'].includes(selectedTemplate) && (
                 <div className="mt-6 space-y-4 pt-6 border-t border-gray-100 dark:border-zinc-800">
                   <h3 className="text-sm font-medium text-gray-700 dark:text-zinc-300">Ajustes da Imagem</h3>
                   
@@ -1182,8 +1182,8 @@ const handleDownload = async () => {
 
             
             {/* The Preview Area */}
-            <div className="flex flex-1 overflow-y-auto z-[10] bg-gray-50 dark:bg-zinc-950 lg:bg-white lg:dark:bg-zinc-900 pb-10 pt-2 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:p-6 lg:mx-0 lg:border lg:border-t-0 border-gray-100 dark:border-zinc-800 lg:rounded-b-2xl items-center justify-center">
-                <div ref={previewContainerRef} className="flex flex-1 h-full items-center justify-center w-full max-w-md mx-auto bg-gray-100 dark:bg-zinc-950 rounded-xl relative p-4 transition-colors duration-200 overflow-hidden">
+            <div className="flex flex-1 overflow-y-auto z-[10] bg-gray-50 dark:bg-zinc-950 lg:bg-white lg:dark:bg-zinc-900 pb-10 pt-2 -mx-4 px-0 sm:-mx-6 sm:px-0 lg:p-6 lg:mx-0 lg:border lg:border-t-0 border-gray-100 dark:border-zinc-800 lg:rounded-b-2xl items-center justify-center">
+                <div ref={previewContainerRef} className="flex flex-1 h-full items-center justify-center w-full max-w-full lg:max-w-md mx-auto bg-gray-100 dark:bg-zinc-950 lg:rounded-xl relative p-0 lg:p-4 transition-colors duration-200 overflow-hidden">
                 {images.length > 0 ? (
                   <div className="relative mx-auto flex-shrink-0 flex items-center justify-center w-full h-full">
                   <div 

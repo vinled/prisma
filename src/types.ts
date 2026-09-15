@@ -6,6 +6,8 @@ export interface PropertyDetails {
   is_package?: boolean;
   title: string; // chamadas (opcional)
   price: string;
+  previousPrice?: string;
+  porteiraFechada?: boolean;
   neighborhood: string;
   city: string;
   state: string;
@@ -25,7 +27,7 @@ export interface PropertyDetails {
   generated_copy?: string;
 }
 
-export type TemplateId = 'modern' | 'luxury' | 'bold' | 'elegant' | 'minimalist';
+export type TemplateId = 'modern' | 'luxury' | 'bold' | 'elegant' | 'minimalist' | 'myway';
 export type AspectRatioId = 'feed' | 'story';
 
 export interface BrandKit {

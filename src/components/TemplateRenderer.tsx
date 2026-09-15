@@ -6,6 +6,7 @@ import { LuxuryTemplate } from '../templates/LuxuryTemplate';
 import { BoldTemplate } from '../templates/BoldTemplate';
 import { ElegantTemplate } from '../templates/ElegantTemplate';
 import { MinimalistTemplate } from '../templates/MinimalistTemplate';
+import { MyWayTemplate } from '../templates/MyWayTemplate';
 
 interface TemplateRendererProps extends TemplateProps {
   templateId: TemplateId;
@@ -32,6 +33,9 @@ export function TemplateRenderer({ templateId, details, image, logo, aspectRatio
       break;
     case 'minimalist':
       TemplateComponent = <MinimalistTemplate details={details} image={safeImage} logo={safeLogo} aspectRatio={aspectRatio} brandKit={brandKit} options={options} />;
+      break;
+    case 'myway':
+      TemplateComponent = <MyWayTemplate details={details} image={safeImage} logo={safeLogo} aspectRatio={aspectRatio} brandKit={brandKit} options={options} />;
       break;
   }
 

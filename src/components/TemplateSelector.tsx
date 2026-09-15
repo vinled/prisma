@@ -75,13 +75,30 @@ const templates: { id: TemplateId; name: string; preview: React.ReactNode }[] = 
       </div>
     )
   },
+  { 
+    id: 'myway', 
+    name: 'My Way',
+    preview: (
+      <div className="w-full h-16 bg-gray-200 relative overflow-hidden rounded-md mb-2">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+        <div className="absolute top-1 left-0 right-0 flex justify-center">
+           <div className="w-1/3 h-2 bg-white/80 rounded-full" />
+        </div>
+        <div className="absolute bottom-1 left-1 right-1 space-y-1">
+          <div className="w-1/2 h-2 bg-white rounded-full" />
+          <div className="w-3/4 h-2 bg-orange-400 rounded-full" />
+          <div className="w-full h-1 bg-white/50 rounded-full" />
+        </div>
+      </div>
+    )
+  },
 ];
 
 export function TemplateSelector({ selected, onSelect }: TemplateSelectorProps) {
   return (
     <div className="space-y-2">
       <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300">Selecione o Modelo</label>
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
         {templates.map((tpl) => (
           <button
             key={tpl.id}
