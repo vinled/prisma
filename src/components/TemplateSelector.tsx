@@ -98,7 +98,7 @@ export function TemplateSelector({ selected, onSelect }: TemplateSelectorProps) 
   return (
     <div className="space-y-2">
       <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300">Selecione o Modelo</label>
-      <div className="flex overflow-x-auto md:grid md:grid-cols-3 lg:grid-cols-6 gap-3 pb-2 scrollbar-hide snap-x">
+      <div className="flex overflow-x-auto md:grid md:grid-cols-3 lg:grid-cols-6 gap-3 pb-2 scrollbar-hide snap-x -mx-5 px-5 md:mx-0 md:px-0">
         {templates.map((tpl) => (
           <button
             key={tpl.id}

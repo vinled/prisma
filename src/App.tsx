@@ -34,6 +34,7 @@ export default function App() {
     const [activeTab, setActiveTab] = useState<'criacao' | 'meus_imoveis' | 'minha_marca' | 'minha_conta'>('criacao');
   const [mobileViewTab, setMobileViewTab] = useState<'form' | 'preview'>('form');
   const [activeMobileTool, setActiveMobileTool] = useState<'template' | 'format' | 'badge' | 'adjust' | 'export' | null>('template');
+  const [isDraggingSlider, setIsDraggingSlider] = useState(false);
   const [idEmEdicao, setIdEmEdicao] = useState<string | null>(null);
   const [details, setDetails] = useState<PropertyDetails>({
     purpose: 'venda', rent_price: '', condo_price: '', iptu_price: '', is_package: false, title: '', previousPrice: '', porteiraFechada: false,
@@ -689,12 +690,14 @@ const handleDownload = async () => {
 
   const renderMobileEditor = () => {
     return (
-      <div className="flex flex-col w-full bg-white dark:bg-zinc-900 border-t border-gray-200 dark:border-zinc-800 block lg:hidden shrink-0 mt-auto shadow-[0_-10px_20px_rgba(0,0,0,0.05)] relative z-20">
+      <div className="flex flex-col w-full block lg:hidden shrink-0 mt-auto relative z-[60]">
         
-        {/* Active Panel */}
-        <div className={`transition-all duration-300 ease-in-out overflow-hidden bg-gray-50 dark:bg-zinc-950 ${activeMobileTool ? 'border-b border-gray-200 dark:border-zinc-800 max-h-[40vh]' : 'max-h-0'}`}>
-          <div className="p-5 overflow-y-auto max-h-[40vh]">
-            <div className="flex justify-between items-center mb-4 pb-2 border-b border-gray-200 dark:border-zinc-800">
+        {/* Active Panel (Floating overlay) */}
+        <div className={`absolute bottom-[100%] left-0 w-full transition-all duration-300 ease-in-out overflow-hidden shadow-[0_-15px_30px_rgba(0,0,0,0.1)] rounded-t-3xl ${
+          activeMobileTool ? 'max-h-[45vh] opacity-100' : 'max-h-0 opacity-0 pointer-events-none'
+        } ${isDraggingSlider ? 'bg-white/20 dark:bg-zinc-950/20' : 'bg-white/95 dark:bg-zinc-950/95 backdrop-blur-xl border-t border-gray-200 dark:border-zinc-800'}`}>
+          <div className="p-4 overflow-y-auto max-h-[45vh]">
+            <div className="flex justify-between items-center mb-3 pb-2 border-b border-gray-200/50 dark:border-zinc-800/50">
               <h3 className="font-semibold text-gray-900 dark:text-white">
                 {activeMobileTool === 'template' && 'Selecionar Estilo'}
                 {activeMobileTool === 'format' && 'Formato da Arte'}
@@ -714,7 +717,7 @@ const handleDownload = async () => {
               <AspectRatioSelector selected={aspectRatio} onSelect={setAspectRatio} />
             )}
             {activeMobileTool === 'badge' && (
-              <div className="flex flex-nowrap overflow-x-auto gap-2 pb-2 scrollbar-hide snap-x">
+              <div className="flex flex-nowrap overflow-x-auto gap-2 pb-2 scrollbar-hide snap-x -mx-5 px-5">
                 {['Nenhum', 'VENDIDO', 'EXCLUSIVIDADE', 'BAIXOU O VALOR', 'OPORTUNIDADE'].map(selo => {
                   const isNenhum = selo === 'Nenhum';
                   const isActive = isNenhum ? seloAtivo === '' : seloAtivo === selo;
@@ -747,7 +750,7 @@ const handleDownload = async () => {
                         type="range" min="0" max="100" 
                         value={templateOptions.imagePositions?.[previewIndex] ?? templateOptions.imagePositionX ?? 50} 
                         onChange={(e) => setTemplateOptions({...templateOptions, imagePositions: {...templateOptions.imagePositions, [previewIndex]: Number(e.target.value)}})}
-                        className="w-full h-1.5 bg-gray-200 dark:bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-emerald-600"
+                        className="w-full h-1.5 bg-gray-200 dark:bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-emerald-600" onTouchStart={() => setIsDraggingSlider(true)} onTouchEnd={() => setIsDraggingSlider(false)} onMouseDown={() => setIsDraggingSlider(true)} onMouseUp={() => setIsDraggingSlider(false)}
                       />
                     </div>
                     <div>
@@ -759,7 +762,7 @@ const handleDownload = async () => {
                         type="range" min="0" max="100" 
                         value={templateOptions.gradientOpacity ?? 45} 
                         onChange={(e) => setTemplateOptions({...templateOptions, gradientOpacity: Number(e.target.value)})}
-                        className="w-full h-1.5 bg-gray-200 dark:bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-emerald-600"
+                        className="w-full h-1.5 bg-gray-200 dark:bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-emerald-600" onTouchStart={() => setIsDraggingSlider(true)} onTouchEnd={() => setIsDraggingSlider(false)} onMouseDown={() => setIsDraggingSlider(true)} onMouseUp={() => setIsDraggingSlider(false)}
                       />
                     </div>
                     <div>
@@ -771,7 +774,7 @@ const handleDownload = async () => {
                         type="range" min="50" max="150" 
                         value={templateOptions.logoSize ?? 100} 
                         onChange={(e) => setTemplateOptions({...templateOptions, logoSize: Number(e.target.value)})}
-                        className="w-full h-1.5 bg-gray-200 dark:bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-emerald-600"
+                        className="w-full h-1.5 bg-gray-200 dark:bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-emerald-600" onTouchStart={() => setIsDraggingSlider(true)} onTouchEnd={() => setIsDraggingSlider(false)} onMouseDown={() => setIsDraggingSlider(true)} onMouseUp={() => setIsDraggingSlider(false)}
                       />
                     </div>
                   </>
@@ -1297,58 +1300,60 @@ const handleDownload = async () => {
           </div>
 
           {/* Preview Side */}
-          <div className={`${mobileViewTab === 'preview' ? 'flex flex-col h-[calc(100dvh-120px)] sm:h-[calc(100dvh-140px)] -mx-4 sm:-mx-6' : 'hidden'} lg:mx-0 lg:flex lg:flex-col lg:order-2 lg:sticky lg:top-6 lg:h-[calc(100vh-3rem)] self-start w-full max-w-full min-w-0`}>
+          <div className={`${mobileViewTab === 'preview' ? 'flex flex-col h-[calc(100dvh-120px)] sm:h-[calc(100dvh-140px)] -mx-4 sm:-mx-6 w-[calc(100%+2rem)] sm:w-[calc(100%+3rem)]' : 'hidden'} lg:mx-0 lg:flex lg:flex-col lg:order-2 lg:sticky lg:top-6 lg:h-[calc(100vh-3rem)] lg:self-start lg:w-full min-w-0`}>
             <div className="shrink-0 bg-white dark:bg-[#0f111a] px-4 sm:px-6 pb-2 pt-4 md:m-0 md:p-0 lg:bg-white lg:dark:bg-zinc-900 lg:p-6 lg:rounded-t-2xl lg:shadow-sm lg:border lg:border-b-0 border-gray-100 dark:border-zinc-800 flex flex-col transition-colors duration-200 relative z-20">
-              <div className="flex flex-wrap w-full gap-2 items-start md:items-center justify-between mb-6">
-                <h2 className="hidden md:block text-lg font-semibold text-gray-900 dark:text-white truncate max-w-full">Pré-visualização do Post</h2>
-                <div className="flex flex-wrap items-center gap-2 space-x-0">
+              <div className="flex w-full items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <h2 className="hidden md:block text-lg font-semibold text-gray-900 dark:text-white truncate max-w-full pr-4 border-r border-gray-200 dark:border-zinc-800">Pré-visualização do Post</h2>
+                  
+                  {idEmEdicao && (
+                    <button
+                      onClick={handleSaveOnly}
+                      disabled={isExporting}
+                      className="px-4 py-1.5 bg-transparent border border-emerald-600 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 font-medium rounded-lg transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100"
+                    >
+                      Salvar
+                    </button>
+                  )}
+
+                  {images.length > 1 && (
+                    <div className="flex space-x-2 overflow-x-auto scrollbar-hide">
+                      {images.map((_, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => setPreviewIndex(idx)}
+                          className={`px-3 py-1.5 shrink-0 rounded-full text-sm font-medium transition-colors ${previewIndex === idx ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 hover:bg-gray-300 dark:hover:bg-zinc-700'}`}
+                        >
+                          {idx + 1}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2">
                   <button
                     onClick={() => {
                       setActiveTab('meus_imoveis');
                       setIdEmEdicao(null);
                     }}
-                    className="hidden lg:block px-4 py-2 text-gray-600 border border-gray-300 hover:bg-gray-100 dark:text-gray-300 dark:border-zinc-700 dark:hover:bg-zinc-800 font-medium rounded-lg transition-colors"
+                    className="hidden lg:block px-4 py-1.5 text-gray-600 border border-gray-300 hover:bg-gray-100 dark:text-gray-300 dark:border-zinc-700 dark:hover:bg-zinc-800 font-medium rounded-lg transition-colors"
                   >
                     Voltar
                   </button>
-                  {idEmEdicao && (
-                    <button
-                      onClick={handleSaveOnly}
-                      disabled={isExporting}
-                      className="px-4 py-2 bg-transparent border border-emerald-600 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 font-medium rounded-lg transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100"
-                    >
-                      Salvar
-                    </button>
-                  )}
                   {/* Desktop Download Button (hidden on mobile) */}
                   <button
                     onClick={handleDownload}
                     disabled={isExporting || images.length === 0}
-                    className="hidden md:flex items-center justify-center p-2 px-4 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="hidden md:flex items-center justify-center py-1.5 px-4 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Download className="w-4 h-4 mr-2" />
                     <span>
                       {isExporting ? (exportProgressText || 'Gerando...') : (images.length > 1 ? `Baixar Todas (${images.length})` : 'Baixar Imagem')}
                     </span>
                   </button>
-
-
                 </div>
               </div>
-
-              {images.length > 1 && (
-                <div className="flex space-x-2 mb-4 overflow-x-auto pb-2">
-                  {images.map((_, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setPreviewIndex(idx)}
-                      className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${previewIndex === idx ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 hover:bg-gray-300 dark:hover:bg-zinc-700'}`}
-                    >
-                      {idx + 1}
-                    </button>
-                  ))}
-                </div>
-              )}
             </div>
 
             
