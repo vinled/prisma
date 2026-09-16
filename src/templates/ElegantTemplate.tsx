@@ -1,7 +1,7 @@
 import React from 'react';
 import { PriceDisplay } from './PriceDisplay';
 import { TemplateProps } from '../types';
-import { BedDouble, Bath, Car, Maximize, MapPin, Phone } from 'lucide-react';
+import { BedDouble, Bath, Car, Maximize, MapPin, Phone, Sparkles } from 'lucide-react';
 import { formatLocation } from '../utils/formatters';
 
 export function ElegantTemplate({ details, image, logo, aspectRatio, brandKit, options, userPlan }: TemplateProps) {
@@ -60,27 +60,39 @@ export function ElegantTemplate({ details, image, logo, aspectRatio, brandKit, o
         {/* The Glass Container */}
         <div className="bg-black/40 backdrop-blur-md border border-white/20 p-[32px] rounded-[32px] w-full max-w-[940px] mx-auto flex flex-col items-start text-left relative shadow-2xl">
           
-          {/* Badge Ancorado no Topo do Card Vidro (Left Aligned) */}
-          {options?.badge && (
-            <div className="absolute -top-[18px] left-[32px] inline-flex items-center justify-center shadow-md">
-              <svg xmlns="http://www.w3.org/2000/svg" className="absolute inset-0 w-full h-full" preserveAspectRatio="none">
-                <rect 
-                  width="100%" 
-                  height="100%" 
-                  rx="999" 
-                  fill={
-                    options.badge === 'VENDIDO' ? '#dc2626' : 
-                    options.badge === 'EXCLUSIVIDADE' ? '#d97706' : 
-                    options.badge === 'BAIXOU O VALOR' ? '#16a34a' : 
-                    options.badge === 'OPORTUNIDADE' ? '#2563eb' : '#000000'
-                  }
-                  stroke="rgba(255,255,255,0.2)"
-                  strokeWidth="2"
-                />
-              </svg>
-              <span className="relative z-10 px-[24px] py-[6px] text-[16px] font-bold tracking-widest uppercase text-white whitespace-nowrap">
-                {options.badge}
-              </span>
+          {/* Badges Ancorados no Topo do Card Vidro (Left Aligned) */}
+          {(options?.badge || (details.porteiraFechada && options?.badge !== 'PORTEIRA FECHADA')) && (
+            <div className="absolute -top-[18px] left-[32px] flex items-center gap-[12px]">
+              {options?.badge && (
+                <div className="inline-flex items-center justify-center shadow-md">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="absolute inset-0 w-full h-full" preserveAspectRatio="none">
+                    <rect 
+                      width="100%" 
+                      height="100%" 
+                      rx="999" 
+                      fill={
+                        options.badge === 'VENDIDO' ? '#dc2626' : 
+                        options.badge === 'EXCLUSIVIDADE' ? '#d97706' : 
+                        options.badge === 'BAIXOU O VALOR' ? '#16a34a' : 
+                        options.badge === 'OPORTUNIDADE' ? '#2563eb' : 
+                        options.badge === 'PORTEIRA FECHADA' ? '#d97706' : '#000000'
+                      }
+                      stroke="rgba(255,255,255,0.2)"
+                      strokeWidth="2"
+                    />
+                  </svg>
+                  <span className="relative z-10 px-[24px] py-[6px] text-[16px] font-bold tracking-widest uppercase text-white whitespace-nowrap">
+                    {options.badge}
+                  </span>
+                </div>
+              )}
+
+              {details.porteiraFechada && options?.badge !== 'PORTEIRA FECHADA' && (
+                <div className="inline-flex items-center justify-center shadow-md bg-gradient-to-r from-amber-600 to-amber-500 border border-amber-300/40 rounded-full px-[20px] py-[6px] text-[15px] font-black tracking-wider uppercase text-white whitespace-nowrap gap-[6px]">
+                  <Sparkles className="w-[14px] h-[14px] text-amber-200" />
+                  <span>Porteira Fechada</span>
+                </div>
+              )}
             </div>
           )}
 

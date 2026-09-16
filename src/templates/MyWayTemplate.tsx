@@ -1,6 +1,6 @@
 import React from 'react';
 import { TemplateProps } from '../types';
-import { ChevronRight, MessageCircle } from 'lucide-react';
+import { ChevronRight, MessageCircle, Sparkles } from 'lucide-react';
 import { formatLocation } from '../utils/formatters';
 
 export function MyWayTemplate({ details, image, logo, aspectRatio, brandKit, options }: TemplateProps) {
@@ -37,14 +37,14 @@ export function MyWayTemplate({ details, image, logo, aspectRatio, brandKit, opt
   }
   
   // 3. APENAS UM diferencial
-  if (details.porteiraFechada) {
-    pills.push('Porteira Fechada');
-  } else if (details.leisureArea) {
+  if (details.leisureArea) {
     pills.push('Lazer Completo');
   } else if (details.differentials && details.differentials.length > 0) {
     pills.push(details.differentials[0]);
   } else if (details.amenities && details.amenities.length > 0) {
     pills.push(details.amenities[0]);
+  } else if (details.porteiraFechada) {
+    pills.push('Porteira Fechada');
   } else if (details.area?.trim()) {
     pills.push(`${details.area} m²`);
   }
@@ -147,6 +147,15 @@ export function MyWayTemplate({ details, image, logo, aspectRatio, brandKit, opt
                 style={{ color: accentColor }}
               >
                 {options.badge}
+              </span>
+            )}
+
+            {details.porteiraFechada && options?.badge !== 'PORTEIRA FECHADA' && (
+              <span 
+                className={`inline-flex items-center gap-[8px] font-black uppercase tracking-[3px] ${isStory ? 'text-[26px] mb-[16px] px-[24px] py-[8px]' : 'text-[18px] mb-[12px] px-[16px] py-[6px]'} rounded-full border border-[#cca36b]/80 bg-black/60 text-[#cca36b] backdrop-blur-md shadow-lg`}
+              >
+                <Sparkles className={`${isStory ? 'w-[22px] h-[22px]' : 'w-[16px] h-[16px]'} text-[#cca36b]`} />
+                Porteira Fechada
               </span>
             )}
             

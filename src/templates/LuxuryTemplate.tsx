@@ -1,7 +1,7 @@
 import React from 'react';
 import { PriceDisplay } from './PriceDisplay';
 import { TemplateProps } from '../types';
-import { BedDouble, Bath, Car, Maximize, MapPin, Phone } from 'lucide-react';
+import { BedDouble, Bath, Car, Maximize, MapPin, Phone, Sparkles } from 'lucide-react';
 import { formatLocation } from '../utils/formatters';
 
 export function LuxuryTemplate({ details, image, logo, aspectRatio, brandKit, options, userPlan }: TemplateProps) {
@@ -10,10 +10,10 @@ export function LuxuryTemplate({ details, image, logo, aspectRatio, brandKit, op
   
   const allTags = [...(details.amenities || []), ...(details.differentials || [])];
   const topTags = allTags.slice(0, 5);
-  const tagsString = topTags.join(' • ');
+  const tagsString = topTags.join('  •  ');
 
   // Options
-  const gradientOpacity = options?.gradientOpacity ?? 80;
+  const gradientOpacity = options?.gradientOpacity ?? 50;
   const imagePositionX = options?.imagePositionX ?? 50;
   const opacityRatio = gradientOpacity / 100;
 
@@ -23,21 +23,29 @@ export function LuxuryTemplate({ details, image, logo, aspectRatio, brandKit, op
   if (details.suites?.trim() || details.bathrooms?.trim()) features.push({ icon: Bath, text: `${details.suites?.trim() ? details.suites : details.bathrooms} ${details.suites?.trim() ? (Number(details.suites) !== 1 ? 'Suítes' : 'Suíte') : (Number(details.bathrooms) !== 1 ? 'Banhs' : 'Banh')}` });
   if (details.parking?.trim()) features.push({ icon: Car, text: `${details.parking} ${Number(details.parking) !== 1 ? 'Vagas' : 'Vaga'}` });
 
-  // Aumentando escalas para Canvas 1080x1440
   const isStory = aspectRatio === 'story';
   const paddingClass = isStory ? 'p-[64px]' : 'p-[48px]';
-  const gapClass = isStory ? 'gap-[24px]' : 'gap-[16px]';
-  const seloPadding = isStory ? 'px-[24px] py-[8px]' : 'px-[16px] py-[4px]';
-  const seloText = isStory ? 'text-[24px]' : 'text-[16px]';
-  const tituloText = isStory ? 'text-[64px]' : 'text-[48px]';
-  const enderecoText = isStory ? 'text-[32px]' : 'text-[24px]';
-  const iconSize = isStory ? 'w-[32px] h-[32px]' : 'w-[24px] h-[24px]';
-  const featText = isStory ? 'text-[28px]' : 'text-[20px]';
-  const comodsText = isStory ? 'text-[20px]' : 'text-[14px]';
+  const seloPadding = isStory ? 'px-[20px] py-[8px]' : 'px-[16px] py-[5px]';
+  const seloText = isStory ? 'text-[20px]' : 'text-[15px]';
+  const tituloText = isStory ? 'text-[58px]' : 'text-[46px]';
+  const enderecoText = isStory ? 'text-[26px]' : 'text-[21px]';
+  const iconSize = isStory ? 'w-[26px] h-[26px]' : 'w-[20px] h-[20px]';
+  const featText = isStory ? 'text-[26px]' : 'text-[21px]';
+  const comodsText = isStory ? 'text-[18px]' : 'text-[14px]';
+
+  // Sombras duplas para contraste impecável sem precisar escurecer a foto
+  const textShadowStyle = {
+    textShadow: '0 2px 8px rgba(0, 0, 0, 0.9), 0 1px 3px rgba(0, 0, 0, 0.95), 0 4px 16px rgba(0, 0, 0, 0.6)'
+  };
+
+  const titleShadowStyle = {
+    fontFamily: '"Playfair Display", Georgia, serif',
+    textShadow: '0 3px 12px rgba(0, 0, 0, 0.95), 0 1px 4px rgba(0, 0, 0, 0.9), 0 6px 24px rgba(0, 0, 0, 0.7)'
+  };
 
   return (
-    <div className="relative w-full h-full bg-zinc-950 overflow-hidden font-serif" id="post-template">
-      {/* Background Image */}
+    <div className="relative w-full h-full bg-zinc-950 overflow-hidden font-sans" id="post-template">
+      {/* Background Image - Límpida e vibrante */}
       {image ? (
         <div 
           className="absolute inset-0 w-full h-full" 
@@ -53,76 +61,112 @@ export function LuxuryTemplate({ details, image, logo, aspectRatio, brandKit, op
         </div>
       )}
 
-      {/* GRADIENTE BASE PARA O PREÇO NO FUNDO */}
+      {/* GRADIENTE SUPERIOR SUAVE E CINEMATOGRÁFICO - Apenas 34% de altura, preserva totalmente a vista */}
       <div 
-        className="absolute bottom-0 inset-x-0 h-[400px] bg-gradient-to-t from-black/80 to-transparent pointer-events-none z-10" 
+        className="absolute top-0 inset-x-0 h-[34%] bg-gradient-to-b from-black/80 via-black/35 to-transparent pointer-events-none z-10" 
         style={{ opacity: opacityRatio }} 
       />
 
-      {/* BLOCO SUPERIOR EXATO COMO PEDIDO PELO USUÁRIO (Escalado para 1080px) */}
+      {/* GRADIENTE INFERIOR DISCRETO PARA O PREÇO */}
       <div 
-        className={`absolute top-0 inset-x-0 ${paddingClass} z-20 flex flex-col ${gapClass} bg-gradient-to-b from-black/80 via-black/40 to-transparent`}
-        style={{ opacity: opacityRatio }}
+        className="absolute bottom-0 inset-x-0 h-[240px] bg-gradient-to-t from-black/85 via-black/30 to-transparent pointer-events-none z-10" 
+        style={{ opacity: opacityRatio }} 
+      />
+
+      {/* BLOCO SUPERIOR EDITORIAL */}
+      <div 
+        className={`absolute top-0 inset-x-0 ${paddingClass} z-20 flex flex-col gap-[14px]`}
       >
         
-        {/* Logo and Whatsapp if needed at the very top, before title */}
-        <div className="flex justify-between items-start w-full mb-[16px]">
+        {/* Top Bar: Logo e WhatsApp */}
+        <div className="flex justify-between items-center w-full mb-[4px]">
           {logo ? (
-            <img src={logo} alt="Logo" className="object-contain max-h-[64px] drop-shadow-md" style={{ transform: `scale(${(options?.logoSize ?? 100) / 100})`, transformOrigin: 'left top' }} />
+            <img 
+              src={logo} 
+              alt="Logo" 
+              className="object-contain max-h-[64px] drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)]" 
+              style={{ transform: `scale(${(options?.logoSize ?? 100) / 100})`, transformOrigin: 'left center' }} 
+            />
           ) : <div />}
           {whatsapp?.trim() && (
-            <div className={`flex items-center text-white/90 font-sans font-medium tracking-widest drop-shadow-md ${enderecoText}`}>
-              <Phone className={`${iconSize} mr-[12px] opacity-80`} />
+            <div className={`flex items-center text-white/95 font-medium tracking-wide bg-black/40 backdrop-blur-md border border-white/15 rounded-full ${isStory ? 'px-[22px] py-[8px] text-[22px]' : 'px-[16px] py-[6px] text-[17px]'} shadow-md`}>
+              <Phone className={`${iconSize} mr-[8px] text-emerald-400 opacity-100`} />
               <span>{whatsapp}</span>
             </div>
           )}
         </div>
 
-        {/* Linha 1: Selo e Título lado a lado */}
-        <div className="flex flex-wrap items-center gap-[16px]">
-          {/* Renderização condicional do selo */}
+        {/* Linha 1: Selo e Título com Tipografia Editorial */}
+        <div className="flex flex-wrap items-center gap-[12px]">
           {options?.badge && (
-            <div className="relative inline-flex items-center justify-center shadow-lg">
-              <svg xmlns="http://www.w3.org/2000/svg" className="absolute inset-0 w-full h-full" preserveAspectRatio="none">
-                <rect 
-                  width="100%" 
-                  height="100%" 
-                  rx="4" 
-                  fill={
+            <div className="inline-flex items-center justify-center shadow-lg">
+              <span 
+                className={`${seloPadding} ${seloText} font-black text-white uppercase tracking-widest rounded-full shadow-md whitespace-nowrap`}
+                style={{
+                  backgroundColor: 
                     options.badge === 'VENDIDO' ? '#dc2626' : 
                     options.badge === 'EXCLUSIVIDADE' ? '#d97706' : 
                     options.badge === 'BAIXOU O VALOR' ? '#16a34a' : 
-                    options.badge === 'OPORTUNIDADE' ? '#2563eb' : '#ea580c'
-                  }
-                />
-              </svg>
-              <span className={`relative z-10 ${seloPadding} ${seloText} font-bold text-white uppercase tracking-wider font-sans whitespace-nowrap`}>
+                    options.badge === 'OPORTUNIDADE' ? '#2563eb' : 
+                    options.badge === 'PORTEIRA FECHADA' ? '#b45309' : '#ea580c'
+                }}
+              >
                 {options.badge}
               </span>
             </div>
           )}
-          <h2 className={`font-serif ${tituloText} text-white tracking-widest uppercase drop-shadow-md m-0 leading-none`}>
+          {details.porteiraFechada && options?.badge !== 'PORTEIRA FECHADA' && (
+            <div className="inline-flex items-center justify-center shadow-md">
+              <div className={`${seloPadding} ${seloText} font-black text-amber-950 uppercase tracking-widest rounded-full bg-gradient-to-r from-[#f1db89] via-[#faeead] to-[#e4be52] border border-[#fff6c9] flex items-center gap-[6px] shadow-sm whitespace-nowrap`}>
+                <Sparkles className={`${iconSize} text-amber-900`} />
+                <span>Porteira Fechada</span>
+              </div>
+            </div>
+          )}
+          <h2 
+            className={`${tituloText} text-white font-bold tracking-[0.06em] uppercase m-0 leading-tight`}
+            style={titleShadowStyle}
+          >
             {details.title || 'ALTO PADRÃO'}
           </h2>
         </div>
 
-        {/* Linha 2: Endereço completo sem cortes */}
-        <div className={`${enderecoText} font-medium text-white/90 drop-shadow flex items-center gap-[8px] font-sans mt-[8px]`}>
-          <MapPin className={`${iconSize} opacity-90`} /> {locationString}
-        </div>
+        {/* Linha 2: Endereço Elegante */}
+        {locationString && (
+          <div 
+            className={`flex items-center gap-[8px] text-white/95 font-medium tracking-wide ${enderecoText}`}
+            style={textShadowStyle}
+          >
+            <MapPin className={`${iconSize} text-amber-300 opacity-100 shrink-0 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]`} />
+            <span>{locationString}</span>
+          </div>
+        )}
 
-        {/* Linha 3: Características */}
-        <div className="flex flex-wrap items-center gap-[24px] mt-[16px]">
-          {features.map((feat, idx) => (
-            <div key={idx} className={`flex items-center gap-[8px] ${featText} text-white drop-shadow font-semibold font-sans`}>
-              <feat.icon className={`${iconSize} opacity-90`} strokeWidth={2} /> {feat.text}
-            </div>
-          ))}
-        </div>
+        {/* Linha 3: Características em Linha Editorial com Ícones Dourados */}
+        {features.length > 0 && (
+          <div className="flex flex-wrap items-center gap-x-[16px] gap-y-[6px] mt-[2px]">
+            {features.map((feat, idx) => (
+              <div 
+                key={idx} 
+                className={`flex items-center gap-[8px] ${featText} text-white font-semibold`}
+                style={textShadowStyle}
+              >
+                <feat.icon className={`${iconSize} text-amber-300 shrink-0 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]`} strokeWidth={2.2} /> 
+                <span>{feat.text}</span>
+                {idx < features.length - 1 && (
+                  <span className="text-white/40 ml-[12px] select-none">•</span>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
 
-        {/* Linha 4: Comodidades */}
+        {/* Linha 4: Comodidades / Tags em Dourado Champagne */}
         {tagsString && (
-          <div className={`${comodsText} text-white/70 uppercase tracking-widest drop-shadow mt-[8px] font-sans font-semibold`}>
+          <div 
+            className={`text-amber-200/90 font-medium tracking-[0.16em] uppercase ${comodsText} mt-[2px]`}
+            style={textShadowStyle}
+          >
             {tagsString}
           </div>
         )}
@@ -132,17 +176,28 @@ export function LuxuryTemplate({ details, image, logo, aspectRatio, brandKit, op
       {/* BLOCO INFERIOR (PREÇO E MARCA D'ÁGUA) */}
       <div className={`absolute bottom-0 inset-x-0 ${paddingClass} flex justify-between items-end z-20`}>
         {/* Lado Esquerdo (Preço) */}
-        <PriceDisplay details={details} aspectRatio={aspectRatio} baseSizeClassName={`font-serif ${isStory ? 'text-[108px]' : 'text-[96px]'} text-white drop-shadow-lg leading-none`} />
+        <PriceDisplay 
+          details={details} 
+          aspectRatio={aspectRatio} 
+          baseSizeClassName={`font-bold ${isStory ? 'text-[104px]' : 'text-[90px]'} text-white leading-none`} 
+          style={titleShadowStyle}
+        />
         
         {/* Lado Direito (Marca d'água) */}
-        <div className="flex flex-col items-end gap-[8px]">
+        <div className="flex flex-col items-end gap-[6px]">
           {details.propertyCode?.trim() && (
-            <div className={`text-white/60 font-sans tracking-widest uppercase ${comodsText}`}>
+            <div 
+              className={`text-white/80 tracking-widest uppercase font-semibold ${comodsText}`}
+              style={textShadowStyle}
+            >
               Cód. {details.propertyCode}
             </div>
           )}
           {userPlan !== 'pro' && (
-            <div className={`text-white/40 font-sans ${isStory ? 'text-[18px]' : 'text-[14px]'}`}>
+            <div 
+              className={`text-white/60 ${isStory ? 'text-[18px]' : 'text-[14px]'}`}
+              style={textShadowStyle}
+            >
               Criado com PostNaMão
             </div>
           )}

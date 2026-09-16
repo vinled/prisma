@@ -112,7 +112,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
           <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Tipo do imóvel</label>
           <select
             name="propertyType"
-            value={details.propertyType}
+            value={details.propertyType || ''}
             onChange={handleChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
@@ -128,7 +128,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
             <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Tipo de apartamento</label>
             <select
               name="propertySubtype"
-              value={details.propertySubtype}
+              value={details.propertySubtype || ''}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
@@ -146,7 +146,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
         <input
           type="text"
           name="title"
-          value={details.title}
+          value={details.title || ''}
           onChange={handleChange}
           placeholder="Ex.: Oportunidade, Exclusividade, Pronto para morar..."
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -159,7 +159,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
           <input
             type="text"
             name="neighborhood"
-            value={details.neighborhood}
+            value={details.neighborhood || ''}
             onChange={handleChange}
             placeholder="Ex.: Boqueirão"
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -170,7 +170,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
           <input
             type="text"
             name="city"
-            value={details.city}
+            value={details.city || ''}
             onChange={handleChange}
             placeholder="Ex.: Santos"
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -180,7 +180,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
           <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Estado</label>
           <select
             name="state"
-            value={details.state}
+            value={details.state || ''}
             onChange={handleChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
@@ -200,7 +200,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
               type="text"
               name="price"
               inputMode="numeric"
-              value={details.price}
+              value={details.price || ''}
               onChange={handlePriceChange}
               placeholder="R$ 1.000.000"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white"
@@ -222,8 +222,9 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
             <label className="flex items-center space-x-2 cursor-pointer">
               <input
                 type="checkbox"
+                name="porteiraFechada"
                 checked={details.porteiraFechada || false}
-                onChange={(e) => onChange({ porteiraFechada: e.target.checked })}
+                onChange={handleCheckboxChange}
                 className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 dark:bg-zinc-800 dark:border-zinc-700"
               />
               <span className="text-sm font-medium text-gray-700 dark:text-zinc-300">Porteira Fechada</span>
@@ -232,18 +233,33 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
         </div>
       ) : (
         <div className="space-y-4">
-          <div className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              id="is_package"
-              name="is_package"
-              checked={details.is_package || false}
-              onChange={handleCheckboxChange}
-              className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
-            />
-            <label htmlFor="is_package" className="text-sm font-medium text-gray-700 dark:text-zinc-300">
-              É Pacote? (Aluguel + Taxas inclusas)
-            </label>
+          <div className="flex items-center space-x-6">
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="is_package"
+                name="is_package"
+                checked={details.is_package || false}
+                onChange={handleCheckboxChange}
+                className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+              />
+              <label htmlFor="is_package" className="text-sm font-medium text-gray-700 dark:text-zinc-300 cursor-pointer">
+                É Pacote? (Aluguel + Taxas inclusas)
+              </label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="porteiraFechada_locacao"
+                name="porteiraFechada"
+                checked={details.porteiraFechada || false}
+                onChange={handleCheckboxChange}
+                className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+              />
+              <label htmlFor="porteiraFechada_locacao" className="text-sm font-medium text-gray-700 dark:text-zinc-300 cursor-pointer">
+                Porteira Fechada
+              </label>
+            </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
@@ -398,7 +414,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
           type="text"
           name="propertyCode"
           inputMode="numeric"
-          value={details.propertyCode}
+          value={details.propertyCode || ''}
           onChange={handleChange}
           placeholder="Ex.: AP0123"
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -435,9 +451,9 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
             <AmenitiesSelector
               label="Opções de Lazer"
               options={LEISURE_AMENITIES}
-              selected={details.amenities.filter(a => LEISURE_AMENITIES.includes(a))}
+              selected={(details.amenities || []).filter(a => LEISURE_AMENITIES.includes(a))}
               onChange={(newSelection) => {
-                const others = details.amenities.filter(a => !LEISURE_AMENITIES.includes(a));
+                const others = (details.amenities || []).filter(a => !LEISURE_AMENITIES.includes(a));
                 handleAmenitiesChange([...others, ...newSelection]);
               }}
             />
@@ -456,9 +472,9 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
         <AmenitiesSelector
           label="Comodidades do Condomínio / Serviços"
           options={[...CONDO_AMENITIES, ...SERVICE_AMENITIES]}
-          selected={details.amenities.filter(a => [...CONDO_AMENITIES, ...SERVICE_AMENITIES].includes(a))}
+          selected={(details.amenities || []).filter(a => [...CONDO_AMENITIES, ...SERVICE_AMENITIES].includes(a))}
           onChange={(newSelection) => {
-            const others = details.amenities.filter(a => !([...CONDO_AMENITIES, ...SERVICE_AMENITIES].includes(a)));
+            const others = (details.amenities || []).filter(a => !([...CONDO_AMENITIES, ...SERVICE_AMENITIES].includes(a)));
             handleAmenitiesChange([...others, ...newSelection]);
           }}
         />
@@ -468,7 +484,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
         <AmenitiesSelector
           label="Diferenciais"
           options={DIFFERENTIALS}
-          selected={details.differentials}
+          selected={details.differentials || []}
           onChange={handleDifferentialsChange}
         />
       </div>
@@ -501,7 +517,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
                   type="tel"
                   name="whatsapp"
                   inputMode="numeric"
-                  value={details.whatsapp}
+                  value={details.whatsapp || ''}
                   onChange={handleChange}
                   placeholder="Ex.: (11) 99999-9999"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -521,7 +537,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
             type="tel"
             name="whatsapp"
             inputMode="numeric"
-            value={details.whatsapp}
+            value={details.whatsapp || ''}
             onChange={handleChange}
             placeholder="Ex.: (11) 99999-9999"
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"

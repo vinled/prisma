@@ -20,22 +20,22 @@ export function TemplateRenderer({ templateId, details, image, logo, aspectRatio
 
   switch (templateId) {
     case 'modern':
-      TemplateComponent = <ModernTemplate details={details} image={safeImage} logo={safeLogo} aspectRatio={aspectRatio} brandKit={brandKit} options={options} />;
+      TemplateComponent = <ModernTemplate details={details} image={safeImage} logo={safeLogo} aspectRatio={aspectRatio} brandKit={brandKit} options={options} userPlan={userPlan} />;
       break;
     case 'luxury':
-      TemplateComponent = <LuxuryTemplate details={details} image={safeImage} logo={safeLogo} aspectRatio={aspectRatio} brandKit={brandKit} options={options} />;
+      TemplateComponent = <LuxuryTemplate details={details} image={safeImage} logo={safeLogo} aspectRatio={aspectRatio} brandKit={brandKit} options={options} userPlan={userPlan} />;
       break;
     case 'bold':
-      TemplateComponent = <BoldTemplate details={details} image={safeImage} logo={safeLogo} aspectRatio={aspectRatio} brandKit={brandKit} options={options} />;
+      TemplateComponent = <BoldTemplate details={details} image={safeImage} logo={safeLogo} aspectRatio={aspectRatio} brandKit={brandKit} options={options} userPlan={userPlan} />;
       break;
     case 'elegant':
-      TemplateComponent = <ElegantTemplate details={details} image={safeImage} logo={safeLogo} aspectRatio={aspectRatio} brandKit={brandKit} options={options} />;
+      TemplateComponent = <ElegantTemplate details={details} image={safeImage} logo={safeLogo} aspectRatio={aspectRatio} brandKit={brandKit} options={options} userPlan={userPlan} />;
       break;
     case 'minimalist':
-      TemplateComponent = <MinimalistTemplate details={details} image={safeImage} logo={safeLogo} aspectRatio={aspectRatio} brandKit={brandKit} options={options} />;
+      TemplateComponent = <MinimalistTemplate details={details} image={safeImage} logo={safeLogo} aspectRatio={aspectRatio} brandKit={brandKit} options={options} userPlan={userPlan} />;
       break;
     case 'myway':
-      TemplateComponent = <MyWayTemplate details={details} image={safeImage} logo={safeLogo} aspectRatio={aspectRatio} brandKit={brandKit} options={options} />;
+      TemplateComponent = <MyWayTemplate details={details} image={safeImage} logo={safeLogo} aspectRatio={aspectRatio} brandKit={brandKit} options={options} userPlan={userPlan} />;
       break;
   }
 

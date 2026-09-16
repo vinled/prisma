@@ -5,9 +5,10 @@ interface PriceDisplayProps {
   details: PropertyDetails;
   aspectRatio: AspectRatioId;
   baseSizeClassName?: string;
+  style?: React.CSSProperties;
 }
 
-export function PriceDisplay({ details, aspectRatio, baseSizeClassName }: PriceDisplayProps) {
+export function PriceDisplay({ details, aspectRatio, baseSizeClassName, style }: PriceDisplayProps) {
   const isLocacao = details.purpose === 'locacao';
   
   // Extract margins to apply to the outer wrapper so the inner items stay together
@@ -43,7 +44,7 @@ export function PriceDisplay({ details, aspectRatio, baseSizeClassName }: PriceD
 
   if (!isLocacao) {
     return (
-      <div className={`whitespace-nowrap ${textClasses} ${marginClasses}`.trim()}>
+      <div className={`whitespace-nowrap ${textClasses} ${marginClasses}`.trim()} style={style}>
         {details.price || ''}
       </div>
     );
@@ -51,7 +52,7 @@ export function PriceDisplay({ details, aspectRatio, baseSizeClassName }: PriceD
 
   // Locação
   return (
-    <div className={`flex flex-col ${alignClass} ${marginClasses}`.trim()}>
+    <div className={`flex flex-col ${alignClass} ${marginClasses}`.trim()} style={style}>
       <div className={`whitespace-nowrap ${textClasses} flex items-baseline`}>
         {details.rent_price || 'Consulte'}
         <span className={`${subtitleClass} font-bold ${monthTextColor} ml-3 tracking-normal drop-shadow-sm font-sans`}>/mês</span>

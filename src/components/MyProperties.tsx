@@ -83,7 +83,7 @@ export function MyProperties({ properties, onEdit, onDelete }: Props) {
             </div>
             <input
               type="text"
-              value={termoBusca}
+              value={termoBusca || ''}
               onChange={(e) => setTermoBusca(e.target.value)}
               className="block w-full pl-10 pr-3 py-2.5 border border-gray-200 dark:border-zinc-700 rounded-xl leading-5 bg-white dark:bg-zinc-900 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm transition-colors"
               placeholder="Buscar por código, bairro ou tipo..."

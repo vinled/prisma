@@ -1,7 +1,7 @@
 import React from 'react';
 import { PriceDisplay } from './PriceDisplay';
 import { TemplateProps } from '../types';
-import { MapPin, Phone, Maximize, BedDouble, Bath, Car } from 'lucide-react';
+import { MapPin, Phone, Maximize, BedDouble, Bath, Car, Sparkles } from 'lucide-react';
 import { formatLocation } from '../utils/formatters';
 
 export function MinimalistTemplate({ details, image, logo, aspectRatio, brandKit, options }: TemplateProps) {
@@ -48,15 +48,35 @@ export function MinimalistTemplate({ details, image, logo, aspectRatio, brandKit
             </div>
           )}
         </div>
+
+        {/* Badge in Minimalist */}
+        {options?.badge && (
+          <div className="absolute bottom-[32px] left-[65px] z-10">
+            <div className="bg-[#1A1A1A] text-white px-[28px] py-[10px] rounded-full text-[18px] font-black tracking-widest uppercase shadow-lg">
+              {options.badge}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Bottom Content Area */}
       <div className={`flex-1 w-full ${aspectRatio === 'story' ? 'p-[108px]' : 'p-[65px]'} bg-white flex flex-col justify-center`}>
         
         <div className="flex-1 flex flex-col justify-center">
-          {details.title?.trim() && (
-            <div className={`${aspectRatio === 'story' ? 'text-[32px] mb-[22px]' : 'text-[24px] mb-[16px]'} uppercase tracking-[1.5px] text-[#666] font-semibold`}>
-              {details.title}
+          {(details.title?.trim() || (details.porteiraFechada && options?.badge !== 'PORTEIRA FECHADA')) && (
+            <div className={`flex items-center justify-between gap-[16px] ${aspectRatio === 'story' ? 'mb-[24px]' : 'mb-[16px]'}`}>
+              {details.title?.trim() ? (
+                <div className={`${aspectRatio === 'story' ? 'text-[32px]' : 'text-[24px]'} uppercase tracking-[1.5px] text-[#666] font-semibold truncate`}>
+                  {details.title}
+                </div>
+              ) : <div />}
+              
+              {details.porteiraFechada && options?.badge !== 'PORTEIRA FECHADA' && (
+                <div className="bg-[#1A1A1A] text-white px-[20px] py-[6px] rounded-full text-[14px] font-black tracking-widest uppercase whitespace-nowrap shrink-0 flex items-center gap-[6px] shadow-sm">
+                  <Sparkles className="w-[14px] h-[14px] text-amber-400" />
+                  <span>Porteira Fechada</span>
+                </div>
+              )}
             </div>
           )}
           

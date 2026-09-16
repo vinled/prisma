@@ -1,7 +1,7 @@
 import React from 'react';
 import { PriceDisplay } from './PriceDisplay';
 import { TemplateProps } from '../types';
-import { BedDouble, Bath, Car, Maximize, MapPin, MessageCircle } from 'lucide-react';
+import { BedDouble, Bath, Car, Maximize, MapPin, MessageCircle, Sparkles } from 'lucide-react';
 import { formatLocation } from '../utils/formatters';
 
 export function ModernTemplate({ details, image, logo, aspectRatio, brandKit, options }: TemplateProps) {
@@ -64,7 +64,8 @@ export function ModernTemplate({ details, image, logo, aspectRatio, brandKit, op
                     options.badge === 'VENDIDO' ? '#dc2626' : 
                     options.badge === 'EXCLUSIVIDADE' ? '#d97706' : 
                     options.badge === 'BAIXOU O VALOR' ? '#16a34a' : 
-                    options.badge === 'OPORTUNIDADE' ? '#2563eb' : '#2563eb'
+                    options.badge === 'OPORTUNIDADE' ? '#2563eb' : 
+                    options.badge === 'PORTEIRA FECHADA' ? '#d97706' : '#2563eb'
                   }
                 />
               </svg>
@@ -113,15 +114,25 @@ export function ModernTemplate({ details, image, logo, aspectRatio, brandKit, op
       {/* Bottom Content */}
       <div className={`absolute bottom-0 left-0 w-full flex flex-col ${aspectRatio === 'story' ? 'p-[86px] gap-[43px]' : 'p-[65px] gap-[32px]'} z-10`}>
         
-        {/* Chamada */}
-        {details.title?.trim() && (
-          <div className="self-start">
-            <div 
-              className={`rounded-[540px] ${aspectRatio === 'story' ? 'px-[43px] py-[16px] text-[32px]' : 'px-[32px] py-[11px] text-[22px]'} font-bold tracking-widest uppercase text-white shadow-sm`}
-              style={{ backgroundColor: primaryColor }}
-            >
-              {details.title}
-            </div>
+        {/* Chamada & Selos */}
+        {(details.title?.trim() || (details.porteiraFechada && options?.badge !== 'PORTEIRA FECHADA')) && (
+          <div className="flex flex-wrap items-center gap-[14px] self-start">
+            {details.title?.trim() && (
+              <div 
+                className={`rounded-[540px] ${aspectRatio === 'story' ? 'px-[43px] py-[16px] text-[32px]' : 'px-[32px] py-[11px] text-[22px]'} font-bold tracking-widest uppercase text-white shadow-sm`}
+                style={{ backgroundColor: primaryColor }}
+              >
+                {details.title}
+              </div>
+            )}
+            {details.porteiraFechada && options?.badge !== 'PORTEIRA FECHADA' && (
+              <div 
+                className={`rounded-[540px] ${aspectRatio === 'story' ? 'px-[36px] py-[14px] text-[26px]' : 'px-[26px] py-[9px] text-[19px]'} font-black tracking-wider uppercase text-amber-300 bg-black/60 backdrop-blur-md border border-amber-400/50 shadow-lg flex items-center gap-[8px]`}
+              >
+                <Sparkles className={`${aspectRatio === 'story' ? 'w-[26px] h-[26px]' : 'w-[18px] h-[18px]'} text-amber-400`} />
+                <span>Porteira Fechada</span>
+              </div>
+            )}
           </div>
         )}
 

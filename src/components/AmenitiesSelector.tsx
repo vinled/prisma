@@ -55,7 +55,7 @@ export function AmenitiesSelector({ label, options, selected, onChange }: Amenit
             type="text"
             className="flex-1 bg-transparent border-none focus:outline-none text-sm text-gray-900 dark:text-white placeholder-gray-400"
             placeholder={`Buscar ou adicionar ${label.toLowerCase()}...`}
-            value={searchTerm}
+            value={searchTerm || ''}
             onChange={(e) => {
               setSearchTerm(e.target.value);
               setIsOpen(true);

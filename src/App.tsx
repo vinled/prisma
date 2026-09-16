@@ -718,7 +718,7 @@ const handleDownload = async () => {
             )}
             {activeMobileTool === 'badge' && (
               <div className="flex flex-nowrap overflow-x-auto gap-2 pb-2 scrollbar-hide snap-x -mx-5 px-5">
-                {['Nenhum', 'VENDIDO', 'EXCLUSIVIDADE', 'BAIXOU O VALOR', 'OPORTUNIDADE'].map(selo => {
+                {['Nenhum', 'VENDIDO', 'EXCLUSIVIDADE', 'BAIXOU O VALOR', 'OPORTUNIDADE', 'PORTEIRA FECHADA'].map(selo => {
                   const isNenhum = selo === 'Nenhum';
                   const isActive = isNenhum ? seloAtivo === '' : seloAtivo === selo;
                   return (
@@ -838,7 +838,7 @@ const handleDownload = async () => {
       <section className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 transition-colors duration-200 mt-6 lg:mt-0">
         <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Selo (Opcional)</h2>
         <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-          {['Nenhum', 'VENDIDO', 'EXCLUSIVIDADE', 'BAIXOU O VALOR', 'OPORTUNIDADE'].map(selo => {
+          {['Nenhum', 'VENDIDO', 'EXCLUSIVIDADE', 'BAIXOU O VALOR', 'OPORTUNIDADE', 'PORTEIRA FECHADA'].map(selo => {
             const isNenhum = selo === 'Nenhum';
             const isActive = isNenhum ? seloAtivo === '' : seloAtivo === selo;
             return (
@@ -1249,7 +1249,7 @@ const handleDownload = async () => {
                   
                   <div className="flex flex-col md:flex-row gap-3 w-full justify-end">
                     <select
-                      value={targetAudience}
+                      value={targetAudience || ''}
                       onChange={(e) => {
                         const val = e.target.value;
                         if (userPlan === 'free' && val.includes('(Pro)')) {
@@ -1280,7 +1280,7 @@ const handleDownload = async () => {
                      readOnly 
                      rows={10} 
                      className="w-full max-w-full p-4 bg-gray-50 dark:bg-zinc-950 border border-gray-200 dark:border-zinc-800 rounded-xl text-sm text-gray-700 dark:text-zinc-300 resize-none focus:outline-none"
-                     value={generatedCaption}
+                     value={generatedCaption || ''}
                      placeholder="Clique em 'Gerar Copy com IA' para criar uma legenda profissional."
                    />
                    <button 
