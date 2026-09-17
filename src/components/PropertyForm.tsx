@@ -80,13 +80,16 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
     onChange({ ...details, differentials: selected });
   };
 
+  const inputClass = "w-full px-3.5 py-2.5 text-base border border-gray-300 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-zinc-500 transition-colors";
+  const labelClass = "block text-sm font-semibold text-gray-700 dark:text-zinc-200 mb-1.5";
+
   return (
     <div className="space-y-6">
       <div className="flex bg-gray-100 dark:bg-zinc-800 p-1 rounded-lg w-fit mb-4">
         <button
           type="button"
           onClick={() => onChange({ ...details, purpose: 'venda' })}
-          className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+          className={`px-5 py-2 text-sm font-bold rounded-md transition-colors ${
             (!details.purpose || details.purpose === 'venda')
               ? 'bg-white dark:bg-zinc-700 text-gray-900 dark:text-white shadow-sm'
               : 'text-gray-500 dark:text-zinc-400 hover:text-gray-700'
@@ -97,7 +100,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
         <button
           type="button"
           onClick={() => onChange({ ...details, purpose: 'locacao' })}
-          className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+          className={`px-5 py-2 text-sm font-bold rounded-md transition-colors ${
             details.purpose === 'locacao'
               ? 'bg-white dark:bg-zinc-700 text-gray-900 dark:text-white shadow-sm'
               : 'text-gray-500 dark:text-zinc-400 hover:text-gray-700'
@@ -109,12 +112,12 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Tipo do imóvel</label>
+          <label className={labelClass}>Tipo do imóvel</label>
           <select
             name="propertyType"
             value={details.propertyType || ''}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className={inputClass}
           >
             <option value="">Selecione...</option>
             {PROPERTY_TYPES.map(type => (
@@ -125,12 +128,12 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
 
         {details.propertyType === 'Apartamento' && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Tipo de apartamento</label>
+            <label className={labelClass}>Tipo de apartamento</label>
             <select
               name="propertySubtype"
               value={details.propertySubtype || ''}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className={inputClass}
             >
               <option value="">Padrão</option>
               {APARTMENT_SUBTYPES.map(type => (
@@ -142,47 +145,47 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Chamada (opcional)</label>
+        <label className={labelClass}>Chamada (opcional)</label>
         <input
           type="text"
           name="title"
           value={details.title || ''}
           onChange={handleChange}
           placeholder="Ex.: Oportunidade, Exclusividade, Pronto para morar..."
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className={inputClass}
         />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Bairro</label>
+          <label className={labelClass}>Bairro</label>
           <input
             type="text"
             name="neighborhood"
             value={details.neighborhood || ''}
             onChange={handleChange}
             placeholder="Ex.: Boqueirão"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className={inputClass}
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Cidade</label>
+          <label className={labelClass}>Cidade</label>
           <input
             type="text"
             name="city"
             value={details.city || ''}
             onChange={handleChange}
             placeholder="Ex.: Santos"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className={inputClass}
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Estado</label>
+          <label className={labelClass}>Estado</label>
           <select
             name="state"
             value={details.state || ''}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className={inputClass}
           >
             <option value="">UF</option>
             {['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'].map(uf => (
@@ -195,7 +198,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
       {(!details.purpose || details.purpose === 'venda') ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Preço Atual</label>
+            <label className={labelClass}>Preço Atual</label>
             <input
               type="text"
               name="price"
@@ -203,11 +206,11 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
               value={details.price || ''}
               onChange={handlePriceChange}
               placeholder="R$ 1.000.000"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white"
+              className={inputClass}
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Preço Anterior (Opcional)</label>
+            <label className={labelClass}>Preço Anterior (Opcional)</label>
             <input
               type="text"
               name="previousPrice"
@@ -215,7 +218,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
               value={details.previousPrice || ''}
               onChange={handlePriceChange}
               placeholder="R$ 1.150.000"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white"
+              className={inputClass}
             />
           </div>
           <div className="flex items-end pb-2">
@@ -225,9 +228,9 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
                 name="porteiraFechada"
                 checked={details.porteiraFechada || false}
                 onChange={handleCheckboxChange}
-                className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 dark:bg-zinc-800 dark:border-zinc-700"
+                className="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500 dark:bg-zinc-800 dark:border-zinc-700"
               />
-              <span className="text-sm font-medium text-gray-700 dark:text-zinc-300">Porteira Fechada</span>
+              <span className="text-sm font-semibold text-gray-700 dark:text-zinc-200">Porteira Fechada</span>
             </label>
           </div>
         </div>
@@ -241,9 +244,9 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
                 name="is_package"
                 checked={details.is_package || false}
                 onChange={handleCheckboxChange}
-                className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
               />
-              <label htmlFor="is_package" className="text-sm font-medium text-gray-700 dark:text-zinc-300 cursor-pointer">
+              <label htmlFor="is_package" className="text-sm font-semibold text-gray-700 dark:text-zinc-200 cursor-pointer">
                 É Pacote? (Aluguel + Taxas inclusas)
               </label>
             </div>
@@ -254,16 +257,16 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
                 name="porteiraFechada"
                 checked={details.porteiraFechada || false}
                 onChange={handleCheckboxChange}
-                className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
               />
-              <label htmlFor="porteiraFechada_locacao" className="text-sm font-medium text-gray-700 dark:text-zinc-300 cursor-pointer">
+              <label htmlFor="porteiraFechada_locacao" className="text-sm font-semibold text-gray-700 dark:text-zinc-200 cursor-pointer">
                 Porteira Fechada
               </label>
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Valor do Aluguel</label>
+              <label className={labelClass}>Valor do Aluguel</label>
               <input
                 type="text"
                 name="rent_price"
@@ -284,13 +287,13 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
                   onChange({ ...details, rent_price: formattedValue });
                 }}
                 placeholder={details.is_package ? "R$ 4.500 (Pacote)" : "R$ 3.000"}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className={inputClass}
               />
             </div>
             {!details.is_package && (
               <>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Condomínio</label>
+                  <label className={labelClass}>Condomínio</label>
                   <input
                     type="text"
                     name="condo_price"
@@ -311,11 +314,11 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
                       onChange({ ...details, condo_price: formattedValue });
                     }}
                     placeholder="R$ 500"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className={inputClass}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">IPTU</label>
+                  <label className={labelClass}>IPTU</label>
                   <input
                     type="text"
                     name="iptu_price"
@@ -336,7 +339,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
                       onChange({ ...details, iptu_price: formattedValue });
                     }}
                     placeholder="R$ 150"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className={inputClass}
                   />
                 </div>
               </>
@@ -347,7 +350,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Metragem (m²)</label>
+          <label className={labelClass}>Metragem (m²)</label>
           <input
             type="text"
             name="area"
@@ -355,11 +358,11 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
             value={details.area ? `${details.area.replace(/\D/g, '')}` : ''}
             onChange={(e) => handleNumberFormatChange(e, 'm²')}
             placeholder="120"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className={inputClass}
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Dormitórios</label>
+          <label className={labelClass}>Dormitórios</label>
           <input
             type="text"
             name="bedrooms"
@@ -367,11 +370,11 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
             value={details.bedrooms ? `${details.bedrooms.replace(/\D/g, '')}` : ''}
             onChange={(e) => handleNumberFormatChange(e, 'dormitórios')}
             placeholder="3"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className={inputClass}
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Suítes</label>
+          <label className={labelClass}>Suítes</label>
           <input
             type="text"
             name="suites"
@@ -379,11 +382,11 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
             value={details.suites ? `${details.suites.replace(/\D/g, '')}` : ''}
             onChange={(e) => handleNumberFormatChange(e, 'suítes')}
             placeholder="1"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className={inputClass}
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Banheiros</label>
+          <label className={labelClass}>Banheiros</label>
           <input
             type="text"
             name="bathrooms"
@@ -391,11 +394,11 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
             value={details.bathrooms ? `${details.bathrooms.replace(/\D/g, '')}` : ''}
             onChange={(e) => handleNumberFormatChange(e, 'banheiros')}
             placeholder="2"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className={inputClass}
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Vagas</label>
+          <label className={labelClass}>Vagas</label>
           <input
             type="text"
             name="parking"
@@ -403,22 +406,21 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
             value={details.parking ? `${details.parking.replace(/\D/g, '')}` : ''}
             onChange={(e) => handleNumberFormatChange(e, 'vagas')}
             placeholder="2"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className={inputClass}
           />
         </div>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Código do imóvel (opcional)</label>
-        <input
-          type="text"
-          name="propertyCode"
-          inputMode="numeric"
-          value={details.propertyCode || ''}
-          onChange={handleChange}
-          placeholder="Ex.: AP0123"
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-        />
+        <div>
+          <label className={labelClass}>Código do imóvel (opcional)</label>
+          <input
+            type="text"
+            name="propertyCode"
+            inputMode="numeric"
+            value={details.propertyCode || ''}
+            onChange={handleChange}
+            placeholder="Ex.: AP0123"
+            className={inputClass}
+          />
+        </div>
       </div>
 
 <div className="pt-4 border-t border-gray-200">
@@ -447,7 +449,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
         </div>
         
         {details.leisureArea && (
-          <div className="bg-blue-50 p-4 rounded-lg space-y-4">
+          <div className="bg-blue-50 dark:bg-zinc-800/80 border border-blue-100 dark:border-zinc-700/60 p-4 rounded-xl space-y-4">
             <AmenitiesSelector
               label="Opções de Lazer"
               options={LEISURE_AMENITIES}
@@ -461,10 +463,10 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
         )}
       </div>
 
-      <div className="pt-4 border-t border-gray-200">
+      <div className="pt-4 border-t border-gray-200 dark:border-zinc-800">
         <div className="mb-4">
-          <h3 className="text-sm font-semibold text-gray-800 dark:text-zinc-300">Destaques do Imóvel</h3>
-          <p className="text-xs text-gray-500 mt-1">
+          <h3 className="text-sm font-bold text-gray-800 dark:text-zinc-200">Destaques do Imóvel</h3>
+          <p className="text-xs text-gray-500 dark:text-zinc-400 mt-1">
             Selecione comodidades e diferenciais. Para não poluir o design, <strong>apenas até 5 opções no total</strong> serão exibidas na arte final.
           </p>
         </div>
@@ -480,7 +482,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
         />
       </div>
 
-      <div className="pt-4 border-t border-gray-200">
+      <div className="pt-4 border-t border-gray-200 dark:border-zinc-800">
         <AmenitiesSelector
           label="Diferenciais"
           options={DIFFERENTIALS}
@@ -489,24 +491,24 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
         />
       </div>
 
-      <div className="pt-4 border-t border-gray-200">
-        <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-2">Contato</label>
+      <div className="pt-4 border-t border-gray-200 dark:border-zinc-800">
+        <label className="block text-sm font-semibold text-gray-700 dark:text-zinc-200 mb-2">Contato</label>
         
         {brandKit?.whatsapp ? (
           <div>
             {!showCustomContact ? (
               <div className="flex flex-col space-y-2">
-                <div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
-                  <div className="flex items-center text-green-800">
+                <div className="flex items-center justify-between p-3.5 bg-green-50 dark:bg-emerald-950/40 border border-green-200 dark:border-emerald-800/50 rounded-xl">
+                  <div className="flex items-center text-green-800 dark:text-emerald-300">
                     <Check className="w-4 h-4 mr-2" />
-                    <span className="text-sm font-medium">Usar WhatsApp do Brand Kit</span>
+                    <span className="text-sm font-bold">Usar WhatsApp do Brand Kit</span>
                   </div>
-                  <span className="text-sm text-green-700">{brandKit.whatsapp}</span>
+                  <span className="text-sm font-semibold text-green-700 dark:text-emerald-400">{brandKit.whatsapp}</span>
                 </div>
                 <button
                   type="button"
                   onClick={() => setShowCustomContact(true)}
-                  className="text-xs text-blue-600 hover:text-blue-800 text-left"
+                  className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline text-left py-1"
                 >
                   Alterar contato para este post
                 </button>
@@ -520,12 +522,12 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
                   value={details.whatsapp || ''}
                   onChange={handleChange}
                   placeholder="Ex.: (11) 99999-9999"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className={inputClass}
                 />
                 <button
                   type="button"
                   onClick={() => setShowCustomContact(false)}
-                  className="text-xs text-blue-600 hover:text-blue-800 text-left"
+                  className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline text-left py-1"
                 >
                   Voltar a usar o contato do Brand Kit
                 </button>
@@ -540,7 +542,7 @@ export function PropertyForm({ details, brandKit, onChange }: PropertyFormProps)
             value={details.whatsapp || ''}
             onChange={handleChange}
             placeholder="Ex.: (11) 99999-9999"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className={inputClass}
           />
         )}
       </div>

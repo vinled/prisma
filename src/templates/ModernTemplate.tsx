@@ -139,21 +139,21 @@ export function ModernTemplate({ details, image, logo, aspectRatio, brandKit, op
         {/* Location & Price */}
         <div className="flex flex-col gap-[11px]">
           {locationString && (
-            <div className={`flex items-center text-gray-200 ${aspectRatio === 'story' ? 'text-[49px] mb-[11px]' : 'text-[32px]'} drop-shadow-sm`}>
-              <MapPin className={`${aspectRatio === 'story' ? 'w-[43px] h-[43px]' : 'w-[32px] h-[32px]'} mr-[16px] opacity-80 shrink-0`} />
+            <div className={`flex items-center text-white ${aspectRatio === 'story' ? 'text-[49px] mb-[11px]' : 'text-[32px]'} drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]`}>
+              <MapPin className={`${aspectRatio === 'story' ? 'w-[43px] h-[43px]' : 'w-[32px] h-[32px]'} mr-[16px] text-amber-400 opacity-100 shrink-0`} />
               <span className="text-white font-bold tracking-wide truncate">{locationString}</span>
             </div>
           )}
-          <PriceDisplay details={details} aspectRatio={aspectRatio} baseSizeClassName={`whitespace-nowrap ${aspectRatio === 'story' ? 'text-[108px] mb-[11px]' : 'text-[86px]'} font-black text-white tracking-tighter drop-shadow-md`} />
+          <PriceDisplay details={details} aspectRatio={aspectRatio} baseSizeClassName={`whitespace-nowrap ${aspectRatio === 'story' ? 'text-[108px] mb-[11px]' : 'text-[86px]'} font-black text-white tracking-tighter drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)]`} />
         </div>
 
         {/* Features Row */}
         {features.length > 0 && (
-          <div className={`flex flex-wrap items-center ${aspectRatio === 'story' ? 'gap-[54px] mt-[11px]' : 'gap-[43px]'} text-white/95`}>
+          <div className={`flex flex-wrap items-center ${aspectRatio === 'story' ? 'gap-[54px] mt-[11px]' : 'gap-[43px]'} text-white`}>
             {features.slice(0, 4).map((feat, i) => (
               <div key={i} className="flex items-center space-x-[16px]">
-                <feat.icon className={`${aspectRatio === 'story' ? 'w-[54px] h-[54px]' : 'w-[43px] h-[43px]'} opacity-70`} />
-                <span className={`whitespace-nowrap ${aspectRatio === 'story' ? 'text-[49px]' : 'text-[32px]'} font-medium`}>{feat.label}</span>
+                <feat.icon className={`${aspectRatio === 'story' ? 'w-[54px] h-[54px]' : 'w-[43px] h-[43px]'} text-white opacity-90 drop-shadow`} strokeWidth={2.5} />
+                <span className={`whitespace-nowrap ${aspectRatio === 'story' ? 'text-[49px]' : 'text-[32px]'} font-bold drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]`}>{feat.label}</span>
               </div>
             ))}
           </div>

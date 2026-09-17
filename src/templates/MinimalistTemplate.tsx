@@ -42,7 +42,7 @@ export function MinimalistTemplate({ details, image, logo, aspectRatio, brandKit
             </div>
           )}
           {whatsapp?.trim() && (
-             <div className="flex items-center text-gray-800 bg-white px-[32px] py-[16px] rounded-[32px] shadow-sm">
+             <div className="flex items-center text-gray-900 bg-white px-[32px] py-[16px] rounded-[32px] shadow-md border border-gray-200/90">
               <Phone className="w-[43px] h-[43px] mr-[16px]" style={{ color: primaryColor }} />
               <span className="whitespace-nowrap text-[32px] font-bold tracking-wide">{whatsapp}</span>
             </div>
@@ -52,7 +52,7 @@ export function MinimalistTemplate({ details, image, logo, aspectRatio, brandKit
         {/* Badge in Minimalist */}
         {options?.badge && (
           <div className="absolute bottom-[32px] left-[65px] z-10">
-            <div className="bg-[#1A1A1A] text-white px-[28px] py-[10px] rounded-full text-[18px] font-black tracking-widest uppercase shadow-lg">
+            <div className="bg-[#1A1A1A] text-white px-[30px] py-[12px] rounded-full text-[22px] font-black tracking-widest uppercase shadow-xl">
               {options.badge}
             </div>
           </div>
@@ -66,14 +66,14 @@ export function MinimalistTemplate({ details, image, logo, aspectRatio, brandKit
           {(details.title?.trim() || (details.porteiraFechada && options?.badge !== 'PORTEIRA FECHADA')) && (
             <div className={`flex items-center justify-between gap-[16px] ${aspectRatio === 'story' ? 'mb-[24px]' : 'mb-[16px]'}`}>
               {details.title?.trim() ? (
-                <div className={`${aspectRatio === 'story' ? 'text-[32px]' : 'text-[24px]'} uppercase tracking-[1.5px] text-[#666] font-semibold truncate`}>
+                <div className={`${aspectRatio === 'story' ? 'text-[36px]' : 'text-[28px]'} uppercase tracking-[1.5px] text-zinc-800 font-bold truncate`}>
                   {details.title}
                 </div>
               ) : <div />}
               
               {details.porteiraFechada && options?.badge !== 'PORTEIRA FECHADA' && (
-                <div className="bg-[#1A1A1A] text-white px-[20px] py-[6px] rounded-full text-[14px] font-black tracking-widest uppercase whitespace-nowrap shrink-0 flex items-center gap-[6px] shadow-sm">
-                  <Sparkles className="w-[14px] h-[14px] text-amber-400" />
+                <div className={`bg-[#1A1A1A] text-white ${aspectRatio === 'story' ? 'px-[28px] py-[10px] text-[22px]' : 'px-[22px] py-[8px] text-[17px]'} rounded-full font-black tracking-widest uppercase whitespace-nowrap shrink-0 flex items-center gap-[8px] shadow-md`}>
+                  <Sparkles className={`${aspectRatio === 'story' ? 'w-[20px] h-[20px]' : 'w-[16px] h-[16px]'} text-amber-400`} />
                   <span>Porteira Fechada</span>
                 </div>
               )}
@@ -81,45 +81,45 @@ export function MinimalistTemplate({ details, image, logo, aspectRatio, brandKit
           )}
           
           {locationString && (
-            <div className={`flex items-center text-[#666] ${aspectRatio === 'story' ? 'mb-[32px]' : 'mb-[22px]'}`}>
-              <MapPin className={`${aspectRatio === 'story' ? 'w-[49px] h-[49px] mr-[16px]' : 'w-[32px] h-[32px] mr-[9px]'} shrink-0`} />
-              <span className={`${aspectRatio === 'story' ? 'text-[49px]' : 'text-[30px]'} font-medium`}>{locationString}</span>
+            <div className={`flex items-center text-zinc-900 ${aspectRatio === 'story' ? 'mb-[32px]' : 'mb-[22px]'}`}>
+              <MapPin className={`${aspectRatio === 'story' ? 'w-[49px] h-[49px] mr-[16px]' : 'w-[36px] h-[36px] mr-[10px]'} text-zinc-800 shrink-0`} />
+              <span className={`${aspectRatio === 'story' ? 'text-[52px]' : 'text-[34px]'} font-bold tracking-tight`}>{locationString}</span>
             </div>
           )}
           
-          <PriceDisplay details={details} aspectRatio={aspectRatio} baseSizeClassName={`whitespace-nowrap ${aspectRatio === 'story' ? 'text-[86px] mb-[65px]' : 'text-[76px] mb-[54px]'} font-[800] text-[#1A1A1A] tracking-tight`} />
+          <PriceDisplay details={details} aspectRatio={aspectRatio} baseSizeClassName={`whitespace-nowrap ${aspectRatio === 'story' ? 'text-[96px] mb-[65px]' : 'text-[82px] mb-[54px]'} font-[900] text-[#111827] tracking-tight`} />
 
           {/* Minimalist Stats - Flexbox inline */}
-          <div className={`flex flex-wrap items-center ${aspectRatio === 'story' ? 'gap-[65px] text-[43px] mb-[65px]' : 'gap-[54px] text-[30px] mb-[54px]'} text-[#666] font-medium`}>
+          <div className={`flex flex-wrap items-center ${aspectRatio === 'story' ? 'gap-[65px] text-[46px] mb-[65px]' : 'gap-[54px] text-[32px] mb-[54px]'} text-zinc-800 font-medium`}>
             {details.area?.trim() && (
               <div className="flex items-center">
-                <Maximize className={`${aspectRatio === 'story' ? 'w-[43px] h-[43px] mr-[16px]' : 'w-[32px] h-[32px] mr-[9px]'}`} strokeWidth={2} />
-                <span className="font-bold">{details.area} m²</span>
+                <Maximize className={`${aspectRatio === 'story' ? 'w-[46px] h-[46px] mr-[16px]' : 'w-[34px] h-[34px] mr-[10px]'} text-zinc-900`} strokeWidth={2.5} />
+                <span className="font-extrabold">{details.area} m²</span>
               </div>
             )}
             {details.bedrooms?.trim() && (
               <div className="flex items-center">
-                <BedDouble className={`${aspectRatio === 'story' ? 'w-[43px] h-[43px] mr-[16px]' : 'w-[32px] h-[32px] mr-[9px]'}`} strokeWidth={2} />
-                <span className="font-bold">{details.bedrooms} {Number(details.bedrooms) !== 1 ? 'Dorms' : 'Dorm'}</span>
+                <BedDouble className={`${aspectRatio === 'story' ? 'w-[46px] h-[46px] mr-[16px]' : 'w-[34px] h-[34px] mr-[10px]'} text-zinc-900`} strokeWidth={2.5} />
+                <span className="font-extrabold">{details.bedrooms} {Number(details.bedrooms) !== 1 ? 'Dorms' : 'Dorm'}</span>
               </div>
             )}
             {details.suites?.trim() && (
               <div className="flex items-center">
-                <Bath className={`${aspectRatio === 'story' ? 'w-[43px] h-[43px] mr-[16px]' : 'w-[32px] h-[32px] mr-[9px]'}`} strokeWidth={2} />
-                <span className="font-bold">{details.suites} {Number(details.suites) !== 1 ? 'Suítes' : 'Suíte'}</span>
+                <Bath className={`${aspectRatio === 'story' ? 'w-[46px] h-[46px] mr-[16px]' : 'w-[34px] h-[34px] mr-[10px]'} text-zinc-900`} strokeWidth={2.5} />
+                <span className="font-extrabold">{details.suites} {Number(details.suites) !== 1 ? 'Suítes' : 'Suíte'}</span>
               </div>
             )}
             {details.parking?.trim() && (
               <div className="flex items-center">
-                <Car className={`${aspectRatio === 'story' ? 'w-[43px] h-[43px] mr-[16px]' : 'w-[32px] h-[32px] mr-[9px]'}`} strokeWidth={2} />
-                <span className="font-bold">{details.parking} {Number(details.parking) !== 1 ? 'Vagas' : 'Vaga'}</span>
+                <Car className={`${aspectRatio === 'story' ? 'w-[46px] h-[46px] mr-[16px]' : 'w-[34px] h-[34px] mr-[10px]'} text-zinc-900`} strokeWidth={2.5} />
+                <span className="font-extrabold">{details.parking} {Number(details.parking) !== 1 ? 'Vagas' : 'Vaga'}</span>
               </div>
             )}
           </div>
           
           {/* Tags */}
           {tagsString && (
-            <div className={`text-[#666] ${aspectRatio === 'story' ? 'text-[32px]' : 'text-[27px]'} font-normal leading-relaxed`}>
+            <div className={`text-zinc-600 ${aspectRatio === 'story' ? 'text-[36px]' : 'text-[28px]'} font-semibold leading-relaxed`}>
               {tagsString}
             </div>
           )}

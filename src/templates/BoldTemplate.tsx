@@ -118,14 +118,14 @@ export function BoldTemplate({ details, image, logo, aspectRatio, brandKit, opti
           <PriceDisplay details={details} aspectRatio={aspectRatio} baseSizeClassName={`whitespace-nowrap ${aspectRatio === 'story' ? 'text-7xl mb-[32px]' : 'text-[86px] mb-[16px]'} font-[900] text-white text-left tracking-tight drop-shadow-lg`} />
 
           {locationString && (
-            <div className={`flex items-center text-gray-200 ${aspectRatio === 'story' ? 'mb-[32px]' : 'mb-[16px]'} drop-shadow-md`}>
-              <MapPin className={`${aspectRatio === 'story' ? 'w-[49px] h-[49px] mr-[22px]' : 'w-[32px] h-[32px] mr-[9px]'} shrink-0`} />
-              <span className={`${aspectRatio === 'story' ? 'text-[59px]' : 'text-[27px]'} font-medium`}>{locationString}</span>
+            <div className={`flex items-center text-white font-bold drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)] ${aspectRatio === 'story' ? 'mb-[32px]' : 'mb-[16px]'}`}>
+              <MapPin className={`${aspectRatio === 'story' ? 'w-[49px] h-[49px] mr-[22px]' : 'w-[36px] h-[36px] mr-[10px]'} text-amber-400 shrink-0`} />
+              <span className={`${aspectRatio === 'story' ? 'text-[59px]' : 'text-[32px]'}`}>{locationString}</span>
             </div>
           )}
           
           {tagsString && (
-            <div className={`text-white/90 ${aspectRatio === 'story' ? 'text-[49px]' : 'text-[30px]'} font-medium drop-shadow-md leading-snug max-w-[90%] mb-[32px]`}>
+            <div className={`text-white font-semibold drop-shadow-[0_2px_6px_rgba(0,0,0,0.95)] ${aspectRatio === 'story' ? 'text-[49px]' : 'text-[30px]'} leading-snug max-w-[90%] mb-[32px]`}>
               + {tagsString}
             </div>
           )}
@@ -135,26 +135,26 @@ export function BoldTemplate({ details, image, logo, aspectRatio, brandKit, opti
         <div className={`flex justify-start gap-[54px] items-center ${aspectRatio === 'story' ? 'pb-12 px-12' : 'pb-6 px-[54px]'}`}>
           {details.area?.trim() && (
             <div className="flex flex-col items-start">
-              <Maximize className={`${aspectRatio === 'story' ? 'w-[54px] h-[54px] mb-[16px]' : 'w-[27px] h-[27px] mb-[9px]'} text-white opacity-90`} strokeWidth={2.5} />
-              <span className={`font-bold ${aspectRatio === 'story' ? 'text-[43px]' : 'text-[27px]'} drop-shadow`}>{details.area} m²</span>
+              <Maximize className={`${aspectRatio === 'story' ? 'w-[54px] h-[54px] mb-[16px]' : 'w-[32px] h-[32px] mb-[9px]'} text-white drop-shadow`} strokeWidth={2.5} />
+              <span className={`font-extrabold ${aspectRatio === 'story' ? 'text-[43px]' : 'text-[30px]'} drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]`}>{details.area} m²</span>
             </div>
           )}
           {details.bedrooms?.trim() && (
             <div className="flex flex-col items-start">
-              <BedDouble className={`${aspectRatio === 'story' ? 'w-[54px] h-[54px] mb-[16px]' : 'w-[27px] h-[27px] mb-[9px]'} text-white opacity-90`} strokeWidth={2.5} />
-              <span className={`font-bold ${aspectRatio === 'story' ? 'text-[43px]' : 'text-[27px]'} drop-shadow`}>{details.bedrooms} {Number(details.bedrooms) !== 1 ? 'Dorms' : 'Dorm'}</span>
+              <BedDouble className={`${aspectRatio === 'story' ? 'w-[54px] h-[54px] mb-[16px]' : 'w-[32px] h-[32px] mb-[9px]'} text-white drop-shadow`} strokeWidth={2.5} />
+              <span className={`font-extrabold ${aspectRatio === 'story' ? 'text-[43px]' : 'text-[30px]'} drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]`}>{details.bedrooms} {Number(details.bedrooms) !== 1 ? 'Dorms' : 'Dorm'}</span>
             </div>
           )}
           {details.suites?.trim() && (
             <div className="flex flex-col items-start">
-              <Bath className={`${aspectRatio === 'story' ? 'w-[54px] h-[54px] mb-[16px]' : 'w-[27px] h-[27px] mb-[9px]'} text-white opacity-90`} strokeWidth={2.5} />
-              <span className={`font-bold ${aspectRatio === 'story' ? 'text-[43px]' : 'text-[27px]'} drop-shadow`}>{details.suites} {Number(details.suites) !== 1 ? 'Suítes' : 'Suíte'}</span>
+              <Bath className={`${aspectRatio === 'story' ? 'w-[54px] h-[54px] mb-[16px]' : 'w-[32px] h-[32px] mb-[9px]'} text-white drop-shadow`} strokeWidth={2.5} />
+              <span className={`font-extrabold ${aspectRatio === 'story' ? 'text-[43px]' : 'text-[30px]'} drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]`}>{details.suites} {Number(details.suites) !== 1 ? 'Suítes' : 'Suíte'}</span>
             </div>
           )}
           {details.parking?.trim() && (
             <div className="flex flex-col items-start">
-              <Car className={`${aspectRatio === 'story' ? 'w-[54px] h-[54px] mb-[16px]' : 'w-[27px] h-[27px] mb-[9px]'} text-white opacity-90`} strokeWidth={2.5} />
-              <span className={`font-bold ${aspectRatio === 'story' ? 'text-[43px]' : 'text-[27px]'} drop-shadow`}>{details.parking} {Number(details.parking) !== 1 ? 'Vagas' : 'Vaga'}</span>
+              <Car className={`${aspectRatio === 'story' ? 'w-[54px] h-[54px] mb-[16px]' : 'w-[32px] h-[32px] mb-[9px]'} text-white drop-shadow`} strokeWidth={2.5} />
+              <span className={`font-extrabold ${aspectRatio === 'story' ? 'text-[43px]' : 'text-[30px]'} drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]`}>{details.parking} {Number(details.parking) !== 1 ? 'Vagas' : 'Vaga'}</span>
             </div>
           )}
         </div>

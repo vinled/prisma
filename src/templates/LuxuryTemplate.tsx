@@ -25,22 +25,22 @@ export function LuxuryTemplate({ details, image, logo, aspectRatio, brandKit, op
 
   const isStory = aspectRatio === 'story';
   const paddingClass = isStory ? 'p-[64px]' : 'p-[48px]';
-  const seloPadding = isStory ? 'px-[20px] py-[8px]' : 'px-[16px] py-[5px]';
-  const seloText = isStory ? 'text-[20px]' : 'text-[15px]';
-  const tituloText = isStory ? 'text-[58px]' : 'text-[46px]';
-  const enderecoText = isStory ? 'text-[26px]' : 'text-[21px]';
-  const iconSize = isStory ? 'w-[26px] h-[26px]' : 'w-[20px] h-[20px]';
-  const featText = isStory ? 'text-[26px]' : 'text-[21px]';
-  const comodsText = isStory ? 'text-[18px]' : 'text-[14px]';
+  const seloPadding = isStory ? 'px-[22px] py-[9px]' : 'px-[18px] py-[6px]';
+  const seloText = isStory ? 'text-[26px]' : 'text-[20px]';
+  const tituloText = isStory ? 'text-[62px]' : 'text-[50px]';
+  const enderecoText = isStory ? 'text-[32px]' : 'text-[25px]';
+  const iconSize = isStory ? 'w-[32px] h-[32px]' : 'w-[25px] h-[25px]';
+  const featText = isStory ? 'text-[32px]' : 'text-[25px]';
+  const comodsText = isStory ? 'text-[24px]' : 'text-[19px]';
 
-  // Sombras duplas para contraste impecável sem precisar escurecer a foto
+  // Sombras duplas de alta densidade para contraste 100% legível até em fotos brancas
   const textShadowStyle = {
-    textShadow: '0 2px 8px rgba(0, 0, 0, 0.9), 0 1px 3px rgba(0, 0, 0, 0.95), 0 4px 16px rgba(0, 0, 0, 0.6)'
+    textShadow: '0 2px 6px rgba(0, 0, 0, 0.95), 0 1px 3px rgba(0, 0, 0, 1), 0 4px 16px rgba(0, 0, 0, 0.8)'
   };
 
   const titleShadowStyle = {
     fontFamily: '"Playfair Display", Georgia, serif',
-    textShadow: '0 3px 12px rgba(0, 0, 0, 0.95), 0 1px 4px rgba(0, 0, 0, 0.9), 0 6px 24px rgba(0, 0, 0, 0.7)'
+    textShadow: '0 3px 12px rgba(0, 0, 0, 0.95), 0 1px 4px rgba(0, 0, 0, 1), 0 6px 24px rgba(0, 0, 0, 0.8)'
   };
 
   return (

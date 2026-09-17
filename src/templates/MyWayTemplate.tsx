@@ -49,29 +49,85 @@ export function MyWayTemplate({ details, image, logo, aspectRatio, brandKit, opt
     pills.push(`${details.area} m²`);
   }
 
-  const renderTitle = (title: string, isStory: boolean) => {
-    if (!title) return null;
-    const lines = title.split('\n').filter(l => l.trim().length > 0);
-    const ts = isStory ? 'text-[112px]' : 'text-[96px]';
-    if (lines.length >= 2) {
-      return (
-        <div className={`flex flex-col font-black leading-[0.95] tracking-tighter ${ts}`}>
-          <span className="text-white">{lines[0]}</span>
-          <span style={{ color: accentColor }}>{lines.slice(1).join(' ')}</span>
-        </div>
-      );
+  const getTitleFontSize = (title: string, isStory: boolean) => {
+    if (!title?.trim()) return isStory ? 108 : 96;
+
+    const trimmed = title.trim();
+    const rawLines = trimmed.split('\n').filter(l => l.trim().length > 0);
+    let line1 = '';
+    let line2 = '';
+
+    if (rawLines.length >= 2) {
+      line1 = rawLines[0].trim();
+      line2 = rawLines.slice(1).join(' ').trim();
     } else {
-      const words = title.split(' ');
+      const words = trimmed.split(/\s+/);
       if (words.length > 1) {
-        return (
-          <div className={`flex flex-col font-black leading-[0.95] tracking-tighter ${ts}`}>
-            <span className="text-white">{words[0]}</span>
-            <span style={{ color: accentColor }}>{words.slice(1).join(' ')}</span>
-          </div>
-        );
+        line1 = words[0];
+        line2 = words.slice(1).join(' ');
+      } else {
+        line1 = trimmed;
+        line2 = '';
       }
-      return <span className={`text-white font-black leading-[0.95] tracking-tighter ${ts}`}>{title}</span>;
     }
+
+    const words = trimmed.split(/\s+/);
+    const maxWordLen = Math.max(...words.map(w => w.length), 0);
+    const maxLineLen = Math.max(line1.length, line2.length);
+
+    const maxFontSize = isStory ? 108 : 96;
+    const minFontSize = isStory ? 34 : 30;
+
+    // Available target width (~410px in feed, ~430px in story) to ensure safe separation from the price
+    const targetWidth = isStory ? 430 : 410;
+
+    // In font-black uppercase/heavy, each character is ~0.62 of font size
+    const wordConstrainedSize = maxWordLen > 0 ? targetWidth / (maxWordLen * 0.62) : maxFontSize;
+    
+    // Line length constraint (average char width with spaces is ~0.56)
+    const lineConstrainedSize = maxLineLen > 0 ? targetWidth / (maxLineLen * 0.56) : maxFontSize;
+
+    const calculatedSize = Math.floor(Math.min(maxFontSize, wordConstrainedSize, lineConstrainedSize));
+    return Math.max(minFontSize, calculatedSize);
+  };
+
+  const renderTitle = (title: string, isStory: boolean) => {
+    if (!title?.trim()) return null;
+    const fontSize = getTitleFontSize(title, isStory);
+    const rawLines = title.split('\n').filter(l => l.trim().length > 0);
+    
+    let line1 = '';
+    let line2 = '';
+    if (rawLines.length >= 2) {
+      line1 = rawLines[0].trim();
+      line2 = rawLines.slice(1).join(' ').trim();
+    } else {
+      const words = title.trim().split(/\s+/);
+      if (words.length > 1) {
+        line1 = words[0];
+        line2 = words.slice(1).join(' ');
+      } else {
+        line1 = title.trim();
+        line2 = '';
+      }
+    }
+
+    return (
+      <div 
+        className="flex flex-col font-black leading-[0.92] tracking-tighter w-full overflow-hidden break-words"
+        style={{ fontSize: `${fontSize}px` }}
+      >
+        <span className="text-white drop-shadow-[0_3px_12px_rgba(0,0,0,0.9)] break-words">{line1}</span>
+        {line2 && (
+          <span 
+            style={{ color: accentColor }} 
+            className="drop-shadow-[0_3px_12px_rgba(0,0,0,0.9)] break-words"
+          >
+            {line2}
+          </span>
+        )}
+      </div>
+    );
   };
 
   const isStory = aspectRatio === 'story';
@@ -132,15 +188,15 @@ export function MyWayTemplate({ details, image, logo, aspectRatio, brandKit, opt
       <div className={`absolute bottom-0 left-0 w-full flex flex-col px-[64px] pb-[64px] z-10`}>
         
         {/* Main Info Row (Title & Pricing) */}
-        <div className={`flex justify-between items-end w-full mb-[48px]`}>
+        <div className={`flex justify-between items-end w-full mb-[48px] gap-[24px]`}>
           
           {/* Title Left */}
-          <div className="flex-1 max-w-[50%]">
+          <div className="flex-1 min-w-0 pr-[8px] max-w-[52%] flex items-end">
             {renderTitle(details.title, isStory)}
           </div>
 
           {/* Pricing Right */}
-          <div className="flex flex-col items-end text-right">
+          <div className="flex flex-col items-end text-right shrink-0">
             {options?.badge && (
               <span 
                 className={`font-black uppercase tracking-[8px] mb-[16px] ${isStory ? 'text-[32px]' : 'text-[24px]'}`}
@@ -172,7 +228,7 @@ export function MyWayTemplate({ details, image, logo, aspectRatio, brandKit, opt
                   <span>R$</span>
                 </div>
               )}
-              <span className={`font-black leading-none tracking-tighter ${isStory ? 'text-[112px]' : 'text-[96px]'}`}>
+              <span className={`font-black leading-none tracking-tighter ${isStory ? 'text-[112px]' : 'text-[96px]'} drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)]`}>
                 {currentPriceDisplay}
               </span>
             </div>
@@ -183,14 +239,14 @@ export function MyWayTemplate({ details, image, logo, aspectRatio, brandKit, opt
         {pills.length > 0 && (
           <div className={`flex flex-wrap items-center gap-[24px] mb-[48px]`}>
             {pills.map((pill, idx) => (
-              <div key={idx} className={`flex items-center bg-white rounded-full ${isStory ? 'px-[32px] py-[16px]' : 'px-[24px] py-[12px]'} shadow-md`}>
+              <div key={idx} className={`flex items-center bg-white rounded-full ${isStory ? 'px-[32px] py-[16px]' : 'px-[24px] py-[12px]'} shadow-lg`}>
                 <div 
                   className={`flex items-center justify-center rounded-full ${isStory ? 'w-[32px] h-[32px] mr-[12px]' : 'w-[24px] h-[24px] mr-[8px]'}`}
                   style={{ backgroundColor: accentColor }}
                 >
                   <ChevronRight className={`text-white ${isStory ? 'w-[24px] h-[24px]' : 'w-[18px] h-[18px]'}`} strokeWidth={3} />
                 </div>
-                <span className={`font-bold text-black ${isStory ? 'text-[28px]' : 'text-[22px]'}`}>{pill}</span>
+                <span className={`font-black text-black ${isStory ? 'text-[28px]' : 'text-[22px]'}`}>{pill}</span>
               </div>
             ))}
           </div>
@@ -200,7 +256,7 @@ export function MyWayTemplate({ details, image, logo, aspectRatio, brandKit, opt
         <div className="w-full">
           <div className="w-full h-[2px] mb-[32px]" style={{ backgroundColor: accentColor }}></div>
           <div 
-            className={`w-full text-center font-bold tracking-[8px] uppercase ${isStory ? 'text-[28px]' : 'text-[22px]'}`}
+            className={`w-full text-center font-bold tracking-[8px] uppercase ${isStory ? 'text-[28px]' : 'text-[22px]'} drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]`}
             style={{ color: accentColor }}
           >
             {formatLocation(details.neighborhood, details.city, details.state)}

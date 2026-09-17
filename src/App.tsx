@@ -101,7 +101,7 @@ export default function App() {
   const [aspectRatio, setAspectRatio] = useState<AspectRatioId>('feed');
   const [seloAtivo, setSeloAtivo] = useState("");
   const [templateOptions, setTemplateOptions] = useState<TemplateOptions>({
-    gradientOpacity: 45,
+    gradientOpacity: 25,
     imagePositionX: 50,
     logoSize: 100,
   });
@@ -755,12 +755,12 @@ const handleDownload = async () => {
                     </div>
                     <div>
                       <div className="flex justify-between text-[11px] text-gray-500 dark:text-zinc-400 mb-1 font-medium">
-                        <label>Escurecimento (Degradê)</label>
-                        <span>{templateOptions.gradientOpacity ?? 45}%</span>
+                        <label>Contraste de Fundo (Degradê)</label>
+                        <span>{templateOptions.gradientOpacity ?? 25}%</span>
                       </div>
                       <input 
                         type="range" min="0" max="100" 
-                        value={templateOptions.gradientOpacity ?? 45} 
+                        value={templateOptions.gradientOpacity ?? 25} 
                         onChange={(e) => setTemplateOptions({...templateOptions, gradientOpacity: Number(e.target.value)})}
                         className="w-full h-1.5 bg-gray-200 dark:bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-emerald-600" onTouchStart={() => setIsDraggingSlider(true)} onTouchEnd={() => setIsDraggingSlider(false)} onMouseDown={() => setIsDraggingSlider(true)} onMouseUp={() => setIsDraggingSlider(false)}
                       />
@@ -886,15 +886,15 @@ const handleDownload = async () => {
 
             <div>
               <div className="flex justify-between text-xs text-gray-500 dark:text-zinc-400 mb-1">
-                <label>Escurecimento (Degradê)</label>
-                <span>{templateOptions.gradientOpacity ?? 45}%</span>
+                <label>Contraste de Fundo (Degradê)</label>
+                <span>{templateOptions.gradientOpacity ?? 25}%</span>
               </div>
               <input 
                 type="range" 
                 min="0" max="100" 
-                value={templateOptions.gradientOpacity ?? 45} 
+                value={templateOptions.gradientOpacity ?? 25} 
                 onChange={(e) => setTemplateOptions({...templateOptions, gradientOpacity: Number(e.target.value)})}
-                className="w-full h-1.5 bg-gray-200 dark:bg-zinc-700 rounded-lg appearance-none cursor-pointer"
+                className="w-full h-1.5 bg-gray-200 dark:bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-slate-900 dark:accent-emerald-500"
               />
             </div>
 

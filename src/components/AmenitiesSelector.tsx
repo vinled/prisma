@@ -102,13 +102,14 @@ export function AmenitiesSelector({ label, options, selected, onChange }: Amenit
           {selected.map((item) => (
             <div
               key={item}
-              className="flex items-center bg-gray-100 dark:bg-zinc-800 px-3 py-1.5 rounded-full border border-gray-200 dark:border-zinc-700"
+              className="flex items-center bg-gray-100 dark:bg-zinc-800 px-3 py-1.5 rounded-full border border-gray-200 dark:border-zinc-700 shadow-xs"
             >
-              <span className="text-sm font-medium text-gray-800 dark:text-zinc-200 mr-2">{item}</span>
+              <span className="text-sm font-semibold text-gray-800 dark:text-zinc-200 mr-2">{item}</span>
               <button
                 type="button"
                 onClick={() => removeOption(item)}
-                className="text-gray-400 hover:text-red-500 transition-colors bg-white dark:bg-zinc-700 rounded-full p-0.5"
+                aria-label={`Remover ${item}`}
+                className="text-gray-400 hover:text-red-500 transition-colors bg-white dark:bg-zinc-700 rounded-full p-1 min-w-[22px] min-h-[22px] flex items-center justify-center cursor-pointer"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
