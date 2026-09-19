@@ -146,16 +146,13 @@ export function ElegantTemplate({ details, image, logo, aspectRatio, brandKit, o
               </p>
             )}
             
-            <div className="flex justify-between items-center w-full mt-[8px]">
-              <span className={`${aspectRatio === 'story' ? 'text-[22px]' : 'text-[18px]'} text-white/80 font-bold uppercase tracking-wider`}>
-                {details.propertyCode?.trim() ? `Cód: ${details.propertyCode}` : ''}
-              </span>
-              {userPlan !== 'pro' && (
-                <span className={`${aspectRatio === 'story' ? 'text-[20px]' : 'text-[16px]'} text-white/60 font-semibold uppercase tracking-wider`}>
-                  Criado com PostNaMão
+            {details.propertyCode?.trim() && (
+              <div className="flex items-center w-full mt-[8px]">
+                <span className={`${aspectRatio === 'story' ? 'text-[22px]' : 'text-[18px]'} text-white/80 font-bold uppercase tracking-wider`}>
+                  Cód: {details.propertyCode}
                 </span>
-              )}
-            </div>
+              </div>
+            )}
           </div>
 
         </div>

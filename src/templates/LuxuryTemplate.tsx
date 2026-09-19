@@ -183,25 +183,17 @@ export function LuxuryTemplate({ details, image, logo, aspectRatio, brandKit, op
           style={titleShadowStyle}
         />
         
-        {/* Lado Direito (Marca d'água) */}
-        <div className="flex flex-col items-end gap-[6px]">
-          {details.propertyCode?.trim() && (
+        {/* Lado Direito (Código do imóvel) */}
+        {details.propertyCode?.trim() && (
+          <div className="flex flex-col items-end gap-[6px]">
             <div 
               className={`text-white/80 tracking-widest uppercase font-semibold ${comodsText}`}
               style={textShadowStyle}
             >
               Cód. {details.propertyCode}
             </div>
-          )}
-          {userPlan !== 'pro' && (
-            <div 
-              className={`text-white/60 ${isStory ? 'text-[18px]' : 'text-[14px]'}`}
-              style={textShadowStyle}
-            >
-              Criado com PostNaMão
-            </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
     </div>

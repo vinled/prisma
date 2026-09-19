@@ -48,15 +48,17 @@ export function TemplateRenderer({ templateId, details, image, logo, aspectRatio
         <div 
           style={{
             position: 'absolute',
-            bottom: '50px',
-            right: '50px',
-            fontSize: '24px',
-            color: 'rgba(255, 255, 255, 0.7)',
-            textShadow: '0px 2px 4px rgba(0, 0, 0, 0.8)',
+            bottom: aspectRatio === 'story' ? '44px' : '36px',
+            right: '48px',
+            fontSize: aspectRatio === 'story' ? '24px' : '20px',
+            color: 'rgba(255, 255, 255, 0.75)',
+            textShadow: '0px 2px 6px rgba(0, 0, 0, 0.95), 0px 1px 2px rgba(0, 0, 0, 0.8)',
             zIndex: 9999,
             pointerEvents: 'none',
-            fontFamily: 'sans-serif',
-            fontWeight: 500
+            fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            fontWeight: 500,
+            letterSpacing: '0.02em',
+            userSelect: 'none'
           }}
         >
           Criado com PostNaMão
