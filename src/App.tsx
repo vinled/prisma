@@ -27,6 +27,54 @@ import { LandingPage } from './components/LandingPage';
 import { TermosDeUso } from './components/TermosDeUso';
 import { PoliticaPrivacidade } from './components/PoliticaPrivacidade';
 
+const LOCAL_STORAGE_PROPERTIES_KEY = 'postnamao_saved_properties';
+
+const getLocalProperties = (): SavedProperty[] => {
+  try {
+    const raw = localStorage.getItem(LOCAL_STORAGE_PROPERTIES_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    return [];
+  }
+};
+
+const saveLocalProperties = (props: SavedProperty[]) => {
+  try {
+    localStorage.setItem(LOCAL_STORAGE_PROPERTIES_KEY, JSON.stringify(props));
+  } catch (e) {
+    console.warn("Não foi possível salvar localmente no navegador:", e);
+  }
+};
+
+const isValidUUID = (str?: string | null): boolean => {
+  if (!str) return false;
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(str);
+};
+
+const generateUUID = (): string => {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+};
+
+const formatDateDisplay = (dateVal?: string, createdAt?: string): string => {
+  if (!dateVal && !createdAt) {
+    return new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+  }
+  try {
+    const d = new Date(dateVal || createdAt!);
+    if (!isNaN(d.getTime())) {
+      return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+  } catch {}
+  return dateVal || '';
+};
+
 export default function App() {
   const location = useLocation();
   const [session, setSession] = useState<Session | null>(null);
@@ -185,7 +233,7 @@ export default function App() {
   const [exportProgressText, setExportProgressText] = useState<string | null>(null);
   const [previewIndex, setPreviewIndex] = useState(0);
 
-  const [savedProperties, setSavedProperties] = useState<SavedProperty[]>([]);
+  const [savedProperties, setSavedProperties] = useState<SavedProperty[]>(getLocalProperties);
   
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -265,22 +313,26 @@ export default function App() {
 
 
   
-  const executeSave = async (): Promise<boolean> => {
+  const executeSave = async (): Promise<{ success: boolean; cloudSynced: boolean }> => {
     if (userPlan !== 'pro' && !idEmEdicao && session?.user) {
-      const { count, error } = await supabase
-        .from('properties')
-        .select('id', { count: 'exact', head: true })
-        .eq('user_id', session.user.id);
-        
-      if (!error && count !== null && count >= 5) {
-        alert('Você atingiu o limite de 5 imóveis do Plano Grátis. Assine o Pro para imóveis ilimitados.');
-        setIsPaywallOpen(true);
-        return false;
+      try {
+        const { count, error } = await supabase
+          .from('properties')
+          .select('id', { count: 'exact', head: true })
+          .eq('user_id', session.user.id);
+          
+        if (!error && count !== null && count >= 5) {
+          alert('Você atingiu o limite de 5 imóveis do Plano Grátis. Assine o Pro para imóveis ilimitados.');
+          setIsPaywallOpen(true);
+          return { success: false, cloudSynced: false };
+        }
+      } catch (countErr) {
+        console.warn("Não foi possível verificar contagem na nuvem:", countErr);
       }
     }
 
     setIsExporting(true);
-    const finalImages = [];
+    const finalImages: string[] = [];
     try {
       for (const imgUrl of images) {
         if (imgUrl.startsWith('blob:') || imgUrl.startsWith('data:')) {
@@ -297,9 +349,7 @@ export default function App() {
             const { data } = supabase.storage.from('fotos_imoveis').getPublicUrl(fileName);
             finalImages.push(data.publicUrl);
           } catch (e) {
-            console.error('Erro ao fazer upload da imagem:', e);
-            // Fallback: If upload fails, keep original url so it doesn't break UI immediately,
-            // but it won't be a valid permanent public URL.
+            console.warn('Upload da imagem para storage da nuvem indisponível:', e);
             finalImages.push(imgUrl); 
           }
         } else {
@@ -313,17 +363,23 @@ export default function App() {
       const dateStr = now.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
       
       let finalThumbnail = finalImages[0] || undefined;
-      // Guarantee we don't save blob: in DB for thumbnail
-      if (finalThumbnail && finalThumbnail.startsWith('blob:')) {
-         finalThumbnail = undefined; // Don't save temporary blob URL to DB
+      // Garante que não salvamos blob efêmero ou base64 gigante como thumbnail no banco
+      if (finalThumbnail && (finalThumbnail.startsWith('blob:') || finalThumbnail.length > 2000)) {
+         finalThumbnail = undefined;
       }
       
       if (finalThumbnail === undefined && idEmEdicao) {
         finalThumbnail = savedProperties.find(p => p.id === idEmEdicao)?.thumbnail;
       }
+
+      // Garante ID com formato UUID v4 válido compatível com banco PostgreSQL
+      const safeId = isValidUUID(idEmEdicao) ? idEmEdicao! : generateUUID();
+      if (!idEmEdicao) {
+        setIdEmEdicao(safeId);
+      }
       
       const propertyData: SavedProperty = {
-        id: idEmEdicao || Date.now().toString(),
+        id: safeId,
         date: dateStr,
         details: { ...details, images: finalImages },
         selectedTemplate,
@@ -332,7 +388,7 @@ export default function App() {
         thumbnail: finalThumbnail
       };
       
-      let updated;
+      let updated: SavedProperty[];
       if (idEmEdicao) {
         updated = savedProperties.map(p => p.id === idEmEdicao ? propertyData : p);
       } else {
@@ -340,36 +396,66 @@ export default function App() {
       }
       
       setSavedProperties(updated);
+      saveLocalProperties(updated);
       
-      // Await Save to Supabase
+      let cloudSynced = false;
+      // Sincronização resiliente com o Supabase
       if (session?.user) {
-        const { error } = await supabase.from('properties').upsert({
-          id: propertyData.id,
-          user_id: session.user.id,
-          date: propertyData.date,
-          details: propertyData.details,
-          selected_template: propertyData.selectedTemplate,
-          aspect_ratio: propertyData.aspectRatio,
-          template_options: propertyData.templateOptions,
-          thumbnail: propertyData.thumbnail
-        });
-        if (error) {
-          console.error("Erro ao salvar no banco:", error);
-          alert("Aviso: Falha ao sincronizar com a nuvem.");
+        try {
+          // Limpa URLs base64 gigantes de details.images para evitar erro 413 Payload Too Large
+          const cleanImages = (propertyData.details.images || []).map(img => 
+            (img && img.startsWith('data:') && img.length > 2000) ? '' : img
+          ).filter(Boolean);
+
+          const dbPayload: any = {
+            id: propertyData.id,
+            user_id: session.user.id,
+            details: { ...propertyData.details, images: cleanImages },
+            selected_template: propertyData.selectedTemplate,
+            aspect_ratio: propertyData.aspectRatio,
+            template_options: propertyData.templateOptions,
+            thumbnail: propertyData.thumbnail || null
+          };
+
+          // Tenta enviar com data ISO (aceita por colunas DATE, TIMESTAMP e TEXT)
+          dbPayload.date = now.toISOString().split('T')[0];
+
+          let { error } = await supabase.from('properties').upsert(dbPayload);
+
+          // Se falhou por causa da coluna 'date' não existir no schema
+          if (error && (error.code === '42703' || error.message?.includes('column "date"'))) {
+            delete dbPayload.date;
+            const retry = await supabase.from('properties').upsert(dbPayload);
+            error = retry.error;
+          }
+
+          if (error) {
+            console.warn("Aviso: Sincronização em nuvem pendente:", error);
+            cloudSynced = false;
+          } else {
+            cloudSynced = true;
+          }
+        } catch (cloudErr) {
+          console.warn("Falha de conexão com banco de dados:", cloudErr);
+          cloudSynced = false;
         }
       }
-      return true;
+      return { success: true, cloudSynced };
     } catch (err) {
       console.error("Execute save erro geral:", err);
-      return false;
+      return { success: false, cloudSynced: false };
     } finally {
       setIsExporting(false);
     }
   };
   const handleSaveOnly = async () => {
-    const success = await executeSave();
-    if (success) {
-      alert('Alterações salvas com sucesso!');
+    const result = await executeSave();
+    if (result.success) {
+      if (result.cloudSynced) {
+        alert('Alterações salvas com sucesso!');
+      } else {
+        alert('Alterações salvas no seu navegador!');
+      }
     }
   };
 
@@ -384,8 +470,8 @@ export default function App() {
 
     try {
       setIsExporting(true);
-      const success = await executeSave();
-      if (!success) {
+      const result = await executeSave();
+      if (!result.success) {
         setIsExporting(false);
         return;
       }
@@ -435,7 +521,7 @@ export default function App() {
       link.click();
     } catch (error: any) {
       console.error(error);
-      alert(error.message || 'Erro ao gerar a legenda. Tente novamente.');
+      alert(error.message || 'Erro ao exportar a imagem. Tente novamente.');
     } finally {
       setIsExporting(false);
     }
@@ -453,8 +539,8 @@ const handleDownload = async () => {
     try {
       setIsExporting(true);
       setExportProgressText('Salvando...');
-      const success = await executeSave();
-      if (!success) {
+      const result = await executeSave();
+      if (!result.success) {
         setIsExporting(false);
         setExportProgressText(null);
         return;
@@ -487,12 +573,9 @@ const handleDownload = async () => {
             await new Promise(resolve => setTimeout(resolve, 600));
         }
       }
-      
-      // If we were creating a new one, we could set idEmEdicao to the new ID, 
-      // but it's fine to leave it to clear on next '+ Criação'.
     } catch (error: any) {
       console.error(error);
-      alert(error.message || 'Erro ao gerar a legenda. Tente novamente.');
+      alert(error.message || 'Erro ao exportar a imagem. Tente novamente.');
     } finally {
       setIsExporting(false);
       setExportProgressText(null);
@@ -515,10 +598,11 @@ const handleDownload = async () => {
     if (confirm('Tem certeza que deseja excluir esta arte?')) {
       const updated = savedProperties.filter(p => p.id !== id);
       setSavedProperties(updated);
+      saveLocalProperties(updated);
       
       if (session?.user) {
         const { error } = await supabase.from('properties').delete().eq('id', id).eq('user_id', session.user.id);
-        if (error) console.error("Erro ao deletar:", error);
+        if (error) console.warn("Aviso ao deletar do banco:", error);
       }
     }
   };
@@ -558,16 +642,24 @@ const handleDownload = async () => {
           .order('created_at', { ascending: false });
           
         if (propertiesData) {
-          const loaded = propertiesData.map(p => ({
+          const loadedFromDb: SavedProperty[] = propertiesData.map(p => ({
             id: p.id,
-            date: p.date || new Date(p.created_at).toLocaleDateString('pt-BR'),
+            date: formatDateDisplay(p.date, p.created_at),
             details: p.details,
             selectedTemplate: p.selected_template,
             aspectRatio: p.aspect_ratio,
             templateOptions: p.template_options,
             thumbnail: p.thumbnail
           }));
-          setSavedProperties(loaded);
+          
+          // Mescla com imóveis locais para nunca perder criações recentes
+          const local = getLocalProperties();
+          const dbIds = new Set(loadedFromDb.map(p => p.id));
+          const localOnly = local.filter(p => !dbIds.has(p.id));
+          const merged = [...localOnly, ...loadedFromDb];
+
+          setSavedProperties(merged);
+          saveLocalProperties(merged);
         }
       }
 
@@ -608,16 +700,23 @@ const handleDownload = async () => {
           .order('created_at', { ascending: false });
           
         if (propertiesData) {
-          const loaded = propertiesData.map(p => ({
+          const loadedFromDb: SavedProperty[] = propertiesData.map(p => ({
             id: p.id,
-            date: p.date || new Date(p.created_at).toLocaleDateString('pt-BR'),
+            date: formatDateDisplay(p.date, p.created_at),
             details: p.details,
             selectedTemplate: p.selected_template,
             aspectRatio: p.aspect_ratio,
             templateOptions: p.template_options,
             thumbnail: p.thumbnail
           }));
-          setSavedProperties(loaded);
+          
+          const local = getLocalProperties();
+          const dbIds = new Set(loadedFromDb.map(p => p.id));
+          const localOnly = local.filter(p => !dbIds.has(p.id));
+          const merged = [...localOnly, ...loadedFromDb];
+
+          setSavedProperties(merged);
+          saveLocalProperties(merged);
         }
       }
 
