@@ -6,7 +6,11 @@ import { useLocation } from 'react-router-dom';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import * as htmlToImage from 'html-to-image';
-import { Download, Layout, Moon, Sun, Copy, Check, LogOut, User, Menu, X, PlusSquare, Palette, Share2, LayoutTemplate, Crop, Tag, SlidersHorizontal } from 'lucide-react';
+import { 
+  Download, Layout, Moon, Sun, Copy, Check, LogOut, User, Menu, X, PlusSquare, 
+  Palette, Share2, LayoutTemplate, Crop, Tag, SlidersHorizontal, ArrowRight, ArrowLeft, 
+  Eye, Sparkles, Star, ChevronDown, ChevronUp, CheckCircle2, Sliders, Wand2, RefreshCw 
+} from 'lucide-react';
 import { supabase } from './lib/supabase';
 import { Auth } from './components/Auth';
 import { ResetPassword } from './components/ResetPassword';
@@ -80,6 +84,8 @@ export default function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [showAuth, setShowAuth] = useState(false);
     const [activeTab, setActiveTab] = useState<'criacao' | 'meus_imoveis' | 'minha_marca' | 'minha_conta'>('criacao');
+  const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
+  const [openSecondaryTool, setOpenSecondaryTool] = useState<'none' | 'selo' | 'ajustes' | 'legenda'>('none');
   const [mobileViewTab, setMobileViewTab] = useState<'form' | 'preview'>('form');
   const [activeMobileTool, setActiveMobileTool] = useState<'template' | 'format' | 'badge' | 'adjust' | 'export' | null>('template');
   const [isDraggingSlider, setIsDraggingSlider] = useState(false);
@@ -290,7 +296,7 @@ export default function App() {
   useEffect(() => {
     const timeoutId = setTimeout(() => updateScale(), 50);
     return () => clearTimeout(timeoutId);
-  }, [mobileViewTab, activeTab, updateScale]);
+  }, [mobileViewTab, activeTab, currentStep, updateScale]);
 
   useEffect(() => {
     updateScale();
@@ -592,6 +598,8 @@ const handleDownload = async () => {
     setTemplateOptions(prop.templateOptions);
     setGeneratedCaption(prop.details.generated_copy || '');
     setActiveTab('criacao');
+    setCurrentStep(4);
+    setMobileViewTab('preview');
   };
 
   const handleDelete = async (id: string) => {
@@ -787,234 +795,246 @@ const handleDownload = async () => {
     return <LandingPage onLoginClick={() => setShowAuth(true)} />;
   }
 
-  const renderMobileEditor = () => {
+  const renderSecondaryTools = (isCompact = false) => {
     return (
-      <div className="flex flex-col w-full block lg:hidden shrink-0 mt-auto relative z-[60]">
-        
-        {/* Active Panel (Floating overlay) */}
-        <div className={`absolute bottom-[100%] left-0 w-full transition-all duration-300 ease-in-out overflow-hidden shadow-[0_-15px_30px_rgba(0,0,0,0.1)] rounded-t-3xl ${
-          activeMobileTool ? 'max-h-[45vh] opacity-100' : 'max-h-0 opacity-0 pointer-events-none'
-        } ${isDraggingSlider ? 'bg-white/20 dark:bg-zinc-950/20' : 'bg-white/95 dark:bg-zinc-950/95 backdrop-blur-xl border-t border-gray-200 dark:border-zinc-800'}`}>
-          <div className="p-4 overflow-y-auto max-h-[45vh]">
-            <div className="flex justify-between items-center mb-3 pb-2 border-b border-gray-200/50 dark:border-zinc-800/50">
-              <h3 className="font-semibold text-gray-900 dark:text-white">
-                {activeMobileTool === 'template' && 'Selecionar Estilo'}
-                {activeMobileTool === 'format' && 'Formato da Arte'}
-                {activeMobileTool === 'badge' && 'Selo Destaque'}
-                {activeMobileTool === 'adjust' && 'Ajustes Finos'}
-                {activeMobileTool === 'export' && 'Exportar Arte'}
-              </h3>
-              <button onClick={() => setActiveMobileTool(null)} className="p-1.5 rounded-full bg-gray-200 dark:bg-zinc-800 text-gray-600 dark:text-zinc-300 hover:bg-gray-300">
-                <X size={16} />
-              </button>
-            </div>
+      <div className="space-y-4">
+        {/* Accordion Tabs */}
+        <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 overflow-hidden">
+          <div className="flex border-b border-gray-100 dark:border-zinc-800 bg-gray-50/50 dark:bg-zinc-850">
+            <button
+              type="button"
+              onClick={() => setOpenSecondaryTool(openSecondaryTool === 'selo' ? 'none' : 'selo')}
+              className={`flex-1 py-3 px-3 text-xs sm:text-sm font-semibold flex items-center justify-center space-x-1.5 transition-colors ${
+                openSecondaryTool === 'selo'
+                  ? 'bg-white dark:bg-zinc-900 text-orange-600 dark:text-orange-400 border-b-2 border-orange-500 shadow-sm'
+                  : 'text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white'
+              }`}
+            >
+              <Tag size={15} />
+              <span>Selo {seloAtivo ? `(${seloAtivo})` : ''}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setOpenSecondaryTool(openSecondaryTool === 'ajustes' ? 'none' : 'ajustes')}
+              className={`flex-1 py-3 px-3 text-xs sm:text-sm font-semibold flex items-center justify-center space-x-1.5 transition-colors ${
+                openSecondaryTool === 'ajustes'
+                  ? 'bg-white dark:bg-zinc-900 text-orange-600 dark:text-orange-400 border-b-2 border-orange-500 shadow-sm'
+                  : 'text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white'
+              }`}
+            >
+              <SlidersHorizontal size={15} />
+              <span>Ajustes da Foto</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setOpenSecondaryTool(openSecondaryTool === 'legenda' ? 'none' : 'legenda')}
+              className={`flex-1 py-3 px-3 text-xs sm:text-sm font-semibold flex items-center justify-center space-x-1.5 transition-colors ${
+                openSecondaryTool === 'legenda'
+                  ? 'bg-white dark:bg-zinc-900 text-orange-600 dark:text-orange-400 border-b-2 border-orange-500 shadow-sm'
+                  : 'text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white'
+              }`}
+            >
+              <Sparkles size={15} />
+              <span>Legenda com IA</span>
+            </button>
+          </div>
 
-            {activeMobileTool === 'template' && (
-              <TemplateSelector selected={selectedTemplate} onSelect={setSelectedTemplate} />
+          <div className="p-4 sm:p-5">
+            {openSecondaryTool === 'none' && (
+              <p className="text-xs text-center text-gray-500 dark:text-zinc-400 py-1">
+                Toque em uma aba acima se desejar adicionar selo de destaque, ajustar a posição da foto ou gerar uma legenda com IA.
+              </p>
             )}
-            {activeMobileTool === 'format' && (
-              <AspectRatioSelector selected={aspectRatio} onSelect={setAspectRatio} />
-            )}
-            {activeMobileTool === 'badge' && (
-              <div className="flex flex-nowrap overflow-x-auto gap-2 pb-2 scrollbar-hide snap-x -mx-5 px-5">
-                {['Nenhum', 'VENDIDO', 'EXCLUSIVIDADE', 'BAIXOU O VALOR', 'OPORTUNIDADE', 'PORTEIRA FECHADA'].map(selo => {
-                  const isNenhum = selo === 'Nenhum';
-                  const isActive = isNenhum ? seloAtivo === '' : seloAtivo === selo;
-                  return (
+
+            {/* Selo Tab */}
+            {openSecondaryTool === 'selo' && (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs sm:text-sm font-semibold text-gray-800 dark:text-zinc-200">
+                    Selo de Destaque na Arte
+                  </h4>
+                  {seloAtivo && (
                     <button
-                      key={selo}
-                      onClick={() => setSeloAtivo(isNenhum ? '' : selo)}
-                      className={`shrink-0 snap-center px-4 py-1.5 rounded-full text-sm font-medium transition-colors border ${
-                        isActive 
-                          ? 'bg-emerald-600 text-white border-emerald-600 shadow-md' 
-                          : 'bg-white text-gray-700 border-gray-300 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-600'
-                      }`}
+                      type="button"
+                      onClick={() => setSeloAtivo('')}
+                      className="text-xs text-orange-600 hover:underline"
                     >
-                      {selo}
+                      Remover selo
                     </button>
-                  );
-                })}
+                  )}
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {['Nenhum', 'VENDIDO', 'EXCLUSIVIDADE', 'BAIXOU O VALOR', 'OPORTUNIDADE', 'PORTEIRA FECHADA'].map(selo => {
+                    const isNenhum = selo === 'Nenhum';
+                    const isActive = isNenhum ? seloAtivo === '' : seloAtivo === selo;
+                    return (
+                      <button
+                        key={selo}
+                        type="button"
+                        onClick={() => setSeloAtivo(isNenhum ? '' : selo)}
+                        className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all border ${
+                          isActive 
+                            ? 'bg-orange-600 text-white border-orange-600 shadow-sm' 
+                            : 'bg-white dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 border-gray-200 dark:border-zinc-700 hover:bg-gray-50 dark:hover:bg-zinc-700'
+                        }`}
+                      >
+                        {selo}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             )}
-            {activeMobileTool === 'adjust' && (
-              <div className="space-y-3">
+
+            {/* Ajustes Tab */}
+            {openSecondaryTool === 'ajustes' && (
+              <div className="space-y-4">
                 {['modern', 'elegant', 'luxury', 'bold', 'minimalist', 'myway'].includes(selectedTemplate) ? (
                   <>
                     <div>
-                      <div className="flex justify-between text-[11px] text-gray-500 dark:text-zinc-400 mb-1 font-medium">
-                        <label>Posição da Foto (Horizontal)</label>
-                        <span>{templateOptions.imagePositions?.[previewIndex] ?? templateOptions.imagePositionX ?? 50}%</span>
+                      <div className="flex justify-between text-xs text-gray-600 dark:text-zinc-400 mb-1.5 font-medium">
+                        <label>Posição da Foto (Esquerda - Direita)</label>
+                        <span className="font-bold text-gray-900 dark:text-white">
+                          {templateOptions.imagePositions?.[previewIndex] ?? templateOptions.imagePositionX ?? 50}%
+                        </span>
                       </div>
                       <input 
                         type="range" min="0" max="100" 
                         value={templateOptions.imagePositions?.[previewIndex] ?? templateOptions.imagePositionX ?? 50} 
                         onChange={(e) => setTemplateOptions({...templateOptions, imagePositions: {...templateOptions.imagePositions, [previewIndex]: Number(e.target.value)}})}
-                        className="w-full h-1.5 bg-gray-200 dark:bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-emerald-600" onTouchStart={() => setIsDraggingSlider(true)} onTouchEnd={() => setIsDraggingSlider(false)} onMouseDown={() => setIsDraggingSlider(true)} onMouseUp={() => setIsDraggingSlider(false)}
+                        className="w-full h-2 bg-gray-200 dark:bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-orange-600"
+                        onTouchStart={() => setIsDraggingSlider(true)} onTouchEnd={() => setIsDraggingSlider(false)} onMouseDown={() => setIsDraggingSlider(true)} onMouseUp={() => setIsDraggingSlider(false)}
                       />
                     </div>
                     <div>
-                      <div className="flex justify-between text-[11px] text-gray-500 dark:text-zinc-400 mb-1 font-medium">
+                      <div className="flex justify-between text-xs text-gray-600 dark:text-zinc-400 mb-1.5 font-medium">
                         <label>Contraste de Fundo (Degradê)</label>
-                        <span>{templateOptions.gradientOpacity ?? 25}%</span>
+                        <span className="font-bold text-gray-900 dark:text-white">
+                          {templateOptions.gradientOpacity ?? 25}%
+                        </span>
                       </div>
                       <input 
                         type="range" min="0" max="100" 
                         value={templateOptions.gradientOpacity ?? 25} 
                         onChange={(e) => setTemplateOptions({...templateOptions, gradientOpacity: Number(e.target.value)})}
-                        className="w-full h-1.5 bg-gray-200 dark:bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-emerald-600" onTouchStart={() => setIsDraggingSlider(true)} onTouchEnd={() => setIsDraggingSlider(false)} onMouseDown={() => setIsDraggingSlider(true)} onMouseUp={() => setIsDraggingSlider(false)}
+                        className="w-full h-2 bg-gray-200 dark:bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-orange-600"
+                        onTouchStart={() => setIsDraggingSlider(true)} onTouchEnd={() => setIsDraggingSlider(false)} onMouseDown={() => setIsDraggingSlider(true)} onMouseUp={() => setIsDraggingSlider(false)}
                       />
                     </div>
                     <div>
-                      <div className="flex justify-between text-[11px] text-gray-500 dark:text-zinc-400 mb-1 font-medium">
+                      <div className="flex justify-between text-xs text-gray-600 dark:text-zinc-400 mb-1.5 font-medium">
                         <label>Tamanho do Logo</label>
-                        <span>{templateOptions.logoSize ?? 100}%</span>
+                        <span className="font-bold text-gray-900 dark:text-white">
+                          {templateOptions.logoSize ?? 100}%
+                        </span>
                       </div>
                       <input 
                         type="range" min="50" max="150" 
                         value={templateOptions.logoSize ?? 100} 
                         onChange={(e) => setTemplateOptions({...templateOptions, logoSize: Number(e.target.value)})}
-                        className="w-full h-1.5 bg-gray-200 dark:bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-emerald-600" onTouchStart={() => setIsDraggingSlider(true)} onTouchEnd={() => setIsDraggingSlider(false)} onMouseDown={() => setIsDraggingSlider(true)} onMouseUp={() => setIsDraggingSlider(false)}
+                        className="w-full h-2 bg-gray-200 dark:bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-orange-600"
+                        onTouchStart={() => setIsDraggingSlider(true)} onTouchEnd={() => setIsDraggingSlider(false)} onMouseDown={() => setIsDraggingSlider(true)} onMouseUp={() => setIsDraggingSlider(false)}
                       />
                     </div>
                   </>
                 ) : (
-                  <p className="text-sm text-gray-500 dark:text-zinc-400 text-center py-4">Este template não possui ajustes avançados.</p>
+                  <p className="text-xs text-gray-500 dark:text-zinc-400 text-center py-2">
+                    Este estilo ajusta automaticamente as proporções da imagem.
+                  </p>
                 )}
               </div>
             )}
-            {activeMobileTool === 'export' && (
-              <div className="flex flex-row gap-3">
-                <button
-                  onClick={handleDownload}
-                  disabled={isExporting || images.length === 0}
-                  className="flex-1 py-2.5 rounded-xl shadow-sm bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center transition-all duration-300 font-semibold active:scale-95 disabled:opacity-50 text-sm"
-                >
-                  <Download className="w-4 h-4 mr-2" /> {isExporting ? (exportProgressText || "Gerando...") : (images.length > 1 ? `Baixar Todas` : "Baixar")}
-                </button>
-                <button
-                  onClick={handleShare}
-                  disabled={isExporting || images.length === 0}
-                  className="flex-1 py-2.5 rounded-xl shadow-sm bg-white dark:bg-zinc-800 text-emerald-600 border border-emerald-200 dark:border-zinc-700 hover:bg-slate-50 flex items-center justify-center transition-all duration-300 font-semibold active:scale-95 disabled:opacity-50 text-sm"
-                >
-                  <Share2 className="w-4 h-4 mr-2" /> Compartilhar
-                </button>
+
+            {/* Legenda IA Tab */}
+            {openSecondaryTool === 'legenda' && (
+              <div className="space-y-3.5">
+                <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
+                  <div className="flex bg-gray-100 dark:bg-zinc-800 p-1 rounded-xl">
+                    <button
+                      type="button"
+                      onClick={() => setDestinoCopy('instagram')}
+                      className={`flex-1 py-1.5 px-3 text-xs font-semibold rounded-lg transition-colors ${
+                        destinoCopy === 'instagram' 
+                          ? 'bg-white dark:bg-zinc-700 text-gray-900 dark:text-white shadow-sm' 
+                          : 'text-gray-500 dark:text-zinc-400 hover:text-gray-700'
+                      }`}
+                    >
+                      Instagram
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setDestinoCopy('whatsapp')}
+                      className={`flex-1 py-1.5 px-3 text-xs font-semibold rounded-lg transition-colors ${
+                        destinoCopy === 'whatsapp' 
+                          ? 'bg-white dark:bg-zinc-700 text-gray-900 dark:text-white shadow-sm' 
+                          : 'text-gray-500 dark:text-zinc-400 hover:text-gray-700'
+                      }`}
+                    >
+                      WhatsApp
+                    </button>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <select
+                      value={targetAudience || ''}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (userPlan === 'free' && val.includes('(Pro)')) {
+                          setTargetAudience('Família/Conforto');
+                          setIsPaywallOpen(true);
+                          return;
+                        }
+                        setTargetAudience(val);
+                      }}
+                      className="px-3 py-1.5 bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-xl text-xs text-gray-700 dark:text-zinc-300 outline-none"
+                    >
+                      <option value="Família/Conforto">Família/Conforto</option>
+                      <option value="Jovem/Dinâmico">Jovem/Dinâmico</option>
+                      <option value="Luxo/Exclusividade (Pro)">Luxo/Exclusividade (Pro)</option>
+                      <option value="Investidor/ROI (Pro)">Investidor/ROI (Pro)</option>
+                    </select>
+
+                    <button
+                      type="button"
+                      onClick={handleGenerateCopy}
+                      disabled={isGeneratingCopy}
+                      className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 shadow-sm whitespace-nowrap"
+                    >
+                      <Sparkles size={13} />
+                      <span>{isGeneratingCopy ? 'Gerando...' : 'Gerar Texto'}</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="relative">
+                  <textarea 
+                    readOnly 
+                    rows={4} 
+                    className="w-full p-3 bg-gray-50 dark:bg-zinc-950 border border-gray-200 dark:border-zinc-800 rounded-xl text-xs sm:text-sm text-gray-700 dark:text-zinc-300 resize-none outline-none leading-relaxed"
+                    value={generatedCaption || ''}
+                    placeholder="Clique em 'Gerar Texto' para criar uma descrição profissional para este imóvel."
+                  />
+                  {generatedCaption && (
+                    <button 
+                      type="button"
+                      onClick={handleCopyCaption}
+                      className="absolute bottom-2.5 right-2.5 px-3 py-1 bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-lg text-xs font-semibold text-gray-700 dark:text-zinc-300 hover:bg-gray-50 dark:hover:bg-zinc-700 transition-colors shadow-sm flex items-center"
+                    >
+                      {isCopied ? (
+                        <><Check className="w-3.5 h-3.5 mr-1 text-emerald-500" /> Copiado!</>
+                      ) : (
+                        <><Copy className="w-3.5 h-3.5 mr-1" /> Copiar</>
+                      )}
+                    </button>
+                  )}
+                </div>
               </div>
             )}
           </div>
-        </div>
-
-        {/* Toolbar Nav */}
-        <div className="flex items-center justify-between px-2 pt-2 pb-4 sm:pb-6 bg-white dark:bg-zinc-900">
-          {[
-            { id: 'template', icon: LayoutTemplate, label: 'Modelo' },
-            { id: 'format', icon: Crop, label: 'Formato' },
-            { id: 'badge', icon: Tag, label: 'Selo' },
-            { id: 'adjust', icon: SlidersHorizontal, label: 'Ajustes' },
-            { id: 'export', icon: Download, label: 'Exportar' }
-          ].map(tool => {
-            const Icon = tool.icon;
-            const isActive = activeMobileTool === tool.id;
-            return (
-              <button
-                key={tool.id}
-                onClick={() => setActiveMobileTool(isActive ? null : tool.id as any)}
-                className={`flex-1 flex flex-col items-center justify-center py-2 transition-all duration-200 ${isActive ? 'text-emerald-600' : 'text-gray-500 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-zinc-200'}`}
-              >
-                <div className={`p-1.5 rounded-full mb-1 transition-colors ${isActive ? 'bg-emerald-50 dark:bg-emerald-900/30' : ''}`}>
-                  <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />
-                </div>
-                <span className="text-[10px] font-medium tracking-wide">{tool.label}</span>
-              </button>
-            )
-          })}
         </div>
       </div>
     );
   };
-
-  const renderStyleControls = () => (
-    <>
-      <section className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 transition-colors duration-200 mt-6 lg:mt-0">
-        <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Selo (Opcional)</h2>
-        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-          {['Nenhum', 'VENDIDO', 'EXCLUSIVIDADE', 'BAIXOU O VALOR', 'OPORTUNIDADE', 'PORTEIRA FECHADA'].map(selo => {
-            const isNenhum = selo === 'Nenhum';
-            const isActive = isNenhum ? seloAtivo === '' : seloAtivo === selo;
-            return (
-              <button
-                key={selo}
-                onClick={() => setSeloAtivo(isNenhum ? '' : selo)}
-                className={`shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors border ${
-                  isActive 
-                    ? 'bg-slate-900 dark:bg-slate-700 text-white border-slate-900 dark:border-slate-700 shadow-md' 
-                    : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700 dark:hover:bg-zinc-700'
-                }`}
-              >
-                {selo}
-              </button>
-            );
-          })}
-        </div>
-      </section>
-
-      <section className="mt-6 bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 transition-colors duration-200">
-        <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Estilo</h2>
-        <TemplateSelector selected={selectedTemplate} onSelect={setSelectedTemplate} />
-        <div className="mt-6">
-          <h3 className="text-sm font-medium text-gray-700 dark:text-zinc-300 mb-3">Formato</h3>
-          <AspectRatioSelector selected={aspectRatio} onSelect={setAspectRatio} />
-        </div>
-        
-        {['modern', 'elegant', 'luxury', 'bold', 'minimalist', 'myway'].includes(selectedTemplate) && (
-          <div className="mt-6 space-y-4 pt-6 border-t border-gray-100 dark:border-zinc-800">
-            <h3 className="text-sm font-medium text-gray-700 dark:text-zinc-300">Ajustes da Imagem</h3>
-            
-            <div>
-              <div className="flex justify-between text-xs text-gray-500 dark:text-zinc-400 mb-1">
-                <label>Posição da Foto (Esquerda - Direita)</label>
-                <span>{templateOptions.imagePositions?.[previewIndex] ?? templateOptions.imagePositionX ?? 50}%</span>
-              </div>
-              <input 
-                type="range" 
-                min="0" max="100" 
-                value={templateOptions.imagePositions?.[previewIndex] ?? templateOptions.imagePositionX ?? 50} 
-                onChange={(e) => setTemplateOptions({...templateOptions, imagePositions: {...templateOptions.imagePositions, [previewIndex]: Number(e.target.value)}})}
-                className="w-full h-1.5 bg-gray-200 dark:bg-zinc-700 rounded-lg appearance-none cursor-pointer"
-              />
-            </div>
-
-            <div>
-              <div className="flex justify-between text-xs text-gray-500 dark:text-zinc-400 mb-1">
-                <label>Contraste de Fundo (Degradê)</label>
-                <span>{templateOptions.gradientOpacity ?? 25}%</span>
-              </div>
-              <input 
-                type="range" 
-                min="0" max="100" 
-                value={templateOptions.gradientOpacity ?? 25} 
-                onChange={(e) => setTemplateOptions({...templateOptions, gradientOpacity: Number(e.target.value)})}
-                className="w-full h-1.5 bg-gray-200 dark:bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-slate-900 dark:accent-emerald-500"
-              />
-            </div>
-
-            <div>
-              <div className="flex justify-between text-xs text-gray-500 dark:text-zinc-400 mb-1">
-                <label>Tamanho do Logo</label>
-                <span>{templateOptions.logoSize ?? 100}%</span>
-              </div>
-              <input 
-                type="range" 
-                min="50" max="150" 
-                value={templateOptions.logoSize ?? 100} 
-                onChange={(e) => setTemplateOptions({...templateOptions, logoSize: Number(e.target.value)})}
-                className="w-full h-1.5 bg-gray-200 dark:bg-zinc-700 rounded-lg appearance-none cursor-pointer"
-              />
-            </div>
-          </div>
-        )}
-      </section>
-    </>
-  );
 
   return (
     <>
@@ -1065,6 +1085,8 @@ const handleDownload = async () => {
                 onClick={() => {
                   setActiveTab('criacao');
                   setIdEmEdicao(null);
+                  setCurrentStep(1);
+                  setMobileViewTab('form');
                   setDetails({
                 purpose: 'venda', rent_price: '', condo_price: '', iptu_price: '', is_package: false, title: '', previousPrice: '', porteiraFechada: false, price: '', neighborhood: '', city: '', state: '',
                 area: '', bedrooms: '', suites: '', bathrooms: '', parking: '',
@@ -1169,6 +1191,8 @@ const handleDownload = async () => {
             onClick={() => {
               setActiveTab('criacao');
               setIdEmEdicao(null);
+              setCurrentStep(1);
+              setMobileViewTab('form');
               setDetails({
                 purpose: 'venda', rent_price: '', condo_price: '', iptu_price: '', is_package: false, title: '', previousPrice: '', porteiraFechada: false, price: '', neighborhood: '', city: '', state: '',
                 area: '', bedrooms: '', suites: '', bathrooms: '', parking: '',
@@ -1260,245 +1284,497 @@ const handleDownload = async () => {
           <MyProperties properties={savedProperties} onEdit={handleEdit} onDelete={handleDelete} />
         ) : (
           <div className="max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8">
-            <header className="hidden md:flex flex-col lg:flex-row lg:justify-between lg:items-center mb-8 gap-4">
+            <header className="hidden md:flex flex-col lg:flex-row lg:justify-between lg:items-center mb-6 gap-2">
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Criação Rápida</h1>
-                <p className="text-gray-500 dark:text-zinc-400">Posts profissionais para imóveis em segundos</p>
+                <p className="text-gray-500 dark:text-zinc-400 text-sm">
+                  Foto → Informações Básicas → Estilo → Post Pronto
+                </p>
               </div>
             </header>
 
-            {/* Segmented Control for Mobile - Sticky Wrapper */}
-            <div className="sticky top-0 z-[60] bg-gray-50 dark:bg-zinc-950 -mt-4 pt-4 pb-3 mb-6 border-b border-gray-200 dark:border-white/10 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:hidden">
-              <div className="flex bg-gray-100 dark:bg-zinc-800 p-1 rounded-xl w-full shadow-sm">
-                <button
-                  onClick={() => setMobileViewTab('form')}
-                  className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all ${mobileViewTab === 'form' ? 'bg-orange-500 text-white shadow-md scale-[1.02]' : 'text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-zinc-700'}`}
-                >
-                  📝 Editar Dados
-                </button>
-                <button
-                  onClick={() => setMobileViewTab('preview')}
-                  className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all ${mobileViewTab === 'preview' ? 'bg-emerald-600 text-white shadow-md scale-[1.02]' : 'text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-zinc-700'}`}
-                >
-                  📱 Ver Arte
-                </button>
-              </div>
-            </div>
-
-        <div className="flex flex-col lg:grid lg:grid-cols-[1fr_1.5fr] gap-8 lg:gap-12 w-full max-w-full">
-          
-          {/* Controls Side */}
-          <div className={`space-y-8 order-2 lg:order-1 min-w-0 w-full max-w-full ${mobileViewTab === 'form' ? 'block' : 'hidden lg:block'}`}>
-            <section className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 transition-colors duration-200 flex items-center justify-between">
-              <div>
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Aplicar Assinatura Visual</h2>
-                <p className="text-sm text-gray-500 dark:text-zinc-400">Usar dados globais de 'Minha Marca'</p>
-              </div>
-              <button 
-                onClick={() => setApplyBrandKit(!applyBrandKit)}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${applyBrandKit ? 'bg-orange-600' : 'bg-gray-200 dark:bg-zinc-700'}`}
-              >
-                <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${applyBrandKit ? 'translate-x-6' : 'translate-x-1'}`} />
-              </button>
-            </section>
-
-            <section className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 transition-colors duration-200">
-              <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">1. Imagens</h2>
-              <ImageUploader 
-                images={images} 
-                onImagesChange={(newImages) => {
-                  setImages(newImages);
-                  if (newImages.length > images.length) {
-                    setPreviewIndex(newImages.length - 1);
-                  }
-                }} 
-              />
-            </section>
-
-            <div className="hidden lg:block">
-              {renderStyleControls()}
-            </div>
-
-            <section className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 transition-colors duration-200 mt-6 lg:mt-0">
-              <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">2. Informações</h2>
-              <PropertyForm details={details} brandKit={applyBrandKit ? brandKit : null} onChange={setDetails} />
-            </section>
-
-            {/* Smart Caption Module */}
-            <div className="order-3 lg:order-none mt-6 lg:mt-0 bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 transition-colors duration-200">
-                <div className="flex flex-col mb-4 gap-3">
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Gerador de Textos com IA</h3>
-                  
-                  <div className="flex flex-col gap-3 w-full">
-                    <div className="flex bg-gray-100 dark:bg-zinc-800 p-1 rounded-lg">
-                      <button
-                        onClick={() => setDestinoCopy('instagram')}
-                        className={`flex-1 py-1.5 px-3 text-xs font-medium rounded-md transition-colors ${destinoCopy === 'instagram' ? 'bg-white dark:bg-zinc-700 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-zinc-400 hover:text-gray-700 dark:hover:text-zinc-300'}`}
-                      >
-                        Post para Feed/Instagram
-                      </button>
-                      <button
-                        onClick={() => setDestinoCopy('whatsapp')}
-                        className={`flex-1 py-1.5 px-3 text-xs font-medium rounded-md transition-colors ${destinoCopy === 'whatsapp' ? 'bg-white dark:bg-zinc-700 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-zinc-400 hover:text-gray-700 dark:hover:text-zinc-300'}`}
-                      >
-                        Mensagem para WhatsApp
-                      </button>
-                    </div>
-                  </div>
-                  
-                  <div className="flex flex-col md:flex-row gap-3 w-full justify-end">
-                    <select
-                      value={targetAudience || ''}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        if (userPlan === 'free' && val.includes('(Pro)')) {
-                          setTargetAudience('Família/Conforto');
-                          setIsPaywallOpen(true);
-                          return;
-                        }
-                        setTargetAudience(val);
+            {/* Stepper Navigation */}
+            <div className="mb-6 bg-white dark:bg-zinc-900 p-1.5 sm:p-2.5 rounded-2xl border border-gray-100 dark:border-zinc-800 shadow-sm">
+              <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
+                {[
+                  { id: 1 as const, title: 'Fotos', sub: images.length > 0 ? `${images.length} foto(s)` : 'Adicionar', isDone: images.length > 0 },
+                  { id: 2 as const, title: 'Informações', sub: (details.neighborhood || details.price || details.rent_price) ? 'Preenchido' : 'Essencial', isDone: Boolean(details.neighborhood || details.price || details.rent_price || details.propertyType) },
+                  { id: 3 as const, title: 'Estilo', sub: selectedTemplate === 'modern' ? 'Modern' : selectedTemplate, isDone: true },
+                  { id: 4 as const, title: 'Ver Arte', sub: 'Baixar', isDone: false }
+                ].map(step => {
+                  const isActive = currentStep === step.id;
+                  return (
+                    <button
+                      key={step.id}
+                      type="button"
+                      onClick={() => {
+                        setCurrentStep(step.id);
+                        setMobileViewTab(step.id === 4 ? 'preview' : 'form');
                       }}
-                      className="w-full md:w-auto px-3 py-2 bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-lg text-xs text-gray-700 dark:text-zinc-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className={`flex flex-col sm:flex-row items-center justify-center p-2 sm:py-2.5 sm:px-3 rounded-xl transition-all text-center sm:text-left ${
+                        isActive
+                          ? 'bg-orange-600 text-white shadow-sm font-bold scale-[1.01]'
+                          : 'text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800'
+                      }`}
                     >
-                      <option value="Família/Conforto">Família/Conforto</option>
-                      <option value="Jovem/Dinâmico">Jovem/Dinâmico</option>
-                      <option value="Luxo/Exclusividade (Pro)">Luxo/Exclusividade (Pro)</option>
-                      <option value="Investidor/ROI (Pro)">Investidor/ROI (Pro)</option>
-                    </select>
-                    <button
-                      onClick={handleGenerateCopy}
-                      disabled={isGeneratingCopy}
-                      className="w-full md:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg text-xs font-medium transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 whitespace-nowrap shadow-sm hover:shadow-lg"
-                    >
-                      {isGeneratingCopy ? 'Escrevendo...' : '✨ Gerar Copy com IA'}
+                      <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold mr-0 sm:mr-2 mb-1 sm:mb-0 shrink-0 ${
+                        isActive 
+                          ? 'bg-white text-orange-600' 
+                          : (step.isDone ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400' : 'bg-gray-200 dark:bg-zinc-700 text-gray-700 dark:text-zinc-300')
+                      }`}>
+                        {step.isDone && !isActive ? <Check size={13} strokeWidth={3} /> : step.id}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="text-xs sm:text-sm font-semibold truncate leading-tight">
+                          {step.title}
+                        </div>
+                        <div className={`hidden sm:block text-[11px] truncate leading-tight ${isActive ? 'text-orange-100' : 'text-gray-400'}`}>
+                          {step.sub}
+                        </div>
+                      </div>
                     </button>
-                  </div>
-                </div>
-                <div className="relative">
-                   <textarea 
-                     readOnly 
-                     rows={10} 
-                     className="w-full max-w-full p-4 bg-gray-50 dark:bg-zinc-950 border border-gray-200 dark:border-zinc-800 rounded-xl text-sm text-gray-700 dark:text-zinc-300 resize-none focus:outline-none"
-                     value={generatedCaption || ''}
-                     placeholder="Clique em 'Gerar Copy com IA' para criar uma legenda profissional."
-                   />
-                   <button 
-                     onClick={handleCopyCaption}
-                     className="absolute bottom-3 right-3 px-4 py-2 bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-lg text-xs font-medium text-gray-700 dark:text-zinc-300 hover:bg-gray-50 dark:hover:bg-zinc-700 transition-colors shadow-sm flex items-center"
-                   >
-                     {isCopied ? (
-                       <><Check className="w-3.5 h-3.5 mr-1.5 text-emerald-500" /> Copiado!</>
-                     ) : (
-                       <><Copy className="w-3.5 h-3.5 mr-1.5" /> Copiar Legenda</>
-                     )}
-                   </button>
-                </div>
-            </div>
-
-            
-          </div>
-
-          {/* Preview Side */}
-          <div className={`${mobileViewTab === 'preview' ? 'flex flex-col h-[calc(100dvh-120px)] sm:h-[calc(100dvh-140px)] -mx-4 sm:-mx-6 w-[calc(100%+2rem)] sm:w-[calc(100%+3rem)]' : 'hidden'} lg:mx-0 lg:flex lg:flex-col lg:order-2 lg:sticky lg:top-6 lg:h-[calc(100vh-3rem)] lg:self-start lg:w-full min-w-0`}>
-            <div className="shrink-0 bg-white dark:bg-[#0f111a] px-4 sm:px-6 pb-2 pt-4 md:m-0 md:p-0 lg:bg-white lg:dark:bg-zinc-900 lg:p-6 lg:rounded-t-2xl lg:shadow-sm lg:border lg:border-b-0 border-gray-100 dark:border-zinc-800 flex flex-col transition-colors duration-200 relative z-20">
-              <div className="flex w-full items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <h2 className="hidden md:block text-lg font-semibold text-gray-900 dark:text-white truncate max-w-full pr-4 border-r border-gray-200 dark:border-zinc-800">Pré-visualização do Post</h2>
-                  
-                  {idEmEdicao && (
-                    <button
-                      onClick={handleSaveOnly}
-                      disabled={isExporting}
-                      className="px-4 py-1.5 bg-transparent border border-emerald-600 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 font-medium rounded-lg transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100"
-                    >
-                      Salvar
-                    </button>
-                  )}
-
-                  {images.length > 1 && (
-                    <div className="flex space-x-2 overflow-x-auto scrollbar-hide">
-                      {images.map((_, idx) => (
-                        <button
-                          key={idx}
-                          onClick={() => setPreviewIndex(idx)}
-                          className={`px-3 py-1.5 shrink-0 rounded-full text-sm font-medium transition-colors ${previewIndex === idx ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 hover:bg-gray-300 dark:hover:bg-zinc-700'}`}
-                        >
-                          {idx + 1}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => {
-                      setActiveTab('meus_imoveis');
-                      setIdEmEdicao(null);
-                    }}
-                    className="hidden lg:block px-4 py-1.5 text-gray-600 border border-gray-300 hover:bg-gray-100 dark:text-gray-300 dark:border-zinc-700 dark:hover:bg-zinc-800 font-medium rounded-lg transition-colors"
-                  >
-                    Voltar
-                  </button>
-                  {/* Desktop Download Button (hidden on mobile) */}
-                  <button
-                    onClick={handleDownload}
-                    disabled={isExporting || images.length === 0}
-                    className="hidden md:flex items-center justify-center py-1.5 px-4 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <Download className="w-4 h-4 mr-2" />
-                    <span>
-                      {isExporting ? (exportProgressText || 'Gerando...') : (images.length > 1 ? `Baixar Todas (${images.length})` : 'Baixar Imagem')}
-                    </span>
-                  </button>
-                </div>
+                  );
+                })}
               </div>
             </div>
 
-            
-            {/* The Preview Area */}
-            <div className="flex flex-1 min-h-0 overflow-hidden z-[10] bg-gray-50 dark:bg-zinc-950 lg:bg-white lg:dark:bg-zinc-900 lg:p-6 lg:mx-0 lg:border lg:border-t-0 border-gray-100 dark:border-zinc-800 lg:rounded-b-2xl items-center justify-center relative">
-                <div ref={previewContainerRef} className="flex flex-1 h-full min-h-0 items-center justify-center w-full max-w-full lg:max-w-md mx-auto bg-gray-100 dark:bg-zinc-950 lg:rounded-xl relative p-0 lg:p-4 transition-colors duration-200 overflow-hidden">
-                {images.length > 0 ? (
-                  <div className="relative mx-auto flex-shrink-0 flex items-center justify-center w-full h-full min-h-0">
-                  <div 
-                    ref={previewRef}
-                    className={`relative shadow-xl transition-all duration-300 bg-white ${aspectRatio === 'feed' ? 'aspect-[3/4]' : 'aspect-[9/16]'}`}
-                    style={{ 
-                      width: '1080px', 
-                      height: aspectRatio === 'story' ? '1920px' : '1440px',
-                      transform: `scale(${previewScale})`,
-                      transformOrigin: 'center center',
-                      fontSize: '16px',
-                      position: 'absolute',
-                      margin: 'auto'
-                    }}
-                  >
-                    <TemplateRenderer 
-                      templateId={selectedTemplate} 
-                      details={details} 
-                      image={images[previewIndex] || null} 
-                      logo={applyBrandKit ? (brandKit?.logo || null) : null}
-                      aspectRatio={aspectRatio}
-                      brandKit={applyBrandKit ? brandKit : undefined}
-                      options={{...templateOptions, badge: seloAtivo, imagePositionX: templateOptions.imagePositions?.[previewIndex] ?? templateOptions.imagePositionX ?? 50}}
-                      userPlan={userPlan}
+            <div className="flex flex-col lg:grid lg:grid-cols-[1.1fr_1.3fr] gap-8 lg:gap-10 w-full max-w-full items-start">
+              
+              {/* Form / Step side */}
+              <div className={`w-full space-y-6 ${currentStep === 4 ? 'hidden lg:block' : 'block'}`}>
+                
+                {/* STEP 1: FOTOS */}
+                {currentStep === 1 && (
+                  <div className="bg-white dark:bg-zinc-900 p-5 sm:p-7 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 space-y-5 animate-in fade-in duration-200">
+                    <div>
+                      <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                        <span>1. Adicionar Fotos</span>
+                        {images.length > 0 && (
+                          <span className="text-xs px-2.5 py-0.5 rounded-full bg-orange-100 dark:bg-orange-950/60 text-orange-700 dark:text-orange-400 font-semibold border border-orange-200 dark:border-orange-800">
+                            {images.length} {images.length === 1 ? 'foto' : 'fotos'}
+                          </span>
+                        )}
+                      </h2>
+                      <p className="text-xs sm:text-sm text-gray-500 dark:text-zinc-400 mt-1">
+                        Selecione as fotos do imóvel. A foto com o selo <strong>"Capa"</strong> será o destaque principal da arte.
+                      </p>
+                    </div>
+
+                    <ImageUploader 
+                      images={images} 
+                      onImagesChange={(newImages) => {
+                        setImages(newImages);
+                        if (newImages.length > images.length) {
+                          setPreviewIndex(newImages.length - 1);
+                        }
+                      }}
+                      previewIndex={previewIndex}
+                      onSelectPreviewIndex={setPreviewIndex}
                     />
-                  </div></div>
-                ) : (
-                  <div className="text-gray-400 text-center">
-                    <p>Adicione fotos para visualizar</p>
+
+                    <div className="pt-4 border-t border-gray-100 dark:border-zinc-800 flex flex-col sm:flex-row gap-3 items-center justify-between">
+                      <p className="text-xs text-gray-500 dark:text-zinc-400 text-center sm:text-left">
+                        {images.length > 0 
+                          ? 'Pronto! Agora informe os dados essenciais do imóvel.' 
+                          : 'Dica: Você pode avançar e adicionar a foto depois.'}
+                      </p>
+                      
+                      <div className="flex gap-2 w-full sm:w-auto">
+                        {images.length > 0 && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setCurrentStep(4);
+                              setMobileViewTab('preview');
+                            }}
+                            className="flex-1 sm:flex-initial px-4 py-2.5 bg-gray-100 dark:bg-zinc-800 hover:bg-gray-200 dark:hover:bg-zinc-700 text-gray-700 dark:text-zinc-300 font-semibold rounded-xl text-sm transition-colors"
+                          >
+                            Ver Arte ✨
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => setCurrentStep(2)}
+                          className="flex-1 sm:flex-initial px-6 py-2.5 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl shadow-sm transition-all flex items-center justify-center space-x-2 text-sm active:scale-95"
+                        >
+                          <span>Avançar</span>
+                          <ArrowRight className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* STEP 2: INFORMAÇÕES ESSENCIAIS */}
+                {currentStep === 2 && (
+                  <div className="bg-white dark:bg-zinc-900 p-5 sm:p-7 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 space-y-6 animate-in fade-in duration-200">
+                    <div>
+                      <h2 className="text-lg font-bold text-gray-900 dark:text-white">
+                        2. Informações do Imóvel
+                      </h2>
+                      <p className="text-xs sm:text-sm text-gray-500 dark:text-zinc-400 mt-1">
+                        Preencha apenas o que desejar. Você não precisa preencher tudo para gerar sua arte!
+                      </p>
+                    </div>
+
+                    <PropertyForm details={details} brandKit={applyBrandKit ? brandKit : null} onChange={setDetails} />
+
+                    <div className="pt-5 border-t border-gray-100 dark:border-zinc-800 flex flex-col-reverse sm:flex-row gap-3 items-center justify-between">
+                      <button
+                        type="button"
+                        onClick={() => setCurrentStep(1)}
+                        className="w-full sm:w-auto px-4 py-2.5 text-gray-600 dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-800 font-semibold rounded-xl transition-colors text-sm flex items-center justify-center space-x-1.5"
+                      >
+                        <ArrowLeft className="w-4 h-4" />
+                        <span>Voltar para Fotos</span>
+                      </button>
+
+                      <div className="flex gap-2 w-full sm:w-auto">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCurrentStep(4);
+                            setMobileViewTab('preview');
+                          }}
+                          className="flex-1 sm:flex-initial px-4 py-2.5 bg-gray-100 dark:bg-zinc-800 hover:bg-gray-200 dark:hover:bg-zinc-700 text-gray-700 dark:text-zinc-300 font-semibold rounded-xl text-sm transition-colors"
+                        >
+                          Ver Arte ✨
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setCurrentStep(3)}
+                          className="flex-1 sm:flex-initial px-6 py-2.5 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl shadow-sm transition-all flex items-center justify-center space-x-2 text-sm active:scale-95"
+                        >
+                          <span>Escolher Estilo</span>
+                          <ArrowRight className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* STEP 3: ESTILO & ASSINATURA VISUAL */}
+                {currentStep === 3 && (
+                  <div className="space-y-6 animate-in fade-in duration-200">
+                    {/* Minha Marca Card */}
+                    <div className="bg-orange-50/70 dark:bg-zinc-900/90 p-5 rounded-2xl border border-orange-200 dark:border-zinc-800 shadow-sm transition-colors">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div className="flex items-center space-x-3.5">
+                          {brandKit?.logo ? (
+                            <img 
+                              src={brandKit.logo} 
+                              alt="Logo" 
+                              className="w-12 h-12 rounded-xl object-contain bg-white dark:bg-zinc-800 p-1 border border-orange-200 dark:border-zinc-700" 
+                            />
+                          ) : (
+                            <div className="w-12 h-12 rounded-xl bg-orange-100 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400 flex items-center justify-center font-bold text-lg">
+                              {brandKit?.name ? brandKit.name[0].toUpperCase() : 'M'}
+                            </div>
+                          )}
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <h4 className="text-sm font-bold text-gray-900 dark:text-white">
+                                Sua marca será aplicada automaticamente
+                              </h4>
+                              <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full ${
+                                applyBrandKit 
+                                  ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400' 
+                                  : 'bg-gray-200 dark:bg-zinc-700 text-gray-600 dark:text-zinc-400'
+                              }`}>
+                                {applyBrandKit ? 'Ativada' : 'Pausada'}
+                              </span>
+                            </div>
+                            <p className="text-xs text-gray-600 dark:text-zinc-400 mt-0.5">
+                              {brandKit?.name 
+                                ? `${brandKit.name} ${brandKit.creci ? `• CRECI ${brandKit.creci}` : ''} ${brandKit.whatsapp ? `• ${brandKit.whatsapp}` : ''}`
+                                : 'Configure seu logo, CRECI e WhatsApp uma vez e eles aparecerão em todas as suas artes.'
+                              }
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between sm:justify-end gap-3 pt-2 sm:pt-0 border-t sm:border-t-0 border-orange-200/60 dark:border-zinc-800">
+                          <button
+                            type="button"
+                            onClick={() => setActiveTab('minha_marca')}
+                            className="text-xs font-semibold text-orange-600 dark:text-orange-400 hover:underline"
+                          >
+                            {brandKit?.name ? 'Editar Marca' : 'Configurar Marca'}
+                          </button>
+                          <label className="flex items-center space-x-2 cursor-pointer">
+                            <span className="text-xs font-medium text-gray-600 dark:text-zinc-400">Aplicar:</span>
+                            <button 
+                              type="button"
+                              onClick={() => setApplyBrandKit(!applyBrandKit)}
+                              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                                applyBrandKit ? 'bg-orange-600' : 'bg-gray-300 dark:bg-zinc-700'
+                              }`}
+                            >
+                              <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                                applyBrandKit ? 'translate-x-6' : 'translate-x-1'
+                              }`} />
+                            </button>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-white dark:bg-zinc-900 p-5 sm:p-7 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 space-y-6">
+                      <div>
+                        <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
+                          3. Escolha o Estilo Visual
+                        </h2>
+                        <p className="text-xs sm:text-sm text-gray-500 dark:text-zinc-400 mb-4">
+                          O estilo "Modern" é pré-selecionado por ser o mais equilibrado para fotos de imóveis.
+                        </p>
+                        <TemplateSelector selected={selectedTemplate} onSelect={setSelectedTemplate} />
+                      </div>
+
+                      <div className="pt-4 border-t border-gray-100 dark:border-zinc-800">
+                        <h3 className="text-sm font-bold text-gray-800 dark:text-zinc-200 mb-2">
+                          Formato da Arte
+                        </h3>
+                        <AspectRatioSelector selected={aspectRatio} onSelect={setAspectRatio} />
+                      </div>
+
+                      <div className="pt-5 border-t border-gray-100 dark:border-zinc-800 flex flex-col-reverse sm:flex-row gap-3 items-center justify-between">
+                        <button
+                          type="button"
+                          onClick={() => setCurrentStep(2)}
+                          className="w-full sm:w-auto px-4 py-2.5 text-gray-600 dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-800 font-semibold rounded-xl transition-colors text-sm flex items-center justify-center space-x-1.5"
+                        >
+                          <ArrowLeft className="w-4 h-4" />
+                          <span>Voltar para Informações</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCurrentStep(4);
+                            setMobileViewTab('preview');
+                          }}
+                          className="w-full sm:w-auto px-7 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center space-x-2 text-sm active:scale-95"
+                        >
+                          <span>Ver Post Pronto ✨</span>
+                          <ArrowRight className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* STEP 4 CONTROLS (DESKTOP) */}
+                {currentStep === 4 && (
+                  <div className="bg-white dark:bg-zinc-900 p-5 sm:p-7 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 space-y-6 animate-in fade-in duration-200">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-gray-100 dark:border-zinc-800">
+                      <div>
+                        <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                          <span>Arte Pronta para Publicar!</span>
+                          <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 font-bold">
+                            Pronto
+                          </span>
+                        </h2>
+                        <p className="text-xs sm:text-sm text-gray-500 dark:text-zinc-400 mt-0.5">
+                          Baixe o arquivo em alta resolução ou compartilhe direto.
+                        </p>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => setCurrentStep(2)}
+                        className="text-xs text-orange-600 dark:text-orange-400 hover:underline font-semibold text-left sm:text-right"
+                      >
+                        ← Fazer alterações nos dados
+                      </button>
+                    </div>
+
+                    {/* Primary Export Actions */}
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <button
+                        onClick={handleDownload}
+                        disabled={isExporting || images.length === 0}
+                        className="flex-1 py-3.5 px-6 rounded-xl shadow-md bg-emerald-600 hover:bg-emerald-700 text-white font-bold transition-all flex items-center justify-center text-sm active:scale-95 disabled:opacity-50"
+                      >
+                        <Download className="w-5 h-5 mr-2" />
+                        <span>{isExporting ? (exportProgressText || 'Gerando imagem...') : (images.length > 1 ? `Baixar Todas (${images.length})` : 'Baixar Imagem')}</span>
+                      </button>
+
+                      <button
+                        onClick={handleShare}
+                        disabled={isExporting || images.length === 0}
+                        className="py-3.5 px-5 rounded-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-700 text-gray-700 dark:text-zinc-200 font-semibold transition-all flex items-center justify-center text-sm active:scale-95 disabled:opacity-50"
+                      >
+                        <Share2 className="w-4 h-4 mr-2 text-emerald-600" />
+                        <span>Compartilhar</span>
+                      </button>
+                    </div>
+
+                    {/* Optional Secondary Tools Accordion */}
+                    <div className="pt-2">
+                      <h3 className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">
+                        Ajustes Opcionais
+                      </h3>
+                      {renderSecondaryTools()}
+                    </div>
                   </div>
                 )}
               </div>
+
+              {/* Preview Side (Desktop Live Preview & Mobile Step 4 Preview) */}
+              <div className={`w-full lg:sticky lg:top-6 lg:self-start ${currentStep === 4 ? 'block' : 'hidden lg:block'}`}>
+                <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 overflow-hidden flex flex-col">
+                  {/* Preview Topbar */}
+                  <div className="px-4 py-3 sm:px-5 sm:py-3.5 border-b border-gray-100 dark:border-zinc-800 flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wider">
+                        Pré-visualização
+                      </span>
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-zinc-400 font-medium">
+                        {aspectRatio === 'feed' ? 'Feed 3:4' : 'Story 9:16'}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      {idEmEdicao && (
+                        <button
+                          onClick={handleSaveOnly}
+                          disabled={isExporting}
+                          className="px-3 py-1 bg-transparent border border-emerald-600 text-emerald-600 hover:bg-emerald-50 text-xs font-semibold rounded-lg transition-colors disabled:opacity-50"
+                        >
+                          Salvar Imóvel
+                        </button>
+                      )}
+
+                      {/* Photo Carousel Pills if > 1 */}
+                      {images.length > 1 && (
+                        <div className="flex space-x-1 overflow-x-auto scrollbar-hide">
+                          {images.map((_, idx) => (
+                            <button
+                              key={idx}
+                              onClick={() => setPreviewIndex(idx)}
+                              className={`w-6 h-6 shrink-0 rounded-full text-xs font-bold transition-colors ${
+                                previewIndex === idx 
+                                  ? 'bg-orange-600 text-white shadow-sm' 
+                                  : 'bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-zinc-400 hover:bg-gray-200'
+                              }`}
+                              title={`Ver Foto ${idx + 1}`}
+                            >
+                              {idx + 1}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Preview Canvas Area */}
+                  <div className="p-3 sm:p-6 bg-gray-100/70 dark:bg-zinc-950 flex items-center justify-center min-h-[380px] sm:min-h-[500px] overflow-hidden relative">
+                    <div ref={previewContainerRef} className="w-full h-full flex items-center justify-center relative min-h-[360px] sm:min-h-[480px]">
+                      {images.length > 0 ? (
+                        <div 
+                          ref={previewRef}
+                          className={`relative shadow-2xl transition-all duration-300 bg-white ${aspectRatio === 'feed' ? 'aspect-[3/4]' : 'aspect-[9/16]'}`}
+                          style={{ 
+                            width: '1080px', 
+                            height: aspectRatio === 'story' ? '1920px' : '1440px',
+                            transform: `scale(${previewScale})`,
+                            transformOrigin: 'center center',
+                            fontSize: '16px',
+                            position: 'absolute',
+                            margin: 'auto'
+                          }}
+                        >
+                          <TemplateRenderer 
+                            templateId={selectedTemplate} 
+                            details={details} 
+                            image={images[previewIndex] || null} 
+                            logo={applyBrandKit ? (brandKit?.logo || null) : null}
+                            aspectRatio={aspectRatio}
+                            brandKit={applyBrandKit ? brandKit : undefined}
+                            options={{...templateOptions, badge: seloAtivo, imagePositionX: templateOptions.imagePositions?.[previewIndex] ?? templateOptions.imagePositionX ?? 50}}
+                            userPlan={userPlan}
+                          />
+                        </div>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center text-center p-8 text-gray-400 dark:text-zinc-500 space-y-3">
+                          <div className="w-16 h-16 rounded-2xl bg-gray-200/60 dark:bg-zinc-800 flex items-center justify-center text-gray-400">
+                            <Eye size={28} />
+                          </div>
+                          <div>
+                            <p className="font-bold text-sm text-gray-700 dark:text-zinc-300">Nenhuma foto selecionada ainda</p>
+                            <p className="text-xs text-gray-500 mt-1 max-w-xs">
+                              Adicione fotos no Passo 1 para visualizar sua arte renderizada em tempo real.
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setCurrentStep(1)}
+                            className="px-4 py-2 rounded-xl bg-orange-600 text-white text-xs font-bold shadow-sm hover:bg-orange-700 transition-colors"
+                          >
+                            + Adicionar Fotos
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Actions Bar under preview on mobile in Step 4 */}
+                  {currentStep === 4 && (
+                    <div className="p-4 sm:p-5 border-t border-gray-100 dark:border-zinc-800 space-y-3 block lg:hidden">
+                      <div className="flex gap-2">
+                        <button
+                          onClick={handleDownload}
+                          disabled={isExporting || images.length === 0}
+                          className="flex-1 py-3 px-4 rounded-xl shadow-md bg-emerald-600 hover:bg-emerald-700 text-white font-bold transition-all flex items-center justify-center text-sm active:scale-95 disabled:opacity-50"
+                        >
+                          <Download className="w-4 h-4 mr-2" />
+                          <span>{isExporting ? (exportProgressText || 'Gerando...') : (images.length > 1 ? `Baixar Todas (${images.length})` : 'Baixar Imagem')}</span>
+                        </button>
+                        <button
+                          onClick={handleShare}
+                          disabled={isExporting || images.length === 0}
+                          className="py-3 px-4 rounded-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-gray-700 dark:text-zinc-200 font-semibold transition-all flex items-center justify-center text-sm active:scale-95 disabled:opacity-50"
+                        >
+                          <Share2 className="w-4 h-4" />
+                        </button>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => setCurrentStep(2)}
+                        className="w-full py-2.5 text-xs text-orange-600 dark:text-orange-400 font-bold hover:underline text-center"
+                      >
+                        ← Fazer alterações nos dados do imóvel
+                      </button>
+
+                      <div className="pt-2">
+                        {renderSecondaryTools(true)}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
             </div>
 
-            {renderMobileEditor()}
-
+            {/* Mobile Floating "Ver Arte" Pill when in steps 1, 2, or 3 */}
+            {currentStep < 4 && images.length > 0 && (
+              <div className="fixed bottom-5 right-5 z-40 lg:hidden">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCurrentStep(4);
+                    setMobileViewTab('preview');
+                  }}
+                  className="px-5 py-3 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-xl flex items-center space-x-2 active:scale-95 transition-all"
+                >
+                  <Eye className="w-4 h-4" />
+                  <span>Ver Arte ({images.length})</span>
+                </button>
+              </div>
+            )}
           </div>
-        </div>
-        </div>
-      )}
+        )}
 
 <footer className={`text-center py-6 text-sm text-gray-500 dark:text-zinc-400 mt-auto border-t border-gray-100 dark:border-zinc-800 ${mobileViewTab === "preview" ? "hidden lg:block" : ""}`}>
         © 2026 PostNaMão. Todos os direitos reservados.
