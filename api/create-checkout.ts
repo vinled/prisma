@@ -1,5 +1,5 @@
-import { authenticateBilling, claimLease, releaseLease, requireToken, respondBillingError, BillingError, type BillingLease } from '../server/billing';
-import { createOrReuseCheckout } from '../server/checkout';
+import { authenticateBilling, claimLease, releaseLease, requireToken, respondBillingError, BillingError, type BillingLease } from '../server/billing.js';
+import { createOrReuseCheckout } from '../server/checkout.js';
 
 export default async function handler(req: any, res: any) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Use POST.' });

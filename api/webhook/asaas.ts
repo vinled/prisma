@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { timingSafeEqual } from 'node:crypto';
-import { activeSubscriptions, applyPlan, BillingError, claimLease, paymentGrantsAccess, payments, releaseLease, respondBillingError, type BillingLease } from '../../server/billing';
+import { activeSubscriptions, applyPlan, BillingError, claimLease, paymentGrantsAccess, payments, releaseLease, respondBillingError, type BillingLease } from '../../server/billing.js';
 
 const EVENTS = new Set(['PAYMENT_RECEIVED', 'PAYMENT_CONFIRMED', 'PAYMENT_OVERDUE', 'PAYMENT_DELETED', 'PAYMENT_REFUNDED', 'PAYMENT_CHARGEBACK_REQUESTED', 'SUBSCRIPTION_DELETED', 'SUBSCRIPTION_INACTIVATED']);
 

@@ -1,5 +1,5 @@
 import type { SupabaseClient, User } from '@supabase/supabase-js';
-import { activeSubscriptions, applyPlan, asaas, asaasList, BillingError, paymentGrantsAccess, payments, updateAccount, validInvoiceUrl, type BillingLease } from './billing';
+import { activeSubscriptions, applyPlan, asaas, asaasList, BillingError, paymentGrantsAccess, payments, updateAccount, validInvoiceUrl, type BillingLease } from './billing.js';
 
 async function invoice(apiKey: string, subscriptionId: string, admin: SupabaseClient, lease: BillingLease) {
   const invoices = await payments(apiKey, subscriptionId);

@@ -1,4 +1,4 @@
-import { activeSubscriptions, applyPlan, asaas, authenticateBilling, claimLease, releaseLease, respondBillingError, type BillingLease } from '../server/billing';
+import { activeSubscriptions, applyPlan, asaas, authenticateBilling, claimLease, releaseLease, respondBillingError, type BillingLease } from '../server/billing.js';
 
 export default async function handler(req: any, res: any) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Use POST.' });
