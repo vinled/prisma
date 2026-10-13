@@ -72,7 +72,7 @@ export function MyProperties({ properties, onEdit, onDelete }: Props) {
           <Home className="w-16 h-16 text-gray-300 dark:text-zinc-600 mb-4" />
           <h3 className="text-xl font-medium text-gray-900 dark:text-white mb-2">Nenhum imóvel criado ainda</h3>
           <p className="text-gray-500 dark:text-zinc-400 max-w-md">
-            Os dados dos seus imóveis criados aparecerão aqui. Vá até a aba "Criação Rápida" e baixe sua primeira imagem para salvar.
+            Seus imóveis aparecem aqui enquanto você cria. Vá até "Criação Rápida" e adicione fotos ou informações: o rascunho será salvo automaticamente.
           </p>
         </div>
       ) : (

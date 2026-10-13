@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom';
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import * as htmlToImage from 'html-to-image';
 import { 
   Download, Layout, Moon, Sun, Copy, Check, LogOut, User, Menu, X, PlusSquare, 
@@ -12,11 +12,14 @@ import {
   Eye, Sparkles, Star, ChevronDown, ChevronUp, CheckCircle2, Sliders, Wand2, RefreshCw 
 } from 'lucide-react';
 import { supabase, isSupabaseConfigured } from './lib/supabase';
+import { loadProperties as getLocalProperties, saveProperties as saveLocalProperties, putProperty } from './lib/editorStorage';
+import { persistProperty, hasContent } from './lib/propertyPersistence';
+import { useDraftAutosave } from './hooks/useDraftAutosave';
 import { Auth } from './components/Auth';
 import { ResetPassword } from './components/ResetPassword';
 import { Session } from '@supabase/supabase-js';
 import { PostNaMaoLogo } from './components/PostNaMaoLogo';
-import { PropertyDetails, TemplateId, AspectRatioId, BrandKit, TemplateOptions, SavedProperty } from './types';
+import { PropertyDetails, TemplateId, AspectRatioId, BrandKit, TemplateOptions, SavedProperty, EditorDraft } from './types';
 import { PropertyForm } from './components/PropertyForm';
 import { BrandKitForm } from './components/BrandKitForm';
 import { ImageUploader } from './components/ImageUploader';
@@ -29,27 +32,6 @@ import { PaywallModal } from './components/PaywallModal';
 import { LandingPage } from './components/LandingPage';
 import { TermosDeUso } from './components/TermosDeUso';
 import { PoliticaPrivacidade } from './components/PoliticaPrivacidade';
-
-const LOCAL_STORAGE_PROPERTIES_KEY = 'postnamao_saved_properties';
-
-const getLocalProperties = (userId = 'local'): SavedProperty[] => {
-  try {
-    const raw = localStorage.getItem(`${LOCAL_STORAGE_PROPERTIES_KEY}_${userId}`);
-    const parsed = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? parsed : [];
-  } catch (e) {
-    return [];
-  }
-};
-
-const saveLocalProperties = (props: SavedProperty[], userId = 'local') => {
-  localStorage.setItem(`${LOCAL_STORAGE_PROPERTIES_KEY}_${userId}`, JSON.stringify(props));
-};
-
-const isValidUUID = (str?: string | null): boolean => {
-  if (!str) return false;
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(str);
-};
 
 const generateUUID = (): string => {
   if (typeof crypto !== 'undefined' && crypto.randomUUID) {
@@ -92,6 +74,7 @@ export default function App() {
   const [activeMobileTool, setActiveMobileTool] = useState<'template' | 'format' | 'badge' | 'adjust' | 'export' | null>('template');
   const [isDraggingSlider, setIsDraggingSlider] = useState(false);
   const [idEmEdicao, setIdEmEdicao] = useState<string | null>(null);
+  const [draftId, setDraftId] = useState(generateUUID);
   const [details, setDetails] = useState<PropertyDetails>({
     purpose: 'venda', rent_price: '', condo_price: '', iptu_price: '', is_package: false, title: '', previousPrice: '', porteiraFechada: false,
     price: '',
@@ -257,7 +240,66 @@ export default function App() {
   const [lastExport, setLastExport] = useState<{ url: string; name: string } | null>(null);
   const [previewIndex, setPreviewIndex] = useState(0);
 
-  const [savedProperties, setSavedProperties] = useState<SavedProperty[]>(() => isLocalDemo ? getLocalProperties() : []);
+  const [savedProperties, setSavedProperties] = useState<SavedProperty[]>([]);
+  const emptyDetails = useRef(details);
+  const owner = isLocalDemo ? 'local' : session?.user.id || null;
+  const activeOwner = useRef(owner);
+  activeOwner.current = owner;
+  const draft = useMemo<EditorDraft>(() => ({
+    id: idEmEdicao || draftId,
+    revision: generateUUID(), updatedAt: Date.now(),
+    details: { ...details, images, generated_copy: generatedCaption },
+    selectedTemplate, aspectRatio,
+    templateOptions: { ...templateOptions, badge: seloAtivo },
+    applyBrandKit, step: currentStep, previewIndex,
+  }), [idEmEdicao, draftId, details, images, generatedCaption, selectedTemplate, aspectRatio, templateOptions, seloAtivo, applyBrandKit, currentStep, previewIndex]);
+  const autosave = useDraftAutosave(owner, draft, (saved) => {
+    setIdEmEdicao(saved?.id || null);
+    setDraftId(saved?.id || generateUUID());
+    setDetails(saved?.details || structuredClone(emptyDetails.current));
+    setImages(saved?.details.images || []);
+    setGeneratedCaption(saved?.details.generated_copy || '');
+    setSelectedTemplate(saved?.selectedTemplate || 'modern');
+    setAspectRatio(saved?.aspectRatio || 'feed');
+    setTemplateOptions(saved?.templateOptions || { gradientOpacity: 25, imagePositionX: 50, logoSize: 100 });
+    setSeloAtivo(saved?.templateOptions.badge || '');
+    setApplyBrandKit(saved?.applyBrandKit ?? true);
+    setCurrentStep(saved?.step || 1);
+    setPreviewIndex(saved?.previewIndex || 0);
+    setMobileViewTab(saved?.step === 4 ? 'preview' : 'form');
+  }, async (snapshot) => {
+    if (!owner) return { success: false, cloudSynced: false };
+    const result = await persistProperty(snapshot, owner, isLocalDemo ? null : supabase, userPlan);
+    if (activeOwner.current === owner && result.properties) setSavedProperties(result.properties);
+    return result;
+  });
+  useEffect(() => {
+    if (!isLocalDemo) return;
+    let active = true;
+    getLocalProperties().then(properties => { if (active) setSavedProperties(properties); });
+    return () => { active = false; };
+  }, [isLocalDemo]);
+  const saveLabels = {
+    loading: 'Carregando rascunho…', saving: 'Salvando…', local: session ? 'Salvo neste dispositivo · aguardando sincronização' : 'Salvo neste dispositivo',
+    syncing: 'Sincronizando…', saved: 'Salvo na nuvem', error: 'Não foi possível salvar · tente novamente',
+    conflict: 'Salvo neste dispositivo · há outra versão na nuvem', limit: 'Salvo neste dispositivo · limite de imóveis na nuvem atingido',
+  };
+  const stashCurrent = async () => {
+    if (!owner || !hasContent(draft)) return true;
+    try {
+      await autosave.flushLocal();
+      const local = await persistProperty({ ...draft, cloudRevision: autosave.getRevision(draft.id) }, owner, null, userPlan);
+      if (local.property) {
+        const properties = await putProperty(owner, { ...local.property, pendingSync: Boolean(session) });
+        setSavedProperties(properties);
+      }
+      autosave.dismissRecovered();
+      return true;
+    } catch {
+      alert('Não foi possível salvar o rascunho antes de trocar de imóvel. Tente novamente.');
+      return false;
+    }
+  };
   
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -337,159 +379,21 @@ export default function App() {
 
 
   
-  const executeSave = async (): Promise<{ success: boolean; cloudSynced: boolean }> => {
-    if (userPlan !== 'pro' && !idEmEdicao && session?.user) {
-      try {
-        const { count, error } = await supabase
-          .from('properties')
-          .select('id', { count: 'exact', head: true })
-          .eq('user_id', session.user.id);
-          
-        if (!error && count !== null && count >= 5) {
-          alert('Você atingiu o limite de 5 imóveis do Plano Grátis. Assine o Pro para imóveis ilimitados.');
-          setIsPaywallOpen(true);
-          return { success: false, cloudSynced: false };
-        }
-      } catch (countErr) {
-        console.warn("Não foi possível verificar contagem na nuvem:", countErr);
-      }
-    }
-
-    setIsExporting(true);
-    const finalImages: string[] = [];
-    let allImagesUploaded = true;
-    try {
-      for (const imgUrl of images) {
-        if (isLocalDemo) {
-          finalImages.push(imgUrl);
-          continue;
-        }
-        if (imgUrl.startsWith('blob:') || imgUrl.startsWith('data:')) {
-          try {
-            const response = await fetch(imgUrl);
-            const blob = await response.blob();
-            const fileExt = blob.type.split('/')[1] || 'jpg';
-            const fileName = `imovel_${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
-            const { error: uploadError } = await supabase.storage.from('fotos_imoveis').upload(fileName, blob, {
-              contentType: blob.type,
-              upsert: false
-            });
-            if (uploadError) throw uploadError;
-            const { data } = supabase.storage.from('fotos_imoveis').getPublicUrl(fileName);
-            finalImages.push(data.publicUrl);
-          } catch (e) {
-            console.warn('Upload da imagem para storage da nuvem indisponível:', e);
-            allImagesUploaded = false;
-            finalImages.push(imgUrl); 
-          }
-        } else {
-          finalImages.push(imgUrl);
-        }
-      }
-      
-      setImages(finalImages);
-
-      const now = new Date();
-      const dateStr = now.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
-      
-      let finalThumbnail = finalImages[0] || undefined;
-      // Garante que não salvamos blob efêmero ou base64 gigante como thumbnail no banco
-      if (!isLocalDemo && finalThumbnail && (finalThumbnail.startsWith('blob:') || finalThumbnail.length > 2000)) {
-         finalThumbnail = undefined;
-      }
-      
-      if (finalThumbnail === undefined && idEmEdicao) {
-        finalThumbnail = savedProperties.find(p => p.id === idEmEdicao)?.thumbnail;
-      }
-
-      // Garante ID com formato UUID v4 válido compatível com banco PostgreSQL
-      const safeId = isValidUUID(idEmEdicao) ? idEmEdicao! : generateUUID();
-      
-      const propertyData: SavedProperty = {
-        id: safeId,
-        date: dateStr,
-        details: { ...details, images: finalImages },
-        selectedTemplate,
-        aspectRatio,
-        templateOptions,
-        thumbnail: finalThumbnail,
-        pendingSync: !isLocalDemo,
-      };
-      
-      let updated: SavedProperty[];
-      if (idEmEdicao) {
-        updated = [propertyData, ...savedProperties.filter(p => p.id !== idEmEdicao)];
-      } else {
-        updated = [propertyData, ...savedProperties];
-      }
-      
-      saveLocalProperties(updated, session?.user.id);
-      setSavedProperties(updated);
-      setIdEmEdicao(safeId);
-      
-      let cloudSynced = false;
-      // Sincronização resiliente com o Supabase
-      if (session?.user && allImagesUploaded) {
-        try {
-          // Limpa URLs base64 gigantes de details.images para evitar erro 413 Payload Too Large
-          const cleanImages = (propertyData.details.images || []).map(img => 
-            (img && img.startsWith('data:') && img.length > 2000) ? '' : img
-          ).filter(Boolean);
-
-          const dbPayload: any = {
-            id: propertyData.id,
-            user_id: session.user.id,
-            details: { ...propertyData.details, images: cleanImages },
-            selected_template: propertyData.selectedTemplate,
-            aspect_ratio: propertyData.aspectRatio,
-            template_options: propertyData.templateOptions,
-            thumbnail: propertyData.thumbnail || null
-          };
-
-          // Tenta enviar com data ISO (aceita por colunas DATE, TIMESTAMP e TEXT)
-          dbPayload.date = now.toISOString().split('T')[0];
-
-          let { error } = await supabase.from('properties').upsert(dbPayload);
-
-          // Se falhou por causa da coluna 'date' não existir no schema
-          if (error && (error.code === '42703' || error.message?.includes('column "date"'))) {
-            delete dbPayload.date;
-            const retry = await supabase.from('properties').upsert(dbPayload);
-            error = retry.error;
-          }
-
-          if (error) {
-            console.warn("Aviso: Sincronização em nuvem pendente:", error);
-            cloudSynced = false;
-          } else {
-            cloudSynced = true;
-            const synced = updated.map(p => p.id === safeId ? { ...p, pendingSync: false } : p);
-            saveLocalProperties(synced, session.user.id);
-            setSavedProperties(synced);
-          }
-        } catch (cloudErr) {
-          console.warn("Falha de conexão com banco de dados:", cloudErr);
-          cloudSynced = false;
-        }
-      }
-      return { success: true, cloudSynced };
-    } catch (err) {
-      console.error("Execute save erro geral:", err);
-      alert('Não foi possível salvar. O armazenamento do navegador pode estar cheio. Remova artes antigas ou reduza o tamanho das fotos.');
+  const executeSave = async () => {
+    if (!hasContent(draft)) {
+      alert('Adicione uma foto ou informações do imóvel para salvar.');
       return { success: false, cloudSynced: false };
-    } finally {
-      setIsExporting(false);
     }
+    const result = await autosave.saveNow();
+    if (!result.success) alert('Não foi possível salvar neste dispositivo. Libere espaço ou tente novamente antes de fechar.');
+    return result;
   };
   const handleSaveOnly = async () => {
-    const result = await executeSave();
-    if (result.success) {
-      if (result.cloudSynced) {
-        alert('Alterações salvas com sucesso!');
-      } else {
-        alert('Alterações salvas no seu navegador!');
-      }
-    }
+    setIsExporting(true);
+    try {
+      const result = await executeSave();
+      if (result.success) alert(result.cloudSynced ? 'Alterações salvas na nuvem!' : 'Alterações salvas neste dispositivo. Confira o status de sincronização acima.');
+    } finally { setIsExporting(false); }
   };
 
     const handleShare = async () => {
@@ -619,25 +523,43 @@ const handleDownload = async () => {
     }
   };
 
-  const handleEdit = (prop: SavedProperty) => {
+  const handleEdit = async (prop: SavedProperty) => {
+    if (draft.id !== prop.id && !await stashCurrent()) return;
     setPreviewIndex(0);
     setImages(prop.details.images && prop.details.images.length > 0 ? prop.details.images : (prop.thumbnail ? [prop.thumbnail] : []));
     setIdEmEdicao(prop.id);
+    setDraftId(prop.id);
+    autosave.selectRevision(prop.id, prop.cloudRevision || prop.details.editor_meta?.revision);
+    setSeloAtivo(prop.templateOptions?.badge || '');
+    setApplyBrandKit(prop.details.editor_meta?.applyBrandKit ?? true);
+    setLastExport(null);
     setDetails(prop.details);
     setSelectedTemplate(prop.selectedTemplate);
     setAspectRatio(prop.aspectRatio);
     setTemplateOptions(prop.templateOptions);
     setGeneratedCaption(prop.details.generated_copy || '');
     setActiveTab('criacao');
-    setCurrentStep(4);
-    setMobileViewTab('preview');
+    setCurrentStep(prop.details.editor_meta?.step || 4);
+    setMobileViewTab(prop.details.editor_meta?.step === 4 || !prop.details.editor_meta ? 'preview' : 'form');
   };
 
   const handleDelete = async (id: string) => {
     if (confirm('Tem certeza que deseja excluir esta arte?')) {
+      await autosave.abandon(id);
+      if (draft.id === id) {
+        setIdEmEdicao(null);
+        setDraftId(generateUUID());
+        setDetails(structuredClone(emptyDetails.current));
+        setImages([]);
+        setGeneratedCaption('');
+        setSeloAtivo('');
+        setLastExport(null);
+        setCurrentStep(1);
+        setMobileViewTab('form');
+      }
       const updated = savedProperties.filter(p => p.id !== id);
       setSavedProperties(updated);
-      saveLocalProperties(updated, session?.user.id);
+      await saveLocalProperties(updated, session?.user.id);
       
       if (session?.user) {
         const { error } = await supabase.from('properties').delete().eq('id', id).eq('user_id', session.user.id);
@@ -661,7 +583,7 @@ const handleDownload = async () => {
 
       if (session?.user) {
         // Restore this user's local work even when the cloud is unavailable.
-        setSavedProperties(getLocalProperties(session.user.id));
+        setSavedProperties(await getLocalProperties(session.user.id));
         // Load user plan and brand kit
         const { data: profile } = await supabase
           .from('profiles')
@@ -691,18 +613,19 @@ const handleDownload = async () => {
             selectedTemplate: p.selected_template,
             aspectRatio: p.aspect_ratio,
             templateOptions: p.template_options,
-            thumbnail: p.thumbnail
+            thumbnail: p.thumbnail,
+            cloudRevision: p.details?.editor_meta?.revision
           }));
           
           // Mescla com imóveis locais para nunca perder criações recentes
-          const local = getLocalProperties(session.user.id);
+          const local = await getLocalProperties(session.user.id);
           const pendingIds = new Set(local.filter(p => p.pendingSync).map(p => p.id));
           const cloud = loadedFromDb.filter(p => !pendingIds.has(p.id));
           const cloudIds = new Set(cloud.map(p => p.id));
           const merged = [...local.filter(p => !cloudIds.has(p.id)), ...cloud];
 
           setSavedProperties(merged);
-          try { saveLocalProperties(merged, session.user.id); }
+          try { await saveLocalProperties(merged, session.user.id); }
           catch (error) { console.warn('Sem espaço para atualizar o cache local:', error); }
         }
       }
@@ -1098,9 +1021,14 @@ const handleDownload = async () => {
               </button>
               
               <button
-                onClick={() => {
+                onClick={async () => {
+                  if (!await stashCurrent()) return;
                   setActiveTab('criacao');
                   setIdEmEdicao(null);
+                  setDraftId(generateUUID());
+                  setSeloAtivo('');
+                  setTemplateOptions({ gradientOpacity: 25, imagePositionX: 50, logoSize: 100 });
+                  setLastExport(null);
                   setCurrentStep(1);
                   setMobileViewTab('form');
                   setDetails({
@@ -1204,9 +1132,14 @@ const handleDownload = async () => {
             Meus Imóveis
           </button>
           <button
-            onClick={() => {
+            onClick={async () => {
+              if (!await stashCurrent()) return;
               setActiveTab('criacao');
               setIdEmEdicao(null);
+                  setDraftId(generateUUID());
+                  setSeloAtivo('');
+                  setTemplateOptions({ gradientOpacity: 25, imagePositionX: 50, logoSize: 100 });
+                  setLastExport(null);
               setCurrentStep(1);
               setMobileViewTab('form');
               setDetails({
@@ -1309,6 +1242,14 @@ const handleDownload = async () => {
                 </p>
               </div>
             </header>
+
+            {/* Persistent draft status, visible on mobile and desktop. */}
+            <div role="status" aria-live="polite" className="mb-4 flex flex-wrap items-center gap-2 text-sm text-gray-600 dark:text-zinc-300">
+              <span className={autosave.status === 'error' || autosave.status === 'conflict' ? 'text-red-600 dark:text-red-400' : ''}>{saveLabels[autosave.status]}</span>
+              {autosave.recovered && <span className="text-xs text-gray-500">· Rascunho recuperado</span>}
+              {(autosave.status === 'local' || autosave.status === 'error' || autosave.status === 'conflict') && session &&
+                <button type="button" onClick={() => { void autosave.saveNow(); }} className="font-semibold text-orange-600 underline">Tentar sincronizar</button>}
+            </div>
 
             {/* Stepper Navigation */}
             <div className="mb-6 bg-white dark:bg-zinc-900 p-1.5 sm:p-2.5 rounded-2xl border border-gray-100 dark:border-zinc-800 shadow-sm">

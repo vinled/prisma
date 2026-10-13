@@ -17,6 +17,10 @@ A demonstração usa o plano gratuito, incluindo sua marca d'água. É disponibi
 
 Os arquivos PNG vão para os downloads do navegador. Se o download automático não ocorrer, use o link **PNG pronto · Baixar novamente** que aparece após a geração.
 
+O editor salva o rascunho automaticamente enquanto você trabalha, incluindo fotos, informações, selo, estilo, formato e ajustes. Ao reabrir a página, ele recupera a edição e mostra **Rascunho recuperado**. O status informa se está salvando, salvo neste dispositivo ou sincronizado na nuvem. Quando a internet volta, a ferramenta tenta sincronizar novamente. O botão de salvar continua disponível.
+
+Rascunhos e imóveis locais usam IndexedDB, que suporta melhor o volume das fotos do que o antigo localStorage. Cada conta tem seu próprio espaço. Uma edição feita em outro aparelho não é sobrescrita silenciosamente: o editor preserva o rascunho local e informa o conflito. A recuperação entre aparelhos depende de a edição ter sido sincronizada na nuvem.
+
 As artes da demonstração ficam no navegador e no endereço usado. `localhost` e `127.0.0.1` têm armazenamentos diferentes: use sempre o mesmo endereço. Limpar os dados do navegador apaga as artes locais. Se faltar espaço, a ferramenta informa que não conseguiu salvar; reduza as fotos ou remova artes antigas.
 
 ## Login, nuvem, IA e pagamentos

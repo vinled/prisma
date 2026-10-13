@@ -63,3 +63,9 @@ O resultado validado desta revisão é uma demonstração local utilizável e um
 ## Vínculo com o GitHub
 
 A pasta foi vinculada ao histórico existente de `https://github.com/vinled/prisma`, branch `main`, preservando os arquivos revisados. As variáveis reais continuam no ambiente da Vercel: `.env.local`, bibliotecas e backups foram excluídos do envio. Os scripts antigos deixam de fazer parte da árvore atual do repositório, permanecendo no backup local e nos commits anteriores. Uma possível chave encontrada em um script antigo pode continuar acessível no histórico; removê-la da versão atual não substitui sua revogação no provedor.
+
+## Salvamento automático — 13/10/2026
+
+O editor agora grava rascunhos automaticamente no IndexedDB, isolados por conta, com recuperação das fotos e da etapa em andamento. A sincronização usa a tabela existente `properties`, grava uma revisão no JSON `details.editor_meta` e impede que uma atualização antiga sobrescreva outra versão. Envios são serializados e fotos iguais reutilizam o mesmo caminho de armazenamento. Falhas de rede e limites de plano preservam o rascunho local.
+
+O banco Supabase conectado foi identificado e sua URL corresponde ao projeto usado pelo site publicado. A leitura das tabelas confirmou os campos utilizados pelo código. O salvamento passou por testes de fotos grandes, isolamento de contas, falha de banco, edição durante envio, conflitos e escritas concorrentes. Na demonstração local, campos e foto foram recuperados após recarregar sem clicar em salvar.

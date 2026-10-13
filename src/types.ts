@@ -25,6 +25,7 @@ export interface PropertyDetails {
   whatsapp: string;
   images?: string[];
   generated_copy?: string;
+  editor_meta?: { revision: string; updatedAt: number; applyBrandKit?: boolean; step?: 1 | 2 | 3 | 4 };
 }
 
 export type TemplateId = 'modern' | 'luxury' | 'bold' | 'elegant' | 'minimalist' | 'myway';
@@ -65,4 +66,19 @@ export interface SavedProperty {
   templateOptions: TemplateOptions;
   thumbnail?: string;
   pendingSync?: boolean;
+  cloudRevision?: string;
+}
+
+export interface EditorDraft {
+  id: string;
+  revision: string;
+  updatedAt: number;
+  details: PropertyDetails;
+  selectedTemplate: TemplateId;
+  aspectRatio: AspectRatioId;
+  templateOptions: TemplateOptions;
+  applyBrandKit: boolean;
+  step: 1 | 2 | 3 | 4;
+  previewIndex: number;
+  cloudRevision?: string;
 }
