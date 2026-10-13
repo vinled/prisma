@@ -1,26 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { X, Loader2, ShieldCheck } from 'lucide-react';
 
 interface CheckoutModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: (cpf: string) => void;
+  onConfirm: (cpf: string) => void | Promise<void>;
   isLoading: boolean;
 }
 
 export function CheckoutModal({ isOpen, onClose, onConfirm, isLoading }: CheckoutModalProps) {
   const [cpf, setCpf] = useState('');
+  const submitting = useRef(false);
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submitting.current || isLoading) return;
     const cleanCpf = cpf.replace(/\D/g, '');
     if (![11, 14].includes(cleanCpf.length)) {
       alert("Por favor, insira um CPF ou CNPJ válido.");
       return;
     }
-    onConfirm(cleanCpf);
+    submitting.current = true;
+    try { await onConfirm(cleanCpf); }
+    finally { submitting.current = false; }
   };
 
   return (

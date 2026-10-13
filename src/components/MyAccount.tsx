@@ -18,7 +18,7 @@ export function MyAccount({ session, brandKit, userPlan = "free", creditsUsed }:
   const [isCanceling, setIsCanceling] = useState(false);
 
   const handleCancelSubscription = async () => {
-    if (!window.confirm('Tem certeza que deseja cancelar sua assinatura Pro? Você perderá o acesso aos benefícios imediatamente ou no final do ciclo.')) {
+    if (!window.confirm('Deseja cancelar sua assinatura Pro? A renovação será cancelada e os recursos Pro serão desativados.')) {
       return;
     }
     

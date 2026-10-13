@@ -21,11 +21,11 @@ export async function handleCheckout(cpf: string, onLoading: (isLoading: boolean
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(`Asaas: ${errorData.error}` || "Falha ao gerar cobrança");
+      throw new Error(errorData.error || 'Não foi possível preparar o pagamento. Tente novamente.');
     }
 
     const data = await response.json();
-    if (data.url) {
+    if (typeof data.url === 'string' && new URL(data.url).protocol === 'https:') {
       window.location.href = data.url;
     } else {
       alert("Erro ao gerar link de pagamento. Verifique as configurações do Asaas.");

@@ -49,16 +49,19 @@ test('falha no cancelamento não rebaixa o plano nem informa sucesso', async () 
       const url = String(input);
       calls.push(`${init?.method || 'GET'} ${url}`);
       if (url.includes('/auth/v1/user')) return Response.json({ id: '00000000-0000-4000-8000-000000000001', email: 'test@example.com' });
+      if (url.includes('/rpc/pn_claim_billing')) return Response.json({ acquired: true, account: { phase: 'idle' } });
+      if (url.includes('/rpc/pn_release_billing')) return Response.json(null);
       if (init?.method === 'DELETE') return Response.json({ error: 'Provider unavailable' }, { status: 500 });
       if (url.includes('/subscriptions?')) return Response.json({ data: [{ id: 'sub_test' }] });
       throw new Error(`Unexpected request: ${url}`);
     };
     const res = response();
     await cancel({ method: 'POST', headers: { authorization: 'Bearer test-token' } }, res);
-    assert.equal(res.code, 500);
+    assert.equal(res.code, 502);
     assert.notEqual(res.body.success, true);
     assert.ok(calls.some(call => call.startsWith('DELETE')));
     assert.ok(!calls.some(call => call.includes('/rest/v1/profiles')));
+    assert.ok(!calls.some(call => call.includes('pn_apply_billing_event')));
   } finally {
     globalThis.fetch = originalFetch;
     keys.forEach((key, index) => {

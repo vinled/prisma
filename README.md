@@ -35,6 +35,12 @@ Nunca coloque chaves privadas em variáveis que começam com `VITE_`: essas vari
 
 O banco precisa das tabelas `profiles` e `properties`, das políticas de acesso por usuário e dos buckets `logos` e `fotos_imoveis`. A configuração desse banco e dos provedores não está incluída nesta pasta e não foi validada com uma conta real.
 
+A atualização de pagamentos usa as tabelas privadas `pn_billing_accounts` e `pn_billing_events`, criadas pela migração em `supabase/migrations/202610130001_billing_safety.sql`. Ela foi aplicada ao projeto Supabase conectado. Somente o servidor pode acessá-las. O preço mensal, os nomes das chaves e a URL do webhook continuam os mesmos.
+
+Um pedido repetido reutiliza a assinatura e a cobrança existentes. Pedidos simultâneos para a mesma conta são bloqueados até a operação em andamento terminar. Se o Asaas não confirmar o resultado de uma criação, a ferramenta consulta a tentativa anterior e evita criar outra assinatura; uma situação ainda inconclusiva exige reconciliação pelo suporte. Notificações repetidas não aplicam o plano duas vezes, e notificações antigas são conferidas contra a situação atual no Asaas.
+
+Para testar pagamentos fora de produção, o servidor aceita opcionalmente `ASAAS_API_URL=https://api-sandbox.asaas.com/v3` com uma chave de sandbox. Sem essa variável, usa o mesmo endereço de produção anterior. Não foram feitas cobranças reais durante as verificações.
+
 ## Por que existem várias pastas?
 
 | Pasta ou arquivo | Para que serve |

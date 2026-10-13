@@ -69,3 +69,11 @@ A pasta foi vinculada ao histórico existente de `https://github.com/vinled/pris
 O editor agora grava rascunhos automaticamente no IndexedDB, isolados por conta, com recuperação das fotos e da etapa em andamento. A sincronização usa a tabela existente `properties`, grava uma revisão no JSON `details.editor_meta` e impede que uma atualização antiga sobrescreva outra versão. Envios são serializados e fotos iguais reutilizam o mesmo caminho de armazenamento. Falhas de rede e limites de plano preservam o rascunho local.
 
 O banco Supabase conectado foi identificado e sua URL corresponde ao projeto usado pelo site publicado. A leitura das tabelas confirmou os campos utilizados pelo código. O salvamento passou por testes de fotos grandes, isolamento de contas, falha de banco, edição durante envio, conflitos e escritas concorrentes. Na demonstração local, campos e foto foram recuperados após recarregar sem clicar em salvar.
+
+## Proteção dos pagamentos — 13/10/2026
+
+A migração `postnamao_billing_safety` adicionou um registro privado de operações e eventos ao banco existente. Uma trava por conta impede operações simultâneas de checkout, cancelamento e webhook. Assinaturas existentes são reutilizadas; respostas inconclusivas não provocam uma nova criação automática. Identificadores do Asaas são registrados para recuperação. Eventos são aplicados uma única vez, com atualização de plano e registro no mesmo commit do banco. Eventos atrasados usam a situação atual do provedor para decidir o plano.
+
+O plano mensal continua R$ 49,90; as variáveis e o endereço de produção continuam os anteriores. A rota `/api/webhook/asaas` e o token configurado continuam válidos. O controle de acesso foi reforçado: um cliente não pode alterar seu próprio plano para Pro, e as políticas de gravação de fotos e logos passaram a exigir propriedade do arquivo. O limite de cinco imóveis é serializado no banco, preservando o limite já existente.
+
+Os testes usam respostas simuladas do Asaas, sem criar cobranças, e um PostgreSQL local para validar a migração. Depois da aplicação, as funções de trava, duplicidade e proteção de plano também foram verificadas no banco real em uma transação revertida. Nenhum usuário, assinatura ou evento de teste foi mantido no banco. A validação completa com uma transação financeira real continua reservada ao titular da conta.
