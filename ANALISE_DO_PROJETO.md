@@ -46,13 +46,13 @@ Também foram removidas da lista de dependências oito bibliotecas/tipagens sem 
 - Navegador: editor abriu; foto demonstrativa foi processada; informações geraram a prévia; imóvel e foto continuaram disponíveis após recarregar e reabrir em Meus Imóveis.
 - Exportação: o conteúdo PNG gerado pelo aplicativo teve assinatura PNG válida e dimensões verificadas de **1080 × 1350**. O navegador integrado não notificou o download automático durante o teste; o link de repetição ficou disponível, e o conteúdo gerado foi verificado diretamente.
 
-## O que depende de configuração ou revisão posterior
+## Limites da validação e revisões posteriores
 
-Não foi encontrado `.env`/`.env.local` com credenciais na pasta recebida. Não foram criadas contas, feitas cobranças, canceladas assinaturas reais ou alterados serviços externos.
+Não foi encontrado `.env`/`.env.local` com credenciais na pasta recebida. As variáveis reais permaneceram no Vercel. Posteriormente, a integração Supabase permitiu aplicar e validar a migração descrita abaixo; os dados de teste foram revertidos. Não foram feitas cobranças nem canceladas assinaturas reais.
 
-1. **Supabase:** configurar tabelas, políticas RLS e buckets, além das URLs de retorno do login. O esquema do banco não está incluído no projeto. É necessário garantir no banco que somente o backend possa mudar o plano e que cada usuário acesse apenas seus dados. A sincronização real, o login e o recebimento de atualizações não puderam ser validados sem credenciais.
+1. **Supabase:** tabelas e buckets existentes foram conferidos, e a migração de segurança está incluída no projeto e aplicada ao banco conectado. A sincronização completa entre dispositivos, o login e as URLs de retorno ainda precisam de validação com uma sessão real do usuário.
 2. **IA:** configurar Gemini e Supabase e validar geração autenticada. O modelo existente foi mantido; sua configuração consta na documentação oficial: https://ai.google.dev/gemini-api/docs/models.
-3. **Pagamentos:** configurar Asaas e webhook. Antes de uso comercial, testar em sandbox duplicidade de checkout, eventos fora de ordem, reenvio de webhook e cancelamento de múltiplas assinaturas. O checkout atual ainda precisa de uma estratégia de idempotência persistente para impedir cobranças duplicadas em requisições simultâneas. O limitador local não substitui essa proteção.
+3. **Pagamentos:** as configurações existentes do Asaas e do webhook foram preservadas. Duplicidade de checkout, eventos fora de ordem e reenvios foram validados com respostas simuladas, usando controle persistente no banco. A homologação de uma cobrança e de um cancelamento no sandbox do Asaas continua pendente.
 4. **Armazenamento:** fotos locais são limitadas pela capacidade do navegador. Sincronização em nuvem, falhas de upload e resolução de conflitos precisam de teste com o banco real.
 5. **Documentação original:** descreve exportação ZIP e múltiplos formatos em lote; o código recebido implementava downloads de PNG por foto. A revisão não criou um exportador ZIP.
 6. **Identidade visual:** modelos antigos geram artes de clientes com escolhas como fontes serifadas e dourado. A revisão não redesenhou esses modelos nem substituiu o logotipo. Uma revisão visual completa pode padronizar os tokens da interface e distinguir a marca da plataforma da marca do corretor.
