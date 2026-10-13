@@ -23,6 +23,9 @@ export default async function handler(req: any, res: any) {
 
     const token = authHeader.split(" ")[1];
     const { cpf } = req.body || {};
+    if (typeof cpf !== 'string' || !/^(\d{11}|\d{14})$/.test(cpf.replace(/\D/g, ''))) {
+      return res.status(400).json({ error: 'Informe um CPF com 11 dígitos ou CNPJ com 14 dígitos.' });
+    }
     const supabaseUrl = process.env.VITE_SUPABASE_URL;
     const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY;
 
@@ -59,7 +62,7 @@ export default async function handler(req: any, res: any) {
       body: JSON.stringify({
         name: user.email?.split('@')[0] || "Usuário PostNaMão",
         email: user.email,
-        cpfCnpj: cpf,
+        cpfCnpj: cpf.replace(/\D/g, ''),
         externalReference: user.id
       })
     });
@@ -70,7 +73,7 @@ export default async function handler(req: any, res: any) {
       customerId = customerData.id;
     } else {
       // Try to find if email exists
-      const searchResponse = await fetch(`https://api.asaas.com/v3/customers?email=${user.email}`, {
+      const searchResponse = await fetch(`https://api.asaas.com/v3/customers?email=${encodeURIComponent(user.email || '')}`, {
         headers: { 'access_token': asaasApiKey }
       });
       const searchData = await searchResponse.json();

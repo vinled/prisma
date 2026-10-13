@@ -40,12 +40,8 @@ export function useSafeImage(url: string | null | undefined, preserveAlpha: bool
       if (isMounted) setSafeUrl(url);
     };
 
-    if (url.startsWith('http')) {
-      const cleanUrl = url.split('?')[0];
-      img.src = `${cleanUrl}?t=${Date.now()}`;
-    } else {
-      img.src = url;
-    }
+    // Preserve query parameters, including signed storage URLs.
+    img.src = url;
 
     return () => {
       isMounted = false;

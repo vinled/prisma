@@ -155,7 +155,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
                 </div>
                 <h3 className="text-xl font-bold text-white mb-4">Pronto para Todas as Telas</h3>
                 <p className="text-slate-400 leading-relaxed">
-                  Exporte sua arte perfeitamente enquadrada para o Feed (3:4) ou para estourar de visualizações nos Stories (9:16). Um clique, dois formatos.
+                  Exporte sua arte perfeitamente enquadrada para o Feed (4:5) ou para os Stories (9:16).
                 </p>
               </div>
 

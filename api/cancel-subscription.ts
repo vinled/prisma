@@ -25,6 +25,10 @@ export default async function handler(req: any, res: any) {
     
     const supabaseUrl = process.env.VITE_SUPABASE_URL;
     const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY;
+    const supabaseServiceRole = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceRole) {
+      return res.status(503).json({ error: 'Configure o Supabase no servidor antes de cancelar assinaturas.' });
+    }
     const supabase = createClient(supabaseUrl!, supabaseAnonKey!);
     
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
@@ -45,6 +49,7 @@ export default async function handler(req: any, res: any) {
     });
     
     const subscriptionsData = await subscriptionsResponse.json();
+    if (!subscriptionsResponse.ok) throw new Error('Não foi possível consultar as assinaturas.');
     
     if (!subscriptionsData.data || subscriptionsData.data.length === 0) {
        return res.status(404).json({ error: "Nenhuma assinatura ativa encontrada." });
@@ -57,13 +62,14 @@ export default async function handler(req: any, res: any) {
         method: 'DELETE',
         headers: { 'access_token': asaasApiKey }
       });
-      if (cancelResponse.ok) cancelled++;
+      if (!cancelResponse.ok) throw new Error('Não foi possível cancelar todas as assinaturas. Tente novamente ou contate o suporte.');
+      cancelled++;
     }
     
     // Atualiza o banco de dados para "free" imediatamente
-    const supabaseServiceRole = process.env.SUPABASE_SERVICE_ROLE_KEY;
     const adminSupabase = createClient(supabaseUrl!, supabaseServiceRole!);
-    await adminSupabase.from("profiles").update({ plan: "free" }).eq("id", user.id);
+    const { error: updateError } = await adminSupabase.from("profiles").update({ plan: "free" }).eq("id", user.id);
+    if (updateError) throw new Error('Assinatura cancelada, mas o plano não pôde ser atualizado. Contate o suporte.');
 
     return res.status(200).json({ success: true, message: `Assinatura cancelada com sucesso (${cancelled}).` });
     

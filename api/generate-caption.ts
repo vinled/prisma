@@ -31,7 +31,10 @@ export default async function handler(req: any, res: any) {
       return res.status(500).json({ error: "Supabase config missing" });
     }
 
-    const supabase = createClient(supabaseUrl, supabaseAnonKey);
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: `Bearer ${token}` } },
+      auth: { persistSession: false, autoRefreshToken: false },
+    });
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
     
     if (authError || !user) {
@@ -39,6 +42,10 @@ export default async function handler(req: any, res: any) {
     }
 
     const { promptText, targetAudience } = req.body || {};
+    if (typeof promptText !== 'string' || !promptText.trim() || promptText.length > 12_000 ||
+        (targetAudience !== undefined && typeof targetAudience !== 'string')) {
+      return res.status(400).json({ error: 'Informe um texto válido de até 12.000 caracteres.' });
+    }
 
     const { data: profile } = await supabase
       .from("profiles")

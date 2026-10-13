@@ -5,9 +5,10 @@ import { Upload, X } from 'lucide-react';
 interface LogoUploaderProps {
   logo: string | null;
   onLogoChange: (logo: string | null) => void;
+  localOnly?: boolean;
 }
 
-export function LogoUploader({ logo, onLogoChange }: LogoUploaderProps) {
+export function LogoUploader({ logo, onLogoChange, localOnly = false }: LogoUploaderProps) {
   const [isUploading, setIsUploading] = useState(false);
 
   const handleFileChange = useCallback(
@@ -16,6 +17,17 @@ export function LogoUploader({ logo, onLogoChange }: LogoUploaderProps) {
       if (file) {
         try {
           setIsUploading(true);
+          if (localOnly) {
+            if (file.size > 2 * 1024 * 1024) throw new Error('Use um logotipo de até 2 MB.');
+            const dataUrl = await new Promise<string>((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onload = () => resolve(String(reader.result));
+              reader.onerror = () => reject(new Error('Não foi possível ler o logotipo.'));
+              reader.readAsDataURL(file);
+            });
+            onLogoChange(dataUrl);
+            return;
+          }
           
           // UPLOAD NATIVO E DIRETO.
           // Nenhuma biblioteca de compressão ou conversão será chamada.
@@ -36,9 +48,9 @@ export function LogoUploader({ logo, onLogoChange }: LogoUploaderProps) {
           
           const { data } = supabase.storage.from('logos').getPublicUrl(fileName);
           onLogoChange(data.publicUrl);
-        } catch (error) {
+        } catch (error: any) {
           console.error('Erro no upload do logo:', error);
-          alert('Erro ao enviar o logo. Tente novamente.');
+          alert(error.message || 'Erro ao enviar o logo. Tente novamente.');
         } finally {
           setIsUploading(false);
         }

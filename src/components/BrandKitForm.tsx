@@ -5,9 +5,10 @@ import { LogoUploader } from './LogoUploader';
 interface BrandKitFormProps {
   brandKit: BrandKit | null;
   onChange: (brandKit: BrandKit | null) => void;
+  localOnly?: boolean;
 }
 
-export function BrandKitForm({ brandKit, onChange }: BrandKitFormProps) {
+export function BrandKitForm({ brandKit, onChange, localOnly = false }: BrandKitFormProps) {
   const handleChange = (field: keyof BrandKit, value: any) => {
     if (!brandKit) {
       onChange({
@@ -29,7 +30,7 @@ export function BrandKitForm({ brandKit, onChange }: BrandKitFormProps) {
 
   return (
     <div className="space-y-4">
-      <LogoUploader logo={brandKit?.logo || null} onLogoChange={handleLogoChange} />
+      <LogoUploader logo={brandKit?.logo || null} onLogoChange={handleLogoChange} localOnly={localOnly} />
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>

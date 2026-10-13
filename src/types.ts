@@ -64,4 +64,5 @@ export interface SavedProperty {
   aspectRatio: AspectRatioId;
   templateOptions: TemplateOptions;
   thumbnail?: string;
+  pendingSync?: boolean;
 }

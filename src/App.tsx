@@ -11,7 +11,7 @@ import {
   Palette, Share2, LayoutTemplate, Crop, Tag, SlidersHorizontal, ArrowRight, ArrowLeft, 
   Eye, Sparkles, Star, ChevronDown, ChevronUp, CheckCircle2, Sliders, Wand2, RefreshCw 
 } from 'lucide-react';
-import { supabase } from './lib/supabase';
+import { supabase, isSupabaseConfigured } from './lib/supabase';
 import { Auth } from './components/Auth';
 import { ResetPassword } from './components/ResetPassword';
 import { Session } from '@supabase/supabase-js';
@@ -24,7 +24,6 @@ import { TemplateSelector } from './components/TemplateSelector';
 import { AspectRatioSelector } from './components/AspectRatioSelector';
 import { TemplateRenderer } from './components/TemplateRenderer';
 import { MyProperties } from './components/MyProperties';
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import { MyAccount } from './components/MyAccount';
 import { PaywallModal } from './components/PaywallModal';
 import { LandingPage } from './components/LandingPage';
@@ -33,21 +32,18 @@ import { PoliticaPrivacidade } from './components/PoliticaPrivacidade';
 
 const LOCAL_STORAGE_PROPERTIES_KEY = 'postnamao_saved_properties';
 
-const getLocalProperties = (): SavedProperty[] => {
+const getLocalProperties = (userId = 'local'): SavedProperty[] => {
   try {
-    const raw = localStorage.getItem(LOCAL_STORAGE_PROPERTIES_KEY);
-    return raw ? JSON.parse(raw) : [];
+    const raw = localStorage.getItem(`${LOCAL_STORAGE_PROPERTIES_KEY}_${userId}`);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
   } catch (e) {
     return [];
   }
 };
 
-const saveLocalProperties = (props: SavedProperty[]) => {
-  try {
-    localStorage.setItem(LOCAL_STORAGE_PROPERTIES_KEY, JSON.stringify(props));
-  } catch (e) {
-    console.warn("Não foi possível salvar localmente no navegador:", e);
-  }
+const saveLocalProperties = (props: SavedProperty[], userId = 'local') => {
+  localStorage.setItem(`${LOCAL_STORAGE_PROPERTIES_KEY}_${userId}`, JSON.stringify(props));
 };
 
 const isValidUUID = (str?: string | null): boolean => {
@@ -81,6 +77,12 @@ const formatDateDisplay = (dateVal?: string, createdAt?: string): string => {
 
 export default function App() {
   const location = useLocation();
+  const isLocalDemo = import.meta.env.DEV &&
+    ['localhost', '127.0.0.1', '[::1]'].includes(window.location.hostname) &&
+    location.pathname === '/demo';
+  const handleSignOut = () => isLocalDemo
+    ? window.location.assign('/')
+    : supabase.auth.signOut();
   const [session, setSession] = useState<Session | null>(null);
   const [showAuth, setShowAuth] = useState(false);
     const [activeTab, setActiveTab] = useState<'criacao' | 'meus_imoveis' | 'minha_marca' | 'minha_conta'>('criacao');
@@ -110,11 +112,22 @@ export default function App() {
     whatsapp: '',
   });
   
-  const [brandKit, setBrandKit] = useState<BrandKit | null>(null);
+  const [brandKit, setBrandKit] = useState<BrandKit | null>(() => {
+    if (!isLocalDemo) return null;
+    try { return JSON.parse(localStorage.getItem('postnamao_demo_brand') || 'null'); }
+    catch { return null; }
+  });
 
   const [isSavingBrand, setIsSavingBrand] = useState(false);
   
   const handleSaveBrandKit = async () => {
+    if (isLocalDemo) {
+      try {
+        localStorage.setItem('postnamao_demo_brand', JSON.stringify(brandKit));
+        alert('Marca salva neste navegador.');
+      } catch { alert('Não há espaço no navegador para salvar a marca. Reduza o tamanho do logotipo.'); }
+      return;
+    }
     if (!session?.user) return;
     setIsSavingBrand(true);
     try {
@@ -168,6 +181,10 @@ export default function App() {
   const [destinoCopy, setDestinoCopy] = useState('instagram');
 
   const handleGenerateCopy = async () => {
+    if (isLocalDemo) {
+      alert('A geração com IA precisa de uma conta e das chaves do Supabase e Gemini. Na demonstração você pode testar as artes e os downloads.');
+      return;
+    }
     if (userPlan !== 'pro' && targetAudience.includes('(Pro)')) {
       alert('Este tom/estilo é exclusivo do Plano Pro. Faça o upgrade para usá-lo!');
       setIsPaywallOpen(true);
@@ -237,9 +254,10 @@ export default function App() {
   };
   const [isExporting, setIsExporting] = useState(false);
   const [exportProgressText, setExportProgressText] = useState<string | null>(null);
+  const [lastExport, setLastExport] = useState<{ url: string; name: string } | null>(null);
   const [previewIndex, setPreviewIndex] = useState(0);
 
-  const [savedProperties, setSavedProperties] = useState<SavedProperty[]>(getLocalProperties);
+  const [savedProperties, setSavedProperties] = useState<SavedProperty[]>(() => isLocalDemo ? getLocalProperties() : []);
   
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -282,7 +300,7 @@ export default function App() {
         containerHeight = window.innerHeight * 0.5; // fallback
       }
       
-      const targetHeight = aspectRatio === 'story' ? 1920 : 1440;
+      const targetHeight = aspectRatio === 'story' ? 1920 : 1350;
       // padding top and bottom (32px)
       const scaleByHeight = (containerHeight - 32) / targetHeight;
       scale = Math.min(scaleByWidth, scaleByHeight);
@@ -339,8 +357,13 @@ export default function App() {
 
     setIsExporting(true);
     const finalImages: string[] = [];
+    let allImagesUploaded = true;
     try {
       for (const imgUrl of images) {
+        if (isLocalDemo) {
+          finalImages.push(imgUrl);
+          continue;
+        }
         if (imgUrl.startsWith('blob:') || imgUrl.startsWith('data:')) {
           try {
             const response = await fetch(imgUrl);
@@ -356,6 +379,7 @@ export default function App() {
             finalImages.push(data.publicUrl);
           } catch (e) {
             console.warn('Upload da imagem para storage da nuvem indisponível:', e);
+            allImagesUploaded = false;
             finalImages.push(imgUrl); 
           }
         } else {
@@ -370,7 +394,7 @@ export default function App() {
       
       let finalThumbnail = finalImages[0] || undefined;
       // Garante que não salvamos blob efêmero ou base64 gigante como thumbnail no banco
-      if (finalThumbnail && (finalThumbnail.startsWith('blob:') || finalThumbnail.length > 2000)) {
+      if (!isLocalDemo && finalThumbnail && (finalThumbnail.startsWith('blob:') || finalThumbnail.length > 2000)) {
          finalThumbnail = undefined;
       }
       
@@ -380,9 +404,6 @@ export default function App() {
 
       // Garante ID com formato UUID v4 válido compatível com banco PostgreSQL
       const safeId = isValidUUID(idEmEdicao) ? idEmEdicao! : generateUUID();
-      if (!idEmEdicao) {
-        setIdEmEdicao(safeId);
-      }
       
       const propertyData: SavedProperty = {
         id: safeId,
@@ -391,22 +412,24 @@ export default function App() {
         selectedTemplate,
         aspectRatio,
         templateOptions,
-        thumbnail: finalThumbnail
+        thumbnail: finalThumbnail,
+        pendingSync: !isLocalDemo,
       };
       
       let updated: SavedProperty[];
       if (idEmEdicao) {
-        updated = savedProperties.map(p => p.id === idEmEdicao ? propertyData : p);
+        updated = [propertyData, ...savedProperties.filter(p => p.id !== idEmEdicao)];
       } else {
         updated = [propertyData, ...savedProperties];
       }
       
+      saveLocalProperties(updated, session?.user.id);
       setSavedProperties(updated);
-      saveLocalProperties(updated);
+      setIdEmEdicao(safeId);
       
       let cloudSynced = false;
       // Sincronização resiliente com o Supabase
-      if (session?.user) {
+      if (session?.user && allImagesUploaded) {
         try {
           // Limpa URLs base64 gigantes de details.images para evitar erro 413 Payload Too Large
           const cleanImages = (propertyData.details.images || []).map(img => 
@@ -440,6 +463,9 @@ export default function App() {
             cloudSynced = false;
           } else {
             cloudSynced = true;
+            const synced = updated.map(p => p.id === safeId ? { ...p, pendingSync: false } : p);
+            saveLocalProperties(synced, session.user.id);
+            setSavedProperties(synced);
           }
         } catch (cloudErr) {
           console.warn("Falha de conexão com banco de dados:", cloudErr);
@@ -449,6 +475,7 @@ export default function App() {
       return { success: true, cloudSynced };
     } catch (err) {
       console.error("Execute save erro geral:", err);
+      alert('Não foi possível salvar. O armazenamento do navegador pode estar cheio. Remova artes antigas ou reduza o tamanho das fotos.');
       return { success: false, cloudSynced: false };
     } finally {
       setIsExporting(false);
@@ -484,7 +511,7 @@ export default function App() {
       
       const scale = 1; 
       const baseWidth = 1080;
-      const baseHeight = aspectRatio === 'story' ? 1920 : 1440;
+      const baseHeight = aspectRatio === 'story' ? 1920 : 1350;
       
       const options = {
         width: baseWidth,
@@ -496,6 +523,8 @@ export default function App() {
       };
 
       const dataUrl = await htmlToImage.toPng(postElements[0], options);
+      const exportName = `PN_INSTAGRAM_${aspectRatio === 'story' ? 'STORY' : 'FEED'}_IMOVEL_v01_${new Date().toLocaleDateString('en-CA')}.png`;
+      setLastExport({ url: dataUrl, name: exportName });
       
       // Attempt to share
       if (navigator.share && navigator.canShare) {
@@ -523,7 +552,7 @@ export default function App() {
       // Fallback: download
       const link = document.createElement('a');
       link.href = dataUrl;
-      link.download = `post-imovel-1.png`;
+      link.download = exportName;
       link.click();
     } catch (error: any) {
       console.error(error);
@@ -554,7 +583,7 @@ const handleDownload = async () => {
       
       const scale = 1; // Export at 1x resolution because base is 1080px
       const baseWidth = 1080;
-      const baseHeight = aspectRatio === 'story' ? 1920 : 1440;
+      const baseHeight = aspectRatio === 'story' ? 1920 : 1350;
       
       const options = {
         width: baseWidth,
@@ -569,9 +598,11 @@ const handleDownload = async () => {
         setExportProgressText(`Baixando (${i + 1}/${postElements.length})...`);
         const el = postElements[i] as HTMLElement;
         const dataUrl = await htmlToImage.toPng(el, options);
+        const exportName = `PN_INSTAGRAM_${aspectRatio === 'story' ? 'STORY' : 'FEED'}_IMOVEL-${i + 1}_v01_${new Date().toLocaleDateString('en-CA')}.png`;
+        setLastExport({ url: dataUrl, name: exportName });
         const link = document.createElement('a');
         link.href = dataUrl;
-        link.download = `post-imovel-${i + 1}.png`;
+        link.download = exportName;
         link.click();
         
         // Intervalo de segurança (Bypass de Bloqueio de Navegador para downloads múltiplos)
@@ -606,7 +637,7 @@ const handleDownload = async () => {
     if (confirm('Tem certeza que deseja excluir esta arte?')) {
       const updated = savedProperties.filter(p => p.id !== id);
       setSavedProperties(updated);
-      saveLocalProperties(updated);
+      saveLocalProperties(updated, session?.user.id);
       
       if (session?.user) {
         const { error } = await supabase.from('properties').delete().eq('id', id).eq('user_id', session.user.id);
@@ -617,6 +648,7 @@ const handleDownload = async () => {
 
   
   useEffect(() => {
+    if (isLocalDemo || !isSupabaseConfigured) return;
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setSession(session);
@@ -628,6 +660,8 @@ const handleDownload = async () => {
       }
 
       if (session?.user) {
+        // Restore this user's local work even when the cloud is unavailable.
+        setSavedProperties(getLocalProperties(session.user.id));
         // Load user plan and brand kit
         const { data: profile } = await supabase
           .from('profiles')
@@ -661,22 +695,24 @@ const handleDownload = async () => {
           }));
           
           // Mescla com imóveis locais para nunca perder criações recentes
-          const local = getLocalProperties();
-          const dbIds = new Set(loadedFromDb.map(p => p.id));
-          const localOnly = local.filter(p => !dbIds.has(p.id));
-          const merged = [...localOnly, ...loadedFromDb];
+          const local = getLocalProperties(session.user.id);
+          const pendingIds = new Set(local.filter(p => p.pendingSync).map(p => p.id));
+          const cloud = loadedFromDb.filter(p => !pendingIds.has(p.id));
+          const cloudIds = new Set(cloud.map(p => p.id));
+          const merged = [...local.filter(p => !cloudIds.has(p.id)), ...cloud];
 
           setSavedProperties(merged);
-          saveLocalProperties(merged);
+          try { saveLocalProperties(merged, session.user.id); }
+          catch (error) { console.warn('Sem espaço para atualizar o cache local:', error); }
         }
       }
 
     };
-    checkSession();
+    checkSession().catch(error => console.warn('Não foi possível carregar a conta:', error));
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       
       const path = location.pathname;
@@ -686,54 +722,21 @@ const handleDownload = async () => {
       }
 
       if (session?.user) {
-        // Load user plan and brand kit
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('plan, brand_kit')
-          .eq('id', session.user.id)
-          .single();
-          
-        if (profile) {
-          setUserPlan(profile.plan || 'free');
-          if (profile.brand_kit) {
-            setBrandKit(profile.brand_kit);
-          }
-        }
-
-        // Load properties
-        const { data: propertiesData } = await supabase
-          .from('properties')
-          .select('*')
-          .eq('user_id', session.user.id)
-          .order('created_at', { ascending: false });
-          
-        if (propertiesData) {
-          const loadedFromDb: SavedProperty[] = propertiesData.map(p => ({
-            id: p.id,
-            date: formatDateDisplay(p.date, p.created_at),
-            details: p.details,
-            selectedTemplate: p.selected_template,
-            aspectRatio: p.aspect_ratio,
-            templateOptions: p.template_options,
-            thumbnail: p.thumbnail
-          }));
-          
-          const local = getLocalProperties();
-          const dbIds = new Set(loadedFromDb.map(p => p.id));
-          const localOnly = local.filter(p => !dbIds.has(p.id));
-          const merged = [...localOnly, ...loadedFromDb];
-
-          setSavedProperties(merged);
-          saveLocalProperties(merged);
-        }
+        // Supabase callbacks must not await other auth/database calls inside its lock.
+        window.setTimeout(() => {
+          checkSession().catch(error => console.warn('Não foi possível atualizar a conta:', error));
+        }, 0);
+      } else {
+        setUserPlan('free');
+        setBrandKit(null);
+        setSavedProperties([]);
       }
-
     });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [isLocalDemo]);
 
   // Separate useEffect for realtime profile updates
   useEffect(() => {
@@ -748,7 +751,7 @@ const handleDownload = async () => {
         (payload) => {
           if (payload.new && payload.new.plan) {
             setUserPlan(payload.new.plan);
-            alert("Pagamento confirmado! Seu plano PRO foi ativado com sucesso. Aproveite!");
+            if (payload.new.plan === 'pro') alert("Pagamento confirmado! Seu plano PRO foi ativado com sucesso. Aproveite!");
           }
         }
       )
@@ -788,11 +791,14 @@ const handleDownload = async () => {
 
   const isValidSession = session && session.user && session.user.email;
 
-  if (!isValidSession) {
+  if (!isValidSession && !isLocalDemo) {
     if (showAuth) {
       return <Auth onBack={() => setShowAuth(false)} />;
     }
-    return <LandingPage onLoginClick={() => setShowAuth(true)} />;
+    return <LandingPage onLoginClick={() => {
+      if (import.meta.env.DEV && !isSupabaseConfigured) window.location.assign('/demo');
+      else setShowAuth(true);
+    }} />;
   }
 
   const renderSecondaryTools = (isCompact = false) => {
@@ -1038,6 +1044,16 @@ const handleDownload = async () => {
 
   return (
     <>
+      {isLocalDemo && (
+        <div className="fixed top-0 left-0 right-0 z-[100] bg-[#002040] text-white text-center text-xs py-2 px-4">
+          Demonstração local · Artes salvas neste navegador · IA, conta e pagamentos exigem configuração
+        </div>
+      )}
+      {lastExport && (
+        <a href={lastExport.url} download={lastExport.name} className="fixed bottom-3 right-3 z-[100] rounded-xl bg-[#002040] text-white px-4 py-3 text-sm shadow-lg">
+          PNG pronto · Baixar novamente
+        </a>
+      )}
       <PaywallModal 
         isOpen={isPaywallOpen} 
         onClose={() => setIsPaywallOpen(false)}
@@ -1143,7 +1159,7 @@ const handleDownload = async () => {
               </button>
               
               <button
-                onClick={() => supabase.auth.signOut()}
+                onClick={handleSignOut}
                 className="w-full flex items-center p-3 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
               >
                 <LogOut className="w-5 h-5 mr-3" />
@@ -1167,7 +1183,7 @@ const handleDownload = async () => {
             </button>
           
             <button
-              onClick={() => supabase.auth.signOut()}
+              onClick={handleSignOut}
               className="p-2 text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
               title="Sair"
             >
@@ -1248,7 +1264,7 @@ const handleDownload = async () => {
           </button>
         
           <button
-            onClick={() => supabase.auth.signOut()}
+            onClick={handleSignOut}
             className="w-full flex items-center justify-center p-2 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors"
           >
             <LogOut className="w-5 h-5 mr-2" />
@@ -1258,9 +1274,10 @@ const handleDownload = async () => {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto w-full">
-        {activeTab === 'minha_conta' && session ? (
-          <MyAccount session={session} brandKit={brandKit} userPlan={userPlan} creditsUsed={savedProperties.length} />
+      <main className={`flex-1 overflow-y-auto w-full ${isLocalDemo ? 'pt-8' : ''}`}>
+        {activeTab === 'minha_conta' ? (
+          session ? <MyAccount session={session} brandKit={brandKit} userPlan={userPlan} creditsUsed={savedProperties.length} /> :
+          <div className="p-8"><h1 className="text-2xl font-bold">Demonstração local</h1><p className="mt-3">Para entrar na sua conta, configurar IA e assinaturas, preencha o arquivo .env.local e acesse a página inicial.</p><a className="inline-block mt-4 text-orange-600" href="/">Ir para a página inicial</a></div>
         ) : activeTab === 'minha_marca' ? (
           <div className="max-w-3xl mx-auto p-4 sm:p-6 lg:p-8">
             <header className="mb-8">
@@ -1268,7 +1285,7 @@ const handleDownload = async () => {
               <p className="text-gray-500 dark:text-zinc-400">Configure sua identidade visual para todos os posts.</p>
             </header>
             <section className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 transition-colors duration-200">
-              <BrandKitForm brandKit={brandKit} onChange={setBrandKit} />
+              <BrandKitForm brandKit={brandKit} onChange={setBrandKit} localOnly={isLocalDemo} />
               <div className="mt-6 flex justify-end">
                 <button
                   onClick={handleSaveBrandKit}
@@ -1630,7 +1647,7 @@ const handleDownload = async () => {
                         Pré-visualização
                       </span>
                       <span className="text-[10px] px-2 py-0.5 rounded-full bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-zinc-400 font-medium">
-                        {aspectRatio === 'feed' ? 'Feed 3:4' : 'Story 9:16'}
+                        {aspectRatio === 'feed' ? 'Feed 4:5' : 'Story 9:16'}
                       </span>
                     </div>
 
@@ -1673,10 +1690,10 @@ const handleDownload = async () => {
                       {images.length > 0 ? (
                         <div 
                           ref={previewRef}
-                          className={`relative shadow-2xl transition-all duration-300 bg-white ${aspectRatio === 'feed' ? 'aspect-[3/4]' : 'aspect-[9/16]'}`}
+                          className={`relative shadow-2xl transition-all duration-300 bg-white ${aspectRatio === 'feed' ? 'aspect-[4/5]' : 'aspect-[9/16]'}`}
                           style={{ 
                             width: '1080px', 
-                            height: aspectRatio === 'story' ? '1920px' : '1440px',
+                            height: aspectRatio === 'story' ? '1920px' : '1350px',
                             transform: `scale(${previewScale})`,
                             transformOrigin: 'center center',
                             fontSize: '16px',
@@ -1791,7 +1808,7 @@ const handleDownload = async () => {
             className="post-template-export relative"
             style={{ 
               width: '1080px', 
-              height: aspectRatio === 'story' ? '1920px' : '1440px',
+              height: aspectRatio === 'story' ? '1920px' : '1350px',
               fontSize: '16px' // Keep standard base font size
             }}
           >

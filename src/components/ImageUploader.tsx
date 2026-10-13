@@ -63,10 +63,10 @@ export function ImageUploader({
              };
              const compressedBlob = await imageCompression(currentFile, options);
              const compressedFile = new File([compressedBlob], currentFile.name, { type: compressedBlob.type });
-             return Object.assign(compressedFile, { preview: URL.createObjectURL(compressedFile) });
+             return Object.assign(compressedFile, { preview: await imageCompression.getDataUrlFromFile(compressedFile) });
           } catch (compressError) {
              console.error("Erro ao comprimir imagem:", compressError);
-             return Object.assign(currentFile, { preview: URL.createObjectURL(currentFile) });
+             return Object.assign(currentFile, { preview: await imageCompression.getDataUrlFromFile(currentFile) });
           }
         })
       );

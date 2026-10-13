@@ -1,6 +1,16 @@
 @import "tailwindcss";
 @custom-variant dark (&:is(.dark *));
 
+@theme {
+  --font-sans: "Inter", sans-serif;
+}
+
+@layer base {
+  h1, h2, h3 {
+    font-family: "Inter Display", "Inter", sans-serif;
+  }
+}
+
 @layer base {
   input[type="text"], input[type="number"], input[type="email"], select, textarea {
     @apply dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-100;

@@ -16,7 +16,7 @@ export function CheckoutModal({ isOpen, onClose, onConfirm, isLoading }: Checkou
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const cleanCpf = cpf.replace(/\D/g, '');
-    if (cleanCpf.length < 11) {
+    if (![11, 14].includes(cleanCpf.length)) {
       alert("Por favor, insira um CPF ou CNPJ válido.");
       return;
     }
