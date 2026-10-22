@@ -1,519 +1,144 @@
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { CheckoutModal } from './CheckoutModal';
-import { handleCheckout } from '../utils/checkout';
-import React, { useState, useEffect, useRef } from 'react';
-import { Smartphone, Tags, Zap, CheckCircle2, XCircle, Sparkles, Check, ShieldCheck, Star, ChevronDown, Home, Instagram , Loader2 } from 'lucide-react';
+import { ArrowRight, Check, ChevronDown, ImagePlus, Instagram, LayoutTemplate, Download, Smartphone, Palette, Sparkles } from 'lucide-react';
 import { PostNaMaoLogo } from './PostNaMaoLogo';
-import { TemplateRenderer } from './TemplateRenderer';
-
-
-
-const mockDetails = {
-  title: "OPORTUNIDADE IMPERDÍVEL",
-  price: "R$ 1.250.000",
-  neighborhood: "Vila Nova Conceição",
-  city: "São Paulo",
-  state: "SP",
-  area: "120",
-  bedrooms: "3",
-  suites: "1",
-  bathrooms: "3",
-  parking: "2",
-  propertyCode: "REF001",
-  propertyType: "Apartamento",
-  propertySubtype: "Padrão",
-  amenities: ["Piscina", "Academia", "Churrasqueira"],
-  differentials: ["Varanda Gourmet", "Andar Alto"],
-  leisureArea: true,
-  whatsapp: "11 99999-9999"
-};
-const mockImageUrlAntes = "/antes.jpg";
-const mockImageUrlDepois = "/depois.jpg";
 
 interface LandingPageProps {
   onLoginClick: () => void;
+  onSignUpClick: () => void;
 }
 
-export function LandingPage({ onLoginClick }: LandingPageProps) {
-  const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
-  const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
-  const depoisRef = useRef<HTMLDivElement>(null);
-  const [depoisScale, setDepoisScale] = useState(1);
+const steps = [
+  { icon: ImagePlus, title: 'Adicione a foto e os dados', text: 'Use uma foto do seu imóvel. Informe preço, localização e as características que quer destacar.' },
+  { icon: LayoutTemplate, title: 'Escolha o estilo e sua marca', text: 'Selecione um dos 6 estilos, aplique sua marca e ajuste o enquadramento da foto.' },
+  { icon: Download, title: 'Baixe e publique', text: 'Exporte em PNG para Feed (4:5) ou Story (9:16). Depois, publique no Instagram ou compartilhe no WhatsApp.' },
+];
 
-  useEffect(() => {
-    const updateScale = () => {
-      if (depoisRef.current) {
-        const containerWidth = depoisRef.current.clientWidth;
-        setDepoisScale(containerWidth / 1080);
-      }
-    };
-    updateScale();
-    window.addEventListener('resize', updateScale);
-    return () => window.removeEventListener('resize', updateScale);
-  }, []);
+const questions = [
+  { title: 'O que posso fazer no plano gratuito?', answer: "Você pode salvar até 5 imóveis e gerar artes ilimitadas com a marca d'água PostNaMão. Também pode experimentar a geração de legendas com IA. Não é necessário informar cartão para criar a conta gratuita." },
+  { title: 'Preciso instalar um aplicativo?', answer: 'Não. O PostNaMão funciona no navegador do celular ou do computador. Tenha uma foto do imóvel e os dados que deseja colocar na arte.' },
+  { title: 'Posso colocar meu logo e meu contato?', answer: 'Sim. Em Minha Marca, cadastre seu logo, nome, CRECI e WhatsApp para usar nas artes. No plano gratuito, a marca d’água PostNaMão também aparece.' },
+  { title: 'A ferramenta publica automaticamente no Instagram?', answer: 'Você baixa a arte em PNG e faz a publicação na sua rede social. O PostNaMão prepara a imagem e ajuda com a legenda; a publicação fica com você.' },
+  { title: 'Como funciona o Plano Pro?', answer: 'O Pro custa R$ 49,90 por mês e permite criar artes sem marca d’água, salvar imóveis sem o limite do plano gratuito e acessar os recursos Pro de selos e IA. Crie sua conta e faça a assinatura dentro da ferramenta. A renovação pode ser cancelada em Minha Conta.' },
+];
 
+export function LandingPage({ onLoginClick, onSignUpClick }: LandingPageProps) {
+  const primaryButton = 'inline-flex items-center justify-center gap-2 rounded-xl bg-[#F85818] px-6 py-3.5 text-base font-bold text-white transition-colors hover:bg-[#d9470e] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#002040]';
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-orange-500 selection:text-white flex flex-col">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <PostNaMaoLogo className="h-10 w-auto" />
-          </div>
-          <div className="flex items-center gap-4 sm:gap-6">
-            <button 
-              onClick={onLoginClick}
-              className="text-sm font-medium text-slate-600 hover:text-orange-500 transition-colors"
-            >
-              Entrar
-            </button>
-            <button 
-              onClick={onLoginClick}
-              className="text-sm font-bold bg-orange-500 hover:bg-orange-600 text-white px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50"
-            >
-              Testar Grátis
-            </button>
-          </div>
+    <div className="min-h-screen bg-[#F8FAFC] font-sans text-[#002040]">
+      <a href="#conteudo" className="sr-only focus:not-sr-only focus:block focus:p-4">Ir para o conteúdo</a>
+      <header className="border-b border-[#E5E7EB] bg-white">
+        <div className="mx-auto flex h-20 max-w-6xl items-center justify-between gap-3 px-5 sm:px-8">
+          <span aria-label="PostNaMão"><PostNaMaoLogo forceLight className="h-10 w-auto" /></span>
+          <nav aria-label="Navegação principal" className="flex items-center gap-4 sm:gap-6">
+            <a href="#como-funciona" className="hidden text-sm font-semibold hover:underline md:block">Como funciona</a>
+            <a href="#planos" className="hidden text-sm font-semibold hover:underline md:block">Planos</a>
+            <button onClick={onLoginClick} className="text-sm font-semibold hover:underline">Entrar</button>
+            <button onClick={onSignUpClick} className="rounded-xl bg-[#F85818] px-4 py-2.5 text-sm font-bold text-white hover:bg-[#d9470e]">Começar grátis</button>
+          </nav>
         </div>
       </header>
-
-      <main className="flex-grow">
-        {/* Hero Section */}
-        <section className="pt-20 pb-24 sm:pt-32 sm:pb-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
-          <div className="flex justify-center mb-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-orange-100/50 border border-orange-200 text-orange-700 font-semibold text-sm shadow-sm">
-              🔥 O Segredo dos Corretores Top Producers
+      <main id="conteudo">
+        <section className="mx-auto grid max-w-6xl items-center gap-10 px-5 py-12 sm:px-8 sm:py-16 lg:grid-cols-[1.1fr_1fr] lg:gap-16 lg:py-20">
+          <div>
+            <p className="mb-5 inline-flex rounded-full bg-[#FFF3EC] px-4 py-2 text-xs font-bold tracking-wide">FEITO PARA CORRETORES DE IMÓVEIS</p>
+            <h1 className="max-w-xl text-[2.65rem] font-extrabold leading-[1.08] tracking-tight sm:text-5xl lg:text-[3.5rem]">A foto do seu imóvel vira um <span className="text-[#F85818]">post pronto.</span></h1>
+            <p className="mt-6 max-w-lg text-lg leading-relaxed text-[#667085]">Adicione a foto, preencha os dados e escolha um estilo. Baixe sua arte para Feed ou Story, com sua marca, pelo celular ou computador.</p>
+            <div className="mt-8 flex flex-col items-start gap-4">
+              <button onClick={onSignUpClick} className={primaryButton}>Criar meu primeiro post grátis <ArrowRight className="h-5 w-5 shrink-0" aria-hidden="true" /></button>
+              <p className="max-w-md text-sm leading-relaxed text-[#667085]">Sem cartão. Até 5 imóveis salvos e artes ilimitadas com marca d'água.</p>
+              <a href="#como-funciona" className="text-sm font-semibold underline underline-offset-4">Veja como funciona</a>
             </div>
           </div>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight mb-6 leading-tight max-w-4xl mx-auto">
-            Suas Captações de Imóveis prontas para o <span className="bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-orange-400">Instagram em segundos</span>
-          </h1>
-          <p className="text-lg sm:text-xl text-slate-600 mb-10 max-w-2xl mx-auto leading-relaxed">
-            A primeira ferramenta de marketing exclusiva para corretores. Aplique selos de Vendido ou Exclusividade, ajuste o formato da fachada e gere textos com IA sem perder horas editando.
-          </p>
-          <div className="flex justify-center mb-16">
-            <button 
-              onClick={onLoginClick}
-              className="text-lg font-bold bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-2xl transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 shadow-xl shadow-orange-500/30 hover:shadow-orange-500/50 hover:-translate-y-1"
-            >
-              Criar meu primeiro post
-            </button>
+          <figure className="mx-auto w-full max-w-md rounded-[28px] border border-[#E5E7EB] bg-white p-4 shadow-[0_10px_30px_rgba(15,23,43,0.10)] sm:p-5">
+            <div className="mb-4 flex items-center justify-between gap-3 text-xs font-semibold">
+              <span>Seu imóvel, pronto para divulgar</span>
+              <span className="rounded-full bg-[#FFF3EC] px-3 py-1.5">Exemplo de arte</span>
+            </div>
+            <img src="/depois.jpg" alt="Exemplo de arte com foto do imóvel, preço, localização e características organizados" width={1080} height={1080} fetchPriority="high" className="aspect-square w-full rounded-2xl object-contain" />
+            <figcaption className="mt-4 flex items-center gap-2 text-xs leading-relaxed text-[#667085]"><Check className="h-4 w-4 shrink-0 text-[#F85818]" aria-hidden="true" /> Exemplo ilustrativo. Você usa as fotos e os dados dos seus imóveis.</figcaption>
+          </figure>
+        </section>
+        <section id="como-funciona" className="scroll-mt-6 border-y border-[#E5E7EB] bg-white px-5 py-14 sm:px-8 sm:py-20">
+          <div className="mx-auto max-w-6xl">
+            <p className="text-xs font-bold tracking-widest text-[#667085]">DA CAPTAÇÃO À DIVULGAÇÃO</p>
+            <h2 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">Seu primeiro post, em 3 etapas.</h2>
+            <div className="mt-10 grid gap-5 md:grid-cols-3">
+              {steps.map(({ icon: Icon, title, text }, index) => (
+                <article key={title} className="rounded-[24px] border border-[#E5E7EB] bg-[#F8FAFC] p-7">
+                  <div className="mb-7 flex items-center justify-between"><Icon className="h-7 w-7 text-[#F85818]" aria-hidden="true" /><span className="text-sm font-bold text-[#667085]">0{index + 1}</span></div>
+                  <h3 className="text-xl font-bold">{title}</h3>
+                  <p className="mt-3 text-sm leading-relaxed text-[#667085]">{text}</p>
+                </article>
+              ))}
+            </div>
+            <button onClick={onSignUpClick} className={primaryButton + ' mt-8'}>Quero criar minha primeira arte <ArrowRight className="h-4 w-4" aria-hidden="true" /></button>
           </div>
-          
-          {/* App UI Placeholder (Mobile First) */}
-          <div className="relative mx-auto w-full max-w-md mt-12 mb-8">
-            <div className="absolute inset-0 bg-gradient-to-b from-orange-500/30 to-transparent blur-3xl -z-10 rounded-full opacity-60"></div>
-            
-            <div className="w-full max-w-[320px] aspect-[9/16] mx-auto bg-slate-900 rounded-[3rem] border-[12px] border-slate-800 shadow-2xl relative overflow-hidden flex items-center justify-center">
-              {/* Dynamic Island / Notch Placeholder */}
-              <div className="absolute top-0 w-32 h-7 bg-slate-800 rounded-b-3xl z-20"></div>
-              
-              <div className="w-full h-full relative">
-                <img 
-                  src="/teladeedicao.jpg" 
-                  alt="Tela de Edição" 
-                  className="w-full h-full object-cover"
-                  width={296}
-                  height={526}
-                />
-              </div>
+        </section>
+        <section className="bg-[#0F172B] px-5 py-14 text-white sm:px-8 sm:py-20">
+          <div className="mx-auto max-w-6xl">
+            <h2 className="max-w-2xl text-3xl font-extrabold tracking-tight sm:text-4xl">Uma ferramenta para a sua rotina de corretor.</h2>
+            <div className="mt-10 grid gap-8 md:grid-cols-3">
+              {[
+                { icon: Smartphone, title: 'No celular ou computador', text: 'Prepare sua divulgação pelo navegador. Exporte a arte para Feed (4:5) ou Story (9:16).' },
+                { icon: Palette, title: 'Com a sua identidade', text: 'Cadastre sua marca e escolha entre 6 estilos. Ajuste a foto, o contraste e os dados que aparecem na arte.' },
+                { icon: Sparkles, title: 'Ajuda para escrever', text: 'Gere uma sugestão de legenda com IA usando os dados do imóvel. Revise o texto e adapte antes de publicar.' },
+              ].map(({ icon: Icon, title, text }) => (
+                <article key={title}><Icon className="mb-5 h-7 w-7 text-[#F85818]" aria-hidden="true" /><h3 className="text-xl font-bold">{title}</h3><p className="mt-3 text-sm leading-relaxed text-slate-300">{text}</p></article>
+              ))}
             </div>
           </div>
         </section>
-
-        {/* Features Section (Sales Arguments) */}
-        <section className="py-24 bg-slate-50 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">
-                Ferramentas de alta conversão, <span className="text-orange-500">na palma da mão.</span>
-              </h2>
-            </div>
-            
-            <div className="grid md:grid-cols-3 gap-8">
-              {/* Feature 1 */}
-              <div className="bg-slate-900 rounded-3xl p-8 border border-slate-800 shadow-xl relative overflow-hidden group">
-                <div className="absolute top-0 right-0 p-6 opacity-5 transform group-hover:scale-110 transition-transform duration-500">
-                  <Sparkles className="w-32 h-32 text-orange-500" />
-                </div>
-                <div className="w-14 h-14 bg-orange-500/20 rounded-2xl flex items-center justify-center mb-6 border border-orange-500/30">
-                  <Sparkles className="w-7 h-7 text-orange-500" />
-                </div>
-                <h3 className="text-xl font-bold text-white mb-4">Design de Incorporadora</h3>
-                <p className="text-slate-400 leading-relaxed">
-                  Escolha entre 5 layouts exclusivos (Modern, Card Vidro, Premium Dark, Impacto e Clean). Artes validadas para vender imóveis de luxo, sem precisar entender de design.
-                </p>
-              </div>
-
-              {/* Feature 2 */}
-              <div className="bg-slate-900 rounded-3xl p-8 border border-slate-800 shadow-xl relative overflow-hidden group">
-                <div className="absolute top-0 right-0 p-6 opacity-5 transform group-hover:scale-110 transition-transform duration-500">
-                  <Smartphone className="w-32 h-32 text-orange-500" />
-                </div>
-                <div className="w-14 h-14 bg-orange-500/20 rounded-2xl flex items-center justify-center mb-6 border border-orange-500/30">
-                  <Smartphone className="w-7 h-7 text-orange-500" />
-                </div>
-                <h3 className="text-xl font-bold text-white mb-4">Pronto para Todas as Telas</h3>
-                <p className="text-slate-400 leading-relaxed">
-                  Exporte sua arte perfeitamente enquadrada para o Feed (4:5) ou para os Stories (9:16).
-                </p>
-              </div>
-
-              {/* Feature 3 */}
-              <div className="bg-slate-900 rounded-3xl p-8 border border-slate-800 shadow-xl relative overflow-hidden group">
-                <div className="absolute top-0 right-0 p-6 opacity-5 transform group-hover:scale-110 transition-transform duration-500">
-                  <Zap className="w-32 h-32 text-orange-500" />
-                </div>
-                <div className="w-14 h-14 bg-orange-500/20 rounded-2xl flex items-center justify-center mb-6 border border-orange-500/30">
-                  <Zap className="w-7 h-7 text-orange-500" />
-                </div>
-                <h3 className="text-xl font-bold text-white mb-4">Ajuste Fino Profissional</h3>
-                <p className="text-slate-400 leading-relaxed">
-                  Não fique engessado. Controle a altura e a cor do degradê, desloque a foto para o enquadramento perfeito e crie o post exatamente como você imaginou.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Before & After Section */}
-        <section className="py-24 bg-slate-900 text-white px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto">
-            <h2 className="text-3xl sm:text-4xl font-bold text-center mb-16">
-              Do imóvel captado ao post publicado <br className="hidden sm:block"/> num estalar de dedos.
-            </h2>
-            
-            <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-              {/* Antes */}
-              <div className="bg-slate-800/50 border-2 border-slate-700 rounded-3xl p-8 flex flex-col relative overflow-hidden">
-                <div className="absolute top-0 right-0 bg-slate-700 text-slate-300 px-4 py-1.5 rounded-bl-2xl font-semibold text-sm">
-                  Antes
-                </div>
-                <div className="flex-grow flex items-center justify-center bg-slate-800 rounded-xl mb-6 aspect-square border border-slate-700/50 overflow-hidden relative">
-                  <img src={mockImageUrlAntes} alt="Antes" className="absolute inset-0 w-full h-full object-contain" />
-                </div>
-                <p className="text-slate-400 font-medium text-lg text-center">
-                  Horas no computador tentando ajustar a foto.
-                </p>
-              </div>
-
-              {/* Depois */}
-              <div className="bg-orange-500/10 border-2 border-orange-500 rounded-3xl p-8 flex flex-col relative overflow-hidden shadow-2xl shadow-orange-500/20">
-                <div className="absolute top-0 right-0 bg-orange-500 text-white px-4 py-1.5 rounded-bl-2xl font-bold text-sm flex items-center gap-1">
-                  <CheckCircle2 className="w-4 h-4" /> Depois
-                </div>
-                <div className="flex-grow flex items-center justify-center bg-slate-800 rounded-xl mb-6 aspect-square border border-orange-500/30 overflow-hidden relative group">
-                  <img src={mockImageUrlDepois} alt="Depois" className="absolute inset-0 w-full h-full object-contain" />
-                </div>
-                <p className="text-white font-medium text-lg text-center">
-                  Imagem perfeita, com selo de Exclusividade e sua marca, direto no celular.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Features Section */}
-        <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-xl">
-              <div className="w-14 h-14 bg-orange-100 rounded-2xl flex items-center justify-center mb-6">
-                <Smartphone className="w-7 h-7 text-orange-600" />
-              </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">Direto do Celular</h3>
-              <p className="text-slate-600 leading-relaxed">
-                Tirou a foto na visita? Crie a arte ali mesmo. Sem precisar de computador, Photoshop ou Canva.
-              </p>
-            </div>
-
-            <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-xl">
-              <div className="w-14 h-14 bg-orange-100 rounded-2xl flex items-center justify-center mb-6">
-                <Tags className="w-7 h-7 text-orange-600" />
-              </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">Gatilhos de Venda</h3>
-              <p className="text-slate-600 leading-relaxed">
-                Aplique selos de "Exclusividade", "Oportunidade" e "Vendido" com apenas um toque na tela.
-              </p>
-            </div>
-
-            <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-xl">
-              <div className="w-14 h-14 bg-orange-100 rounded-2xl flex items-center justify-center mb-6">
-                <Zap className="w-7 h-7 text-orange-600" />
-              </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">Focado em Vendas, Não em Design</h3>
-              <p className="text-slate-600 leading-relaxed">
-                Você precisa estar na rua fazendo visitas, não no computador alinhando textos. Interface pensada para a correria do corretor.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* AI Copywriter Section */}
-        <section className="py-24 bg-white px-4 sm:px-6 lg:px-8 border-y border-slate-200">
-          <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-            <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-orange-100 text-orange-700 font-semibold text-sm mb-6">
-                <Sparkles className="w-4 h-4" /> IA Copywriter
-              </div>
-              <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-6 leading-tight">
-                Não sabe o que escrever? A Inteligência Artificial faz isso por você.
-              </h2>
-              <p className="text-lg text-slate-600 leading-relaxed mb-8">
-                O PostNaMão não cria apenas a arte. Nossa IA analisa o seu imóvel e gera instantaneamente legendas magnéticas para o Instagram e mensagens persuasivas prontas para você disparar no WhatsApp dos seus clientes.
-              </p>
-            </div>
-            <div className="relative">
-               {/* Visual Chat Bubble Mockup */}
-               <div className="bg-slate-50 border border-slate-200 rounded-3xl p-6 shadow-lg relative z-10">
-                  <div className="flex items-center gap-3 mb-4 border-b border-slate-200 pb-4">
-                    <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center">
-                       <Sparkles className="w-5 h-5 text-white" />
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-slate-900">Assistente IA</h4>
-                      <p className="text-xs text-slate-500">Online agora</p>
-                    </div>
-                  </div>
-                  <div className="bg-white border border-slate-100 p-4 rounded-2xl rounded-tl-none shadow-sm text-slate-700 text-sm leading-relaxed">
-                    🏡 <strong>Mansão Suspensa com Vista Mar!</strong><br/><br/>
-                    Acorde todos os dias com a brisa do mar. 4 suítes, varanda gourmet e acabamento em mármore.<br/><br/>
-                    💎 <em>Oportunidade única para quem não abre mão do melhor.</em><br/><br/>
-                    👉 Clique no link da bio e agende sua visita hoje mesmo!
-                  </div>
-                  <div className="mt-4 flex justify-end">
-                    <div className="bg-orange-500 text-white p-4 rounded-2xl rounded-tr-none shadow-sm text-sm inline-block">
-                      Perfeito! Vou enviar pro cliente. 🚀
-                    </div>
-                  </div>
-               </div>
-               {/* Decoration */}
-               <div className="absolute -top-6 -right-6 w-24 h-24 bg-orange-200 rounded-full blur-2xl opacity-50 z-0"></div>
-               <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-slate-300 rounded-full blur-2xl opacity-50 z-0"></div>
-            </div>
-          </div>
-        </section>
-
-        {/* Pricing Section */}
-        <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">
-              Escolha o plano ideal para alavancar suas captações
-            </h2>
-            <p className="text-lg text-slate-600">Sem surpresas, sem taxas ocultas. Cancele quando quiser.</p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {/* Free Plan */}
-            <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm flex flex-col transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-xl">
-              <div className="mb-8">
-                <h3 className="text-xl font-bold text-slate-900 mb-2">Gratuito</h3>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-extrabold text-slate-900">R$ 0</span>
-                </div>
-                <p className="text-slate-500 mt-2 text-sm">Para testar a ferramenta</p>
-              </div>
-              <ul className="space-y-4 mb-8 flex-grow">
-                <li className="flex items-start gap-3 text-slate-600">
-                  <Check className="w-5 h-5 text-orange-500 shrink-0" />
-                  <span>Até 5 imóveis salvos</span>
-                </li>
-                <li className="flex items-start gap-3 text-slate-600">
-                  <Check className="w-5 h-5 text-orange-500 shrink-0" />
-                  <span>Geração de artes ilimitadas (com marca d'água)</span>
-                </li>
-                <li className="flex items-start gap-3 text-slate-600">
-                  <Check className="w-5 h-5 text-orange-500 shrink-0" />
-                  <span>Teste da IA de textos</span>
-                </li>
+        <section id="planos" className="mx-auto max-w-5xl scroll-mt-6 px-5 py-14 sm:px-8 sm:py-20">
+          <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">Comece grátis.<br /><span className="text-[#667085]">Escolha o Pro quando precisar.</span></h2>
+          <p className="mt-4 text-[#667085]">Experimente com um imóvel seu antes de decidir.</p>
+          <div className="mt-10 grid gap-6 md:grid-cols-2">
+            <article className="flex flex-col rounded-[28px] border-2 border-[#F85818] bg-white p-7 sm:p-8">
+              <p className="mb-4 text-xs font-bold tracking-wider">COMECE POR AQUI</p>
+              <h3 className="text-xl font-bold">Gratuito</h3>
+              <p className="mt-4 text-4xl font-extrabold">R$ 0</p>
+              <p className="mt-2 text-sm text-[#667085]">Sem cartão para criar sua conta.</p>
+              <ul className="my-7 flex-grow space-y-4 text-sm">
+                {['Até 5 imóveis salvos', "Artes ilimitadas com marca d'água", 'Exportação para Feed e Story', 'Sua marca e seu contato nas artes', 'Teste da geração de legendas com IA'].map(item => <li key={item} className="flex items-start gap-3"><Check className="h-5 w-5 shrink-0 text-[#F85818]" aria-hidden="true" />{item}</li>)}
               </ul>
-              <button 
-                onClick={onLoginClick}
-                className="w-full py-4 rounded-xl font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 hover:shadow-lg border border-slate-200"
-              >
-                Começar Grátis
-              </button>
-            </div>
-
-            {/* Pro Plan */}
-            <div className="bg-slate-900 rounded-3xl p-8 border-2 border-orange-500 shadow-xl shadow-orange-500/20 flex flex-col relative transform md:-translate-y-4 transition-all duration-300 ease-in-out hover:-translate-y-6 hover:shadow-2xl">
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-orange-500 text-white px-4 py-1 rounded-full text-sm font-bold tracking-wide shadow-sm">
-                MAIS ESCOLHIDO
-              </div>
-              <div className="mb-8 mt-2">
-                <h3 className="text-xl font-bold text-white mb-2">Plano Pro</h3>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-extrabold text-white">R$ 49,90</span>
-                  <span className="text-slate-400">/ mês</span>
-                </div>
-                <p className="text-slate-400 mt-2 text-sm">Tudo liberado para alta conversão</p>
-              </div>
-              <ul className="space-y-4 mb-8 flex-grow">
-                <li className="flex items-start gap-3 text-slate-300">
-                  <Check className="w-5 h-5 text-orange-500 shrink-0" />
-                  <span><strong className="text-white">Artes ilimitadas</strong></span>
-                </li>
-                <li className="flex items-start gap-3 text-slate-300">
-                  <Check className="w-5 h-5 text-orange-500 shrink-0" />
-                  <span>Sem marca d'água</span>
-                </li>
-                <li className="flex items-start gap-3 text-slate-300">
-                  <Check className="w-5 h-5 text-orange-500 shrink-0" />
-                  <span>Selos exclusivos (Vendido, Oportunidade)</span>
-                </li>
-                <li className="flex items-start gap-3 text-slate-300">
-                  <Check className="w-5 h-5 text-orange-500 shrink-0" />
-                  <span>Copywriter de IA liberado</span>
-                </li>
-                <li className="flex items-start gap-3 text-slate-300">
-                  <Check className="w-5 h-5 text-orange-500 shrink-0" />
-                  <span>Suporte prioritário</span>
-                </li>
+              <button onClick={onSignUpClick} className={primaryButton}>Começar com o gratuito</button>
+            </article>
+            <article className="flex flex-col rounded-[28px] border border-[#E5E7EB] bg-white p-7 sm:p-8">
+              <p className="mb-4 text-xs font-bold tracking-wider text-[#667085]">PARA SUA ROTINA DE DIVULGAÇÃO</p>
+              <h3 className="text-xl font-bold">Plano Pro</h3>
+              <p className="mt-4 text-4xl font-extrabold">R$ 49,90 <span className="text-base font-medium text-[#667085]">/ mês</span></p>
+              <p className="mt-2 text-sm text-[#667085]">Assine dentro da sua conta quando quiser.</p>
+              <ul className="my-7 flex-grow space-y-4 text-sm">
+                {['Imóveis e artes ilimitados', "Artes sem marca d'água", 'Recursos Pro de selos e IA', 'Suporte prioritário', 'Cancelamento da renovação em Minha Conta'].map(item => <li key={item} className="flex items-start gap-3"><Check className="h-5 w-5 shrink-0 text-[#F85818]" aria-hidden="true" />{item}</li>)}
               </ul>
-              <button 
-                onClick={() => setIsCheckoutModalOpen(true)}
-            disabled={isCheckoutLoading}
-                className="w-full py-4 rounded-xl font-bold text-white bg-orange-500 hover:bg-orange-600 transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 text-center block"
-              >
-                Assinar o PostNaMão Pro
-              </button>
-            </div>
-          </div>
-
-          {/* Risk Reversal */}
-          <div className="mt-16 flex flex-col items-center justify-center text-center max-w-2xl mx-auto">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-6">
-              <ShieldCheck className="w-8 h-8 text-green-600" />
-            </div>
-            <p className="text-slate-600 font-medium text-lg leading-relaxed">
-              <strong className="text-slate-900">Risco Zero.</strong> Teste o Plano Pro por 7 dias. Se não gostar, devolvemos 100% do seu dinheiro com um clique.
-            </p>
+              <button onClick={onSignUpClick} className="rounded-xl border border-[#002040] px-6 py-3.5 font-bold hover:bg-[#F8FAFC]">Criar conta e conhecer o Pro</button>
+            </article>
           </div>
         </section>
-        {/* Testimonials Section */}
-        <section className="py-24 bg-slate-900 text-white px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-                O que os corretores estão dizendo
-              </h2>
-              <p className="text-slate-400 text-lg">Junte-se a centenas de profissionais que já automatizaram seu marketing.</p>
-            </div>
-            
-            <div className="grid md:grid-cols-3 gap-8">
-              {/* Testimonial 1 */}
-              <div className="bg-slate-800 rounded-3xl p-8 border border-slate-700 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-xl">
-                <div className="flex gap-1 mb-6">
-                  {[...Array(5)].map((_, i) => <Star key={i} className="w-5 h-5 text-orange-400 fill-orange-400" />)}
-                </div>
-                <p className="text-slate-300 text-lg leading-relaxed mb-8">
-                  "Parei de perder tempo no Canva. Clico num botão e a captação vai direto pro Instagram. Surreal."
-                </p>
-                <div>
-                  <h4 className="font-bold text-white">Carlos E.</h4>
-                  <p className="text-sm text-slate-500">Corretor Autônomo</p>
-                </div>
-              </div>
-
-              {/* Testimonial 2 */}
-              <div className="bg-slate-800 rounded-3xl p-8 border border-slate-700 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-xl">
-                <div className="flex gap-1 mb-6">
-                  {[...Array(5)].map((_, i) => <Star key={i} className="w-5 h-5 text-orange-400 fill-orange-400" />)}
-                </div>
-                <p className="text-slate-300 text-lg leading-relaxed mb-8">
-                  "A IA que escreve as legendas já me salvou várias vezes. Mando direto pro WhatsApp do cliente."
-                </p>
-                <div>
-                  <h4 className="font-bold text-white">Mariana T.</h4>
-                  <p className="text-sm text-slate-500">Especialista em Alto Padrão</p>
-                </div>
-              </div>
-
-              {/* Testimonial 3 */}
-              <div className="bg-slate-800 rounded-3xl p-8 border border-slate-700 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-xl">
-                <div className="flex gap-1 mb-6">
-                  {[...Array(5)].map((_, i) => <Star key={i} className="w-5 h-5 text-orange-400 fill-orange-400" />)}
-                </div>
-                <p className="text-slate-300 text-lg leading-relaxed mb-8">
-                  "Colocar o selo de Vendido nunca foi tão fácil. Dá muita autoridade pro meu perfil."
-                </p>
-                <div>
-                  <h4 className="font-bold text-white">Roberto F.</h4>
-                  <p className="text-sm text-slate-500">Sócio de Imobiliária</p>
-                </div>
-              </div>
+        <section className="border-t border-[#E5E7EB] bg-white px-5 py-14 sm:px-8 sm:py-20">
+          <div className="mx-auto max-w-3xl">
+            <h2 className="mb-8 text-3xl font-extrabold tracking-tight">Antes do seu primeiro post</h2>
+            <div className="space-y-3">
+              {questions.map(({ title, answer }) => <details key={title} className="group rounded-2xl border border-[#E5E7EB] [&_summary::-webkit-details-marker]:hidden"><summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-5 font-semibold">{title}<ChevronDown className="h-5 w-5 shrink-0 transition-transform group-open:rotate-180" aria-hidden="true" /></summary><p className="px-5 pb-5 text-sm leading-relaxed text-[#667085]">{answer}</p></details>)}
             </div>
           </div>
         </section>
-
-        {/* FAQ Section */}
-        <section className="py-24 bg-slate-50 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">
-                Perguntas Frequentes
-              </h2>
-            </div>
-            
-            <div className="space-y-4">
-              <details className="group bg-white border border-slate-200 rounded-2xl [&_summary::-webkit-details-marker]:hidden">
-                <summary className="flex items-center justify-between p-6 cursor-pointer font-bold text-slate-900 text-lg">
-                  Preciso instalar algum aplicativo?
-                  <ChevronDown className="w-5 h-5 text-slate-500 group-open:rotate-180 transition-transform" />
-                </summary>
-                <div className="px-6 pb-6 text-slate-600 leading-relaxed">
-                  Não, o PostNaMão funciona 100% no navegador do seu celular ou computador.
-                </div>
-              </details>
-
-              <details className="group bg-white border border-slate-200 rounded-2xl [&_summary::-webkit-details-marker]:hidden">
-                <summary className="flex items-center justify-between p-6 cursor-pointer font-bold text-slate-900 text-lg">
-                  Como funciona o limite do plano gratuito?
-                  <ChevronDown className="w-5 h-5 text-slate-500 group-open:rotate-180 transition-transform" />
-                </summary>
-                <div className="px-6 pb-6 text-slate-600 leading-relaxed">
-                  Você pode gerar até 10 artes por mês com a nossa marca d'água.
-                </div>
-              </details>
-
-              <details className="group bg-white border border-slate-200 rounded-2xl [&_summary::-webkit-details-marker]:hidden">
-                <summary className="flex items-center justify-between p-6 cursor-pointer font-bold text-slate-900 text-lg">
-                  Posso cancelar o Plano Pro quando quiser?
-                  <ChevronDown className="w-5 h-5 text-slate-500 group-open:rotate-180 transition-transform" />
-                </summary>
-                <div className="px-6 pb-6 text-slate-600 leading-relaxed">
-                  Sim, sem multas e sem burocracia, direto no painel.
-                </div>
-              </details>
-            </div>
-          </div>
+        <section className="px-5 py-14 text-center sm:px-8 sm:py-20">
+          <h2 className="text-3xl font-extrabold tracking-tight">Tem uma foto de imóvel no celular?</h2>
+          <p className="mt-4 text-[#667085]">Use essa foto para criar seu primeiro post.</p>
+          <button onClick={onSignUpClick} className={primaryButton + ' mt-7'}>Criar minha conta grátis <ArrowRight className="h-5 w-5" aria-hidden="true" /></button>
         </section>
       </main>
-
-      {/* Footer */}
-      <footer className="bg-white py-12 border-t border-slate-200 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-2">
-            <PostNaMaoLogo className="h-8 w-auto grayscale opacity-50" />
-            <span className="text-slate-500 font-medium text-sm">© 2026 PostNaMão. Todos os direitos reservados.</span>
-          </div>
-          <div className="flex flex-wrap justify-center items-center gap-6 text-sm font-medium text-slate-500">
-            <a href="https://instagram.com/postnamaobr" target="_blank" rel="noopener noreferrer" className="hover:text-orange-500 transition-colors flex items-center gap-1">
-              <Instagram className="w-4 h-4" />
-              @postnamaobr
-            </a>
-            <Link to="/termos" className="hover:text-orange-500 transition-colors">Termos de Uso</Link>
-            <Link to="/privacidade" className="hover:text-orange-500 transition-colors">Política de Privacidade</Link>
-            <a href="#" className="hover:text-orange-500 transition-colors">Contato</a>
+      <footer className="border-t border-[#E5E7EB] bg-white px-5 py-8 sm:px-8">
+        <div className="mx-auto flex max-w-6xl flex-col justify-between gap-6 md:flex-row md:items-center">
+          <p className="text-xs text-[#667085]">© {new Date().getFullYear()} PostNaMão. Todos os direitos reservados.</p>
+          <div className="flex flex-wrap items-center gap-5 text-xs font-medium text-[#667085]">
+            <a href="https://www.instagram.com/postnamaobr/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 hover:underline"><Instagram className="h-4 w-4" aria-hidden="true" /> Fale com a gente no Instagram</a>
+            <Link to="/termos" className="hover:underline">Termos de Uso</Link>
+            <Link to="/privacidade" className="hover:underline">Política de Privacidade</Link>
           </div>
         </div>
       </footer>
-    
-      <CheckoutModal 
-        isOpen={isCheckoutModalOpen}
-        onClose={() => setIsCheckoutModalOpen(false)}
-        isLoading={isCheckoutLoading}
-        onConfirm={(cpf) => handleCheckout(cpf, setIsCheckoutLoading)}
-      />
-</div>
+    </div>
   );
 }

@@ -67,6 +67,7 @@ export default function App() {
     : supabase.auth.signOut();
   const [session, setSession] = useState<Session | null>(null);
   const [showAuth, setShowAuth] = useState(false);
+  const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
     const [activeTab, setActiveTab] = useState<'criacao' | 'meus_imoveis' | 'minha_marca' | 'minha_conta'>('criacao');
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
   const [openSecondaryTool, setOpenSecondaryTool] = useState<'none' | 'selo' | 'ajustes' | 'legenda'>('none');
@@ -716,11 +717,14 @@ const handleDownload = async () => {
 
   if (!isValidSession && !isLocalDemo) {
     if (showAuth) {
-      return <Auth onBack={() => setShowAuth(false)} />;
+      return <Auth initialMode={authMode} onBack={() => setShowAuth(false)} />;
     }
     return <LandingPage onLoginClick={() => {
       if (import.meta.env.DEV && !isSupabaseConfigured) window.location.assign('/demo');
-      else setShowAuth(true);
+      else { setAuthMode('login'); setShowAuth(true); }
+    }} onSignUpClick={() => {
+      if (import.meta.env.DEV && !isSupabaseConfigured) window.location.assign('/demo');
+      else { setAuthMode('signup'); setShowAuth(true); }
     }} />;
   }
 

@@ -5,10 +5,11 @@ import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
 
 interface AuthProps {
   onBack?: () => void;
+  initialMode?: 'login' | 'signup';
 }
 
-export function Auth({ onBack }: AuthProps) {
-  const [isLogin, setIsLogin] = useState(true);
+export function Auth({ onBack, initialMode = 'login' }: AuthProps) {
+  const [isLogin, setIsLogin] = useState(initialMode === 'login');
   const [isRecovery, setIsRecovery] = useState(false);
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
@@ -50,9 +51,9 @@ export function Auth({ onBack }: AuthProps) {
     setLoading(true);
     setError(null);
     setMessage(null);
-    const { error } = await supabase.auth.signUp({ email, password });
+    const { data, error } = await supabase.auth.signUp({ email, password });
     if (error) setError(error.message);
-    else setMessage('Verifique seu email para confirmar o cadastro (ou faça login se configurado sem confirmação).');
+    else if (!data.session) setMessage('Confira seu e-mail e abra o link de confirmação para começar. Se não encontrar, verifique a pasta de spam.');
     setLoading(false);
   };
 
@@ -126,6 +127,11 @@ export function Auth({ onBack }: AuthProps) {
         <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-white mb-6">
           {isRecovery ? 'Recuperar senha' : (isLogin ? 'Acesse sua conta' : 'Crie sua conta')}
         </h2>
+        {!isLogin && !isRecovery && (
+          <p className="text-sm text-center text-gray-600 dark:text-zinc-400 mb-6">
+            Comece grátis, sem cartão. Salve até 5 imóveis e crie artes com a marca d'água PostNaMão.
+          </p>
+        )}
         
         {error && (
           <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg text-red-600 dark:text-red-400 text-sm text-center transition-colors">
